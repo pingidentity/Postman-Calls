@@ -1,0 +1,608 @@
+{
+	"info": {
+		"_postman_id": "15da081a-869d-f505-4421-8354f035d470",
+		"name": "OAuth Demos (JWT)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "OAuth Demo - Validate Token",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": {
+						"username": "play_rs_client",
+						"password": "2Federate",
+						"saveHelperData": true,
+						"showPassword": false
+					}
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					},
+					{
+						"key": "Authorization",
+						"value": "Basic cGxheV9yc19jbGllbnQ6MkZlZGVyYXRl"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "https://sso.cpricedomain.net/as/token.oauth2?grant_type=urn:pingidentity.com:oauth2:grant_type:validate_bearer&token=",
+					"protocol": "https",
+					"host": [
+						"sso",
+						"cpricedomain",
+						"net"
+					],
+					"path": [
+						"as",
+						"token.oauth2"
+					],
+					"query": [
+						{
+							"key": "grant_type",
+							"value": "urn:pingidentity.com:oauth2:grant_type:validate_bearer"
+						},
+						{
+							"key": "token",
+							"value": ""
+						}
+					]
+				},
+				"description": "Sends AT to the RS Client that's tied to the *same* AT Manager in PF"
+			},
+			"response": []
+		},
+		{
+			"name": "OAuth Demo - Token Introspection",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": {
+						"username": "play_rs_client",
+						"password": "2Federate",
+						"saveHelperData": true,
+						"showPassword": false
+					}
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Basic cGxheV9yc19jbGllbnQ6MkZlZGVyYXRl"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "https://sso.cpricedomain.net/as/introspect.oauth2?token=",
+					"protocol": "https",
+					"host": [
+						"sso",
+						"cpricedomain",
+						"net"
+					],
+					"path": [
+						"as",
+						"introspect.oauth2"
+					],
+					"query": [
+						{
+							"key": "token",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "OAuth Demo - Revoke Token",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": {
+						"username": "play_ac_client",
+						"password": "",
+						"saveHelperData": true,
+						"showPassword": false
+					}
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					},
+					{
+						"key": "Authorization",
+						"value": "Basic cGxheV9hY19jbGllbnQ6"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "https://sso.cpricedomain.net/as/revoke_token.oauth2?token=",
+					"protocol": "https",
+					"host": [
+						"sso",
+						"cpricedomain",
+						"net"
+					],
+					"path": [
+						"as",
+						"revoke_token.oauth2"
+					],
+					"query": [
+						{
+							"key": "token",
+							"value": ""
+						}
+					]
+				},
+				"description": "AT revocation is only directly supported with Internal Reference.\n\nWith JWT, set the \"Access Grant GUID Claim Name\" in the AT Manager - Advanced Options and then revoke the RT"
+			},
+			"response": []
+		},
+		{
+			"name": "OAuth Demo - Revoke SRI (Backchannel SLO)",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": {
+						"username": "play_ac_client",
+						"password": "",
+						"saveHelperData": true,
+						"showPassword": false
+					}
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-XSRF-Header",
+						"value": "PingFederate"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Basic cGxheV9hY19jbGllbnQ6"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \"id\" : \"<insert TID (PF Logs) or SRI (PA Token)>\" }"
+				},
+				"url": "https://sso.cpricedomain.net/pf-ws/rest/sessionMgmt/revokedSris/"
+			},
+			"response": []
+		},
+		{
+			"name": "OAuth Demo - AuthZ - Get AuthZ Code (Browser)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "https://sso.cpricedomain.net/as/authorization.oauth2?response_type=code&client_id=play_ac_client&redirect_uri=https://apps.cpricedomain.net/OAuthDecode/",
+					"protocol": "https",
+					"host": [
+						"sso",
+						"cpricedomain",
+						"net"
+					],
+					"path": [
+						"as",
+						"authorization.oauth2"
+					],
+					"query": [
+						{
+							"key": "response_type",
+							"value": "code"
+						},
+						{
+							"key": "client_id",
+							"value": "play_ac_client"
+						},
+						{
+							"key": "redirect_uri",
+							"value": "https://apps.cpricedomain.net/OAuthDecode/"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "OAuth Demo - AuthZ - Get Token(s)",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": {
+						"username": "play_ac_client",
+						"password": "",
+						"saveHelperData": true,
+						"showPassword": false
+					}
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					},
+					{
+						"key": "Authorization",
+						"value": "Basic cGxheV9hY19jbGllbnQ6"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "https://{{pingfed}}/as/token.oauth2?grant_type=authorization_code&redirect_uri=https://apps.cpricedomain.net/OAuthDecode/&code=",
+					"protocol": "https",
+					"host": [
+						"{{pingfed}}"
+					],
+					"path": [
+						"as",
+						"token.oauth2"
+					],
+					"query": [
+						{
+							"key": "grant_type",
+							"value": "authorization_code"
+						},
+						{
+							"key": "redirect_uri",
+							"value": "https://apps.cpricedomain.net/OAuthDecode/"
+						},
+						{
+							"key": "code",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "OAuth Demo - AuthZ - Use Refresh Token for AT",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": {
+						"username": "play_ac_client",
+						"password": "",
+						"saveHelperData": true,
+						"showPassword": false
+					}
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					},
+					{
+						"key": "Authorization",
+						"value": "Basic cGxheV9hY19jbGllbnQ6"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "https://sso.cpricedomain.net/as/token.oauth2?grant_type=refresh_token&redirect_uri=https://www.getpostman.com/oauth2/callback&refresh_token",
+					"protocol": "https",
+					"host": [
+						"sso",
+						"cpricedomain",
+						"net"
+					],
+					"path": [
+						"as",
+						"token.oauth2"
+					],
+					"query": [
+						{
+							"key": "grant_type",
+							"value": "refresh_token"
+						},
+						{
+							"key": "redirect_uri",
+							"value": "https://www.getpostman.com/oauth2/callback"
+						},
+						{
+							"key": "refresh_token",
+							"value": null
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "OAuth Demo - Implicit (Browser)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Basic cGxheV9pbV9jbGllbnQ6"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "https://sso.cpricedomain.net/as/authorization.oauth2?response_type=token&redirect_uri=https://www.getpostman.com/oauth2/callback&client_id=play_im_client",
+					"protocol": "https",
+					"host": [
+						"sso",
+						"cpricedomain",
+						"net"
+					],
+					"path": [
+						"as",
+						"authorization.oauth2"
+					],
+					"query": [
+						{
+							"key": "response_type",
+							"value": "token"
+						},
+						{
+							"key": "redirect_uri",
+							"value": "https://www.getpostman.com/oauth2/callback"
+						},
+						{
+							"key": "client_id",
+							"value": "play_im_client"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "OAuth Demo - Client Credentials",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": {
+						"username": "play_cc_client",
+						"password": "2Federate",
+						"saveHelperData": true,
+						"showPassword": false
+					}
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Basic cGxheV9jY19jbGllbnQ6MkZlZGVyYXRl"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "https://sso.cpricedomain.net/as/token.oauth2?grant_type=client_credentials&redirect_uri=https://www.getpostman.com/oauth2/callback",
+					"protocol": "https",
+					"host": [
+						"sso",
+						"cpricedomain",
+						"net"
+					],
+					"path": [
+						"as",
+						"token.oauth2"
+					],
+					"query": [
+						{
+							"key": "grant_type",
+							"value": "client_credentials"
+						},
+						{
+							"key": "redirect_uri",
+							"value": "https://www.getpostman.com/oauth2/callback"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "OAuth Demo - Resource Owner",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": {
+						"username": "play_ro_client",
+						"password": "",
+						"saveHelperData": true,
+						"showPassword": false
+					}
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Basic cGxheV9yb19jbGllbnQ6"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "https://sso.cpricedomain.net/as/token.oauth2?grant_type=password&redirect_uri=https://www.getpostman.com/oauth2/callback&username=aduser1&password=P@ssword2",
+					"protocol": "https",
+					"host": [
+						"sso",
+						"cpricedomain",
+						"net"
+					],
+					"path": [
+						"as",
+						"token.oauth2"
+					],
+					"query": [
+						{
+							"key": "grant_type",
+							"value": "password"
+						},
+						{
+							"key": "redirect_uri",
+							"value": "https://www.getpostman.com/oauth2/callback"
+						},
+						{
+							"key": "username",
+							"value": "aduser1"
+						},
+						{
+							"key": "password",
+							"value": "P@ssword2"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "OAuth Demo - Dynamic Client Registration - Get Token",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "client_secret",
+							"value": "rutaBbRNNg1eSNqihdN8et3K5uwMMNvk9MyvwCyNMrz1nIxMrwPOKjfeYmdvaRAR",
+							"type": "text"
+						},
+						{
+							"key": "client_id",
+							"value": "devRegClient ",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://sso.cpricedomain.net/as/token.oauth2?grant_type=client_credentials&scope=dev:regClient",
+					"protocol": "https",
+					"host": [
+						"sso",
+						"cpricedomain",
+						"net"
+					],
+					"path": [
+						"as",
+						"token.oauth2"
+					],
+					"query": [
+						{
+							"key": "grant_type",
+							"value": "client_credentials"
+						},
+						{
+							"key": "redirect_uri",
+							"value": "https://www.getpostman.com/oauth2/callback",
+							"disabled": true
+						},
+						{
+							"key": "scope",
+							"value": "dev:regClient"
+						}
+					]
+				},
+				"description": "This call is made to retrieve an access_token that can be used to make a call to the Dynamic Registration Endpoint"
+			},
+			"response": []
+		},
+		{
+			"name": "OAuth Demo - Dynamic Client Registration",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJFUzI1NiIsImtpZCI6IkNQcmljZUxhYkpXVFNpZ24ifQ.eyJzY29wZSI6WyJkZXY6cmVnQ2xpZW50Il0sImNsaWVudF9pZCI6ImRldlJlZ0NsaWVudCIsImV4cCI6MTUzNDM4NTY5Mn0.VpfCXCpbOeZwZZpFahuFhfysT4Rc-0N-f53cWzBmG3cc7Rr4Jf0btmpwyyOED3dUKKHK2q2jaTy0QVBr1FnRPA"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"client_name\":\"My Dynamic Client\",\n\t\"redirect_uris\": \"https://apps.cpricedomain.net/OAuthDecode\",\n\t\"grant_types\": [\"authorization_code\", \"password\", \"implicit\"],\n\t\"response_types\": \"code token id_token\",\n\t\"scope\": \"openid address email phone profile\"\n}"
+				},
+				"url": "https://sso.cpricedomain.net/as/clients.oauth2",
+				"description": "Used to create an OAuth client with the Dynamic Client Registration endpoint.\n\nRequires an AT with the scope \"dev:regClient\""
+			},
+			"response": []
+		},
+		{
+			"name": "OIDC Demo - Configuration Endpoin",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					},
+					{
+						"key": "Authorization",
+						"value": "Basic cGxheV9yc19jbGllbnQ6MkZlZGVyYXRl"
+					}
+				],
+				"body": {},
+				"url": "https://{{pingfed}}/.well-known/openid-configuration"
+			},
+			"response": []
+		},
+		{
+			"name": "OIDC Demo - JWKS Endpoint",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					},
+					{
+						"key": "Authorization",
+						"value": "Basic cGxheV9yc19jbGllbnQ6MkZlZGVyYXRl"
+					}
+				],
+				"body": {},
+				"url": "https://{{pingfed}}/pf/JWKS"
+			},
+			"response": []
+		},
+		{
+			"name": "OIDC Demo - UserInfo Endoint",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJFUzI1NiIsImtpZCI6IkNQcmljZUxhYkpXVFNpZ24ifQ.eyJmbmFtZSI6IkNocmlzIiwibG5hbWUiOiJQcmljZSIsInN1YmplY3QiOiJjaHJpc0BjcHJpY2Vkb21haW4ubmV0IiwiZXhwIjoxNDc4ODA3MTYwLCJzY29wZSI6WyJvcGVuaWQiXSwiY2xpZW50X2lkIjoicGxheV9hY19jbGllbnQifQ.Pf1rg7wHW0ZyhRweLbPcLaEiWaL6fo9tj3dRkf83hAIZbv6o_wjEZx-8lL0xeT3PpaqO7-7-mNWyki_XZ9_nLQ"
+					}
+				],
+				"body": {},
+				"url": "https://{{pingfed}}/idp/userinfo.openid",
+				"description": "Use access_token in the Authorization: Bearer header to present a User to the UserInfo API.\n\nPF OIDC Policy will use the claims in the AT to figure out th rest of the data.\n\nAttributes in the response will be tied to the AT scopes - minimally must be \"openid\""
+			},
+			"response": []
+		}
+	]
+}
