@@ -30,7 +30,7 @@
 				],
 				"body": {},
 				"url": {
-					"raw": "https://sso.cpricedomain.net/as/token.oauth2?grant_type=urn:pingidentity.com:oauth2:grant_type:validate_bearer&token=",
+					"raw": "https://{{pingfed}}/as/token.oauth2?grant_type=urn:pingidentity.com:oauth2:grant_type:validate_bearer&token=",
 					"protocol": "https",
 					"host": [
 						"sso",
@@ -81,7 +81,7 @@
 				],
 				"body": {},
 				"url": {
-					"raw": "https://sso.cpricedomain.net/as/introspect.oauth2?token=",
+					"raw": "https://{{pingfed}}/as/introspect.oauth2?token=",
 					"protocol": "https",
 					"host": [
 						"sso",
@@ -127,7 +127,7 @@
 				],
 				"body": {},
 				"url": {
-					"raw": "https://sso.cpricedomain.net/as/revoke_token.oauth2?token=",
+					"raw": "https://{{pingfed}}/as/revoke_token.oauth2?token=",
 					"protocol": "https",
 					"host": [
 						"sso",
@@ -180,7 +180,7 @@
 					"mode": "raw",
 					"raw": "{ \"id\" : \"<insert TID (PF Logs) or SRI (PA Token)>\" }"
 				},
-				"url": "https://sso.cpricedomain.net/pf-ws/rest/sessionMgmt/revokedSris/"
+				"url": "https://{{pingfed}}/pf-ws/rest/sessionMgmt/revokedSris/"
 			},
 			"response": []
 		},
@@ -191,7 +191,7 @@
 				"header": [],
 				"body": {},
 				"url": {
-					"raw": "https://sso.cpricedomain.net/as/authorization.oauth2?response_type=code&client_id=play_ac_client&redirect_uri=https://apps.cpricedomain.net/OAuthDecode/",
+					"raw": "https://{{pingfed}}/as/authorization.oauth2?response_type=code&client_id=play_ac_client&redirect_uri=https://apps.cpricedomain.net/OAuthDecode/",
 					"protocol": "https",
 					"host": [
 						"sso",
@@ -297,7 +297,7 @@
 				],
 				"body": {},
 				"url": {
-					"raw": "https://sso.cpricedomain.net/as/token.oauth2?grant_type=refresh_token&redirect_uri=https://www.getpostman.com/oauth2/callback&refresh_token",
+					"raw": "https://{{pingfed}}/as/token.oauth2?grant_type=refresh_token&redirect_uri=https://www.getpostman.com/oauth2/callback&refresh_token",
 					"protocol": "https",
 					"host": [
 						"sso",
@@ -338,7 +338,7 @@
 				],
 				"body": {},
 				"url": {
-					"raw": "https://sso.cpricedomain.net/as/authorization.oauth2?response_type=token&redirect_uri=https://www.getpostman.com/oauth2/callback&client_id=play_im_client",
+					"raw": "https://{{pingfed}}/as/authorization.oauth2?response_type=token&redirect_uri=https://www.getpostman.com/oauth2/callback&client_id=play_im_client",
 					"protocol": "https",
 					"host": [
 						"sso",
@@ -388,7 +388,7 @@
 				],
 				"body": {},
 				"url": {
-					"raw": "https://sso.cpricedomain.net/as/token.oauth2?grant_type=client_credentials&redirect_uri=https://www.getpostman.com/oauth2/callback",
+					"raw": "https://{{pingfed}}/as/token.oauth2?grant_type=client_credentials&redirect_uri=https://www.getpostman.com/oauth2/callback",
 					"protocol": "https",
 					"host": [
 						"sso",
@@ -434,7 +434,7 @@
 				],
 				"body": {},
 				"url": {
-					"raw": "https://sso.cpricedomain.net/as/token.oauth2?grant_type=password&redirect_uri=https://www.getpostman.com/oauth2/callback&username=aduser1&password=P@ssword2",
+					"raw": "https://{{pingfed}}/as/token.oauth2?grant_type=password&redirect_uri=https://www.getpostman.com/oauth2/callback&username=aduser1&password=P@ssword2",
 					"protocol": "https",
 					"host": [
 						"sso",
@@ -496,7 +496,7 @@
 					]
 				},
 				"url": {
-					"raw": "https://sso.cpricedomain.net/as/token.oauth2?grant_type=client_credentials&scope=dev:regClient",
+					"raw": "https://{{pingfed}}/as/token.oauth2?grant_type=client_credentials&scope=dev:regClient",
 					"protocol": "https",
 					"host": [
 						"sso",
@@ -523,7 +523,7 @@
 						}
 					]
 				},
-				"description": "This call is made to retrieve an access_token that can be used to make a call to the Dynamic Registration Endpoint"
+				"description": "This call is made to retrieve an access_token that can be used to make a call to the Dynamic Registration Endpoint. Modify the scope= value to match the appropriate one on the PingFed AS"
 			},
 			"response": []
 		},
@@ -545,7 +545,7 @@
 					"mode": "raw",
 					"raw": "{\n\t\"client_name\":\"My Dynamic Client\",\n\t\"redirect_uris\": \"https://apps.cpricedomain.net/OAuthDecode\",\n\t\"grant_types\": [\"authorization_code\", \"password\", \"implicit\"],\n\t\"response_types\": \"code token id_token\",\n\t\"scope\": \"openid address email phone profile\"\n}"
 				},
-				"url": "https://sso.cpricedomain.net/as/clients.oauth2",
+				"url": "https://{{pingfed}}/as/clients.oauth2",
 				"description": "Used to create an OAuth client with the Dynamic Client Registration endpoint.\n\nRequires an AT with the scope \"dev:regClient\""
 			},
 			"response": []
