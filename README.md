@@ -6,7 +6,7 @@ Some of the calls are individual, others may be to demonstrate a flow of transac
 
 # OAuth Playground
 
-This is a Postman collection that demonstrates PingFederate as an Oauth \ OIDC AS without using any UI.
+This is a place to document calls to Ping APIs using Postman.
 
 # PingID SDK
 
