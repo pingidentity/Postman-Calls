@@ -6,7 +6,7 @@ Some of the calls are individual, others may be to demonstrate a flow of transac
 
 # OAuth Playground
 
-This is a place to document calls to Ping APIs using Postman.
+This is Postman collection that demonstrates the OAuth \ OIDC flows without the UI of the PingFed OAuth Playground v4.0
 
 # PingID SDK
 
