@@ -1,6 +1,5 @@
-# PingFed-OAuth-Playground
+# Postman-Calls
 
-This is a Postman collection that demonstrates PingFederate as an Oauth \ OIDC AS without using any UI.
+This is a place to document calls to Ping APIs using Postman.
 
-It assumes that an install of the PingFed OAuth playground has been performed, with seperate OAuth clients for each flow.
-https://www.pingidentity.com/content/dam/ping-6-2-assets/Software/toolkits/OAuthPlayground-4.0.0.zip
+Some of the calls are individual, others may be to demonstrate a flow of transactions needed to perform a use case.
