@@ -1,0 +1,72 @@
+// This script can be used to create the proper Authorization token needed for any call made to the PingID SDK service.
+
+// The tenant secrets - sdkApiKey && sdkApiToken - should be defined in the Collection Environment.
+// Due to the way that Postman handles variable resolution, the absolute values for the URL are necessary - 
+// otherwise the data pulled into this script will not match the actual call and the request will fail. 
+
+var removeIllegalCharacters = function(input) {
+    return input
+        .replace(/=/g, '')
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_');
+};
+
+// Base64 Encoding function
+var base64object = function(input) {
+    var inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));
+    var base64 = CryptoJS.enc.Base64.stringify(inputWords);
+    var output = removeIllegalCharacters(base64);
+    return output;
+};
+
+// Get the AccountID out of the Request URL
+var sdkAccountId = pm.request.url.path[3];
+
+// Get the Tenant Secrets from the environment (the values are in the pingidsdk.properties file)
+var sdkApiToken = pm.environment.get("sdkApiToken");
+var sdkApiKey = pm.environment.get("sdkApiKey");
+
+//Parse the Request
+var method = pm.request.method;
+var payload = pm.request.body.raw;
+var path = pm.request.url.path.toString().replace(/,/g, "/");
+
+//Grab any parameters
+var parameters = pm.request.url.query.toString();
+
+// Hash and Hex Encode Request Payload
+var payloadHash = CryptoJS.SHA256(payload);
+var payloadHex = CryptoJS.enc.Hex.stringify(payloadHash);
+
+// Build the proper canonicalString
+if (parameters === "") {
+    var canonicalString = method + ":" + "sdk.pingid.com" + ":" + "/" + path + ":" + payloadHex + ":";
+}
+else
+{
+    var canonicalString = method + ":" + "sdk.pingid.com" + ":" + "/" + path + ":" + parameters + ":" + payloadHex + ":";
+}
+
+// Hash the Canonical String
+var stringHash = CryptoJS.SHA256(canonicalString);
+var stringHex = CryptoJS.enc.Hex.stringify(stringHash);
+
+// Construct JWT Header
+var jwtHeader = { 'alg': 'HS256', 'typ': 'JWT', 'account_id': sdkAccountId, 'token': sdkApiToken, 'jwt_version': 'v4' };
+
+// Construct JWT Payload
+var jwtPayload = { 'data': stringHex };
+
+// Create JWT
+var unsignedToken = base64object(jwtHeader) + "." + base64object(jwtPayload);
+
+// Sign the JWT
+var sdkApiKeyBytes = CryptoJS.enc.Base64.parse(sdkApiKey);
+var signatureHash = CryptoJS.HmacSHA256(unsignedToken, sdkApiKeyBytes);
+var signature = CryptoJS.enc.Base64.stringify(signatureHash);
+var signature2 = removeIllegalCharacters(signature);
+
+var token = unsignedToken + '.' + signature2;
+
+// Set the token in the environment to be included in an Authorization: PINGID-HMAC={{authToken}} header for the request
+pm.environment.set("authToken", token);
