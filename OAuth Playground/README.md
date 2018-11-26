@@ -3,7 +3,7 @@
 This is a Postman collection that demonstrates PingFederate as an Oauth \ OIDC AS without using any UI.
 
 It assumes that an install of the PingFed OAuth playground has been performed, with seperate OAuth clients for each flow.
-https://www.pingidentity.com/content/dam/ping-6-2-assets/Software/toolkits/OAuthPlayground-4.0.0.zip
+https://www.pingidentity.com/en/resources/downloads/pingfederate.html
 
 Update: 11/25/18
 * Added the following flows:
@@ -14,3 +14,7 @@ Update: 11/25/18
 * Organized calls a little better
 * Indicated PF versions for more recent support
 * Included Postman Environment file
+
+Update: 11/26/18
+* Added Scope parameter \ field to all requests
+* Added Client Credential with client_assertion JWT flow

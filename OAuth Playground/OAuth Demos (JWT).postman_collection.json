@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "15da081a-869d-f505-4421-8354f035d470",
 		"name": "OAuth Demos (JWT)",
-		"description": "This collection is a \"pure\" OAuth set of calls that has no UI wrapped around the request \\ response that mimic OAuth Playground for PingFed.\n\nCalls that require a Web Browser (AuthZ Code or Implicit) are marked \"(Browser)\" these calls should be pasted into a Web Browser to be completed - this is to bypass any UI that Postman uses with the Authorization --> OAuth 2.0 mechanism.\n\nUpdate: 11/25/18\nAdded the following flows:\n    SAML Bearer\n    JWT Bearer\n    Device Flow (PF 9.2+)\nAdded examples using x-www-form-urlencoded body for call parameters\nOrganized calls a little better\nIndicated PF versions for more recent support",
+		"description": "This collection is a \"pure\" OAuth set of calls that has no UI wrapped around the request \\ response that mimic OAuth Playground for PingFed.\n\nCalls that require a Web Browser (AuthZ Code or Implicit) are marked \"(Browser)\" these calls should be pasted into a Web Browser to be completed - this is to bypass any UI that Postman uses with the Authorization --> OAuth 2.0 mechanism.\n\nUpdate: 11/25/18\nAdded the following flows:\n    SAML Bearer\n    JWT Bearer\n    Device Flow (PF 9.2+)\nAdded examples using x-www-form-urlencoded body for call parameters\nOrganized calls a little better\nIndicated PF versions for more recent support\n\nUpdate: 11/26/18\nAdded Scope parameter \\ field to all requests\nAdded Client Credential with client_assertion JWT flow",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -25,7 +25,7 @@
 										"header": [],
 										"body": {},
 										"url": {
-											"raw": "https://{{pingfed}}/as/authorization.oauth2?response_type=code&client_id={{authz_client}}&redirect_uri={{redirect_uri}}",
+											"raw": "https://{{pingfed}}/as/authorization.oauth2?response_type=code&client_id={{authz_client}}&redirect_uri={{redirect_uri}}&scope=",
 											"protocol": "https",
 											"host": [
 												"{{pingfed}}"
@@ -46,6 +46,10 @@
 												{
 													"key": "redirect_uri",
 													"value": "{{redirect_uri}}"
+												},
+												{
+													"key": "scope",
+													"value": ""
 												}
 											]
 										},
@@ -113,7 +117,10 @@
 												"value": "application/x-www-form-urlencoded"
 											}
 										],
-										"body": {},
+										"body": {
+											"mode": "raw",
+											"raw": ""
+										},
 										"url": {
 											"raw": "https://{{pingfed}}/as/token.oauth2?grant_type=authorization_code&redirect_uri={{redirect_uri}}&code=<<Insert Returned AuthZ Code Here>>",
 											"protocol": "https",
@@ -159,7 +166,7 @@
 										"header": [],
 										"body": {},
 										"url": {
-											"raw": "https://{{pingfed}}/as/authorization.oauth2?response_type=code&client_id={{authz_client}}&redirect_uri={{redirect_uri}}&code_challenge=Any-string-you-want-between-43-and-128-characters",
+											"raw": "https://{{pingfed}}/as/authorization.oauth2?response_type=code&client_id={{authz_client}}&redirect_uri={{redirect_uri}}&scope=&code_challenge=Any-string-you-want-between-43-and-128-characters",
 											"protocol": "https",
 											"host": [
 												"{{pingfed}}"
@@ -183,8 +190,7 @@
 												},
 												{
 													"key": "scope",
-													"value": "openid",
-													"disabled": true
+													"value": ""
 												},
 												{
 													"key": "code_challenge",
@@ -411,6 +417,11 @@
 													"key": "assertion",
 													"value": "{{samlAssertion}}",
 													"type": "text"
+												},
+												{
+													"key": "scope",
+													"value": "",
+													"type": "text"
 												}
 											]
 										},
@@ -531,6 +542,11 @@
 													"key": "assertion",
 													"value": "{{jwtBearer}}",
 													"type": "text"
+												},
+												{
+													"key": "scope",
+													"value": "",
+													"type": "text"
 												}
 											]
 										},
@@ -609,7 +625,7 @@
 								"header": [],
 								"body": {},
 								"url": {
-									"raw": "https://{{pingfed}}/as/authorization.oauth2?response_type=token&redirect_uri={{redirect_uri}}&client_id={{implicit_client}}",
+									"raw": "https://{{pingfed}}/as/authorization.oauth2?response_type=token&redirect_uri={{redirect_uri}}&client_id={{implicit_client}}&scope=",
 									"protocol": "https",
 									"host": [
 										"{{pingfed}}"
@@ -630,6 +646,10 @@
 										{
 											"key": "client_id",
 											"value": "{{implicit_client}}"
+										},
+										{
+											"key": "scope",
+											"value": ""
 										}
 									]
 								},
@@ -690,7 +710,7 @@
 								"header": [],
 								"body": {},
 								"url": {
-									"raw": "https://{{pingfed}}/as/token.oauth2?grant_type=password&username=joe&password=2Federate",
+									"raw": "https://{{pingfed}}/as/token.oauth2?grant_type=password&username=joe&password=2Federate&scope=",
 									"protocol": "https",
 									"host": [
 										"{{pingfed}}"
@@ -711,6 +731,10 @@
 										{
 											"key": "password",
 											"value": "2Federate"
+										},
+										{
+											"key": "scope",
+											"value": ""
 										}
 									]
 								},
@@ -797,7 +821,7 @@
 								"header": [],
 								"body": {},
 								"url": {
-									"raw": "https://{{pingfed}}/as/token.oauth2?grant_type=client_credentials",
+									"raw": "https://{{pingfed}}/as/token.oauth2?grant_type=client_credentials&scope=",
 									"protocol": "https",
 									"host": [
 										"{{pingfed}}"
@@ -810,6 +834,10 @@
 										{
 											"key": "grant_type",
 											"value": "client_credentials"
+										},
+										{
+											"key": "scope",
+											"value": ""
 										}
 									]
 								},
@@ -866,7 +894,7 @@
 									]
 								},
 								"url": {
-									"raw": "https://{{pingfed}}/as/token.oauth2?grant_type=client_credentials",
+									"raw": "https://{{pingfed}}/as/token.oauth2?grant_type=client_credentials&scope=",
 									"protocol": "https",
 									"host": [
 										"{{pingfed}}"
@@ -879,6 +907,10 @@
 										{
 											"key": "grant_type",
 											"value": "client_credentials"
+										},
+										{
+											"key": "scope",
+											"value": ""
 										}
 									]
 								}
@@ -886,16 +918,19 @@
 							"response": []
 						},
 						{
-							"name": "OAuth Demo - Client Credentials (JWT) - Not Working",
+							"name": "OAuth Demo - Client Credentials with client_assertion (JWT)",
 							"event": [
 								{
 									"listen": "test",
 									"script": {
 										"id": "9e996932-72ca-4c3d-b565-2b6ff36b6e3b",
 										"exec": [
-											"jsonData = pm.response.json();",
-											"pm.environment.set(\"access_token\", jsonData.access_token);",
-											""
+											"pm.test(\"Access Token received\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"access_token\");",
+											"    ",
+											"    jsonData = pm.response.json();",
+											"    pm.environment.set(\"access_token\", jsonData.access_token);",
+											"});"
 										],
 										"type": "text/javascript"
 									}
@@ -905,58 +940,41 @@
 									"script": {
 										"id": "4ea50f30-7473-41dd-997e-419e80742ed4",
 										"exec": [
-											"function base64url(source) {",
-											"  // Encode in classical base64",
-											"  encodedSource = CryptoJS.enc.Base64.stringify(source);",
+											"// Sketchy loading of the jsrsasign library into Postman Sandbox",
+											"var navigator = {}; //fake a navigator object for the lib",
+											"var window = {}; //fake a window object for the lib",
+											"eval(pm.globals.get(\"jsrsasign-js\")); //import javascript jsrsasign",
 											"",
-											"  // Remove padding equal characters",
-											"  encodedSource = encodedSource.replace(/=+$/, '');",
+											"var currentTime = +new Date(); // the current time in milliseconds",
+											"var issuedAtTimeSeconds = currentTime/1000;",
+											"var expirationTimeSeconds = currentTime/1000 + 3600;",
 											"",
-											"  // Replace characters according to base64url specifications",
-											"  encodedSource = encodedSource.replace(/\\+/g, '-');",
-											"  encodedSource = encodedSource.replace(/\\//g, '_');",
-											"",
-											"  return encodedSource;",
-											"}",
-											"",
+											"// Create Header and Payload objects",
 											"var header = {",
-											"  \"kid\": \"k1\",",
-											"  \"alg\": \"ES256\"",
+											"  \"kid\": pm.environment.get(\"client_assertion_kid\"),",
+											"  \"alg\": \"RS256\"",
 											"};",
 											"",
-											"var stringifiedHeader = CryptoJS.enc.Utf8.parse(JSON.stringify(header));",
-											"var encodedHeader = base64url(stringifiedHeader);",
-											"",
-											"// Generate current timestamp with moment library",
-											"var moment = require(\"moment\");",
-											"var issued = new Date();",
-											"var issued = moment(issued).valueOf();",
-											"",
-											"var data = {",
+											"var payload = {",
 											"  \"iss\": pm.environment.get(\"client_credentials_jwt\"),",
-											"  \"aud\": pm.environment.get(\"pingfed\")+\"/as/token.oauth2\",",
+											"  \"aud\": \"https://\"+pm.environment.get(\"pingfed\")+\"/as/token.oauth2\",",
 											"  \"sub\": pm.environment.get(\"client_credentials_jwt\"),",
-											"  \"iat\": issued,",
-											"  \"exp\": issued+600",
+											"  \"exp\" : Math.ceil(expirationTimeSeconds),",
+											"  \"iat\" : Math.ceil(issuedAtTimeSeconds)",
 											"};",
 											"",
-											"var stringifiedData = CryptoJS.enc.Utf8.parse(JSON.stringify(data));",
-											"var encodedData = base64url(stringifiedData);",
+											"// Prep the objects for a JWT",
+											"var sHeader = JSON.stringify(header);",
+											"var sPayload = JSON.stringify(payload);",
 											"",
-											"var token = encodedHeader + \".\" + encodedData;",
+											"// Use the jsrsasign module to create the signed JWT ",
+											"var privateKey = pm.environment.get(\"private_key\");",
+											"var password = pm.environment.get(\"keyPassword\");",
 											"",
-											"var privateKey=\"-----BEGIN EC PRIVATE KEY-----MCQCAQEEH0laOSuEdwlQT087zu28YwaccdYYjQDPhQIBy5kkYz8=-----END EC PRIVATE KEY-----\"",
+											"var prvKey = KEYUTIL.getKey(privateKey, password);",
+											"var sJWT = KJUR.jws.JWS.sign(header.alg, sHeader, sPayload, prvKey);",
 											"",
-											"// Postman CryptoJS doesn't support RSA or ECDSA signing algorithms - either is needed by PingFed for the signed JWTs in this request",
-											"",
-											"//var signature = CryptoJS.HmacSHA256(token, secret);",
-											"//signature = base64url(signature);",
-											"",
-											"// Alternative may be to use an API to handle the signature - https://documenter.getpostman.com/view/4289664/RWaC4D7b",
-											"",
-											"var signedToken = token + \".\" + signature;",
-											"",
-											"pm.environment.set(\"client_assertion\", signedToken);",
+											"pm.environment.set(\"client_assertion\", sJWT);",
 											""
 										],
 										"type": "text/javascript"
@@ -986,7 +1004,7 @@
 										},
 										{
 											"key": "client_id",
-											"value": "cc_jwt_pm_client",
+											"value": "{{client_credentials_jwt}}",
 											"type": "text"
 										},
 										{
@@ -997,6 +1015,11 @@
 										{
 											"key": "client_assertion",
 											"value": "{{client_assertion}}",
+											"type": "text"
+										},
+										{
+											"key": "scope",
+											"value": "",
 											"type": "text"
 										}
 									]
@@ -1010,6 +1033,44 @@
 									"path": [
 										"as",
 										"token.oauth2"
+									]
+								},
+								"description": "This call creates a signed JWT that is sent to PF and is swapped for an access_token.\n\nThe signature is handled by a sideloaded library - jsrsasign. The \"Get jsrsasign library\" call should be made to populate the code into a global variable that is invoked at the start of the pre-request script.\n\nA new Client Credential OAuth Client will need to be created so you can import your own keys.\n\nThe client_credential client needs a corresponding JWKS for the public cert - this can be generated here:\nhttps://8gwifi.org/jwkconvertfunctions.jsp\n\nThe generated JWK can be placed into JWKS format by wrapping it with this:\n\n{\n  \"keys\": [\n    << Insert JWK object here >>\n  ]\n}\n\nThe \"kid\" value in the Header should be pulled from this JWK\n\nprivate_key - the encrypted cert as a PEM\nkeyPassword - the password to unlock private_key\n\n"
+							},
+							"response": []
+						},
+						{
+							"name": "Get jsrsasign library - used for JWT Signing with RSA \\ ECDSA",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "5e8fbd26-7506-4458-893a-abd195448c3d",
+										"exec": [
+											"pm.globals.set(\"jsrsasign-js\", responseBody);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://kjur.github.io/jsrsasign/jsrsasign-latest-all-min.js",
+									"protocol": "http",
+									"host": [
+										"kjur",
+										"github",
+										"io"
+									],
+									"path": [
+										"jsrsasign",
+										"jsrsasign-latest-all-min.js"
 									]
 								}
 							},
@@ -1053,7 +1114,7 @@
 										"id": "38e7e7c1-125c-4578-a52f-75abd6dcfe8a",
 										"exec": [
 											"pm.test(\"Device Code received\", function () {",
-											"    pm.expect(pm.response.text()).to.include(\"access_token\");",
+											"    pm.expect(pm.response.text()).to.include(\"device_code\");",
 											"    ",
 											"jsonData = pm.response.json();",
 											"pm.environment.set(\"device_code\", jsonData.device_code);",
@@ -1082,6 +1143,11 @@
 										{
 											"key": "client_id",
 											"value": "df_client",
+											"type": "text"
+										},
+										{
+											"key": "scope",
+											"value": "",
 											"type": "text"
 										}
 									]
