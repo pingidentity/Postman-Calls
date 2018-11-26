@@ -2,27 +2,617 @@
 	"info": {
 		"_postman_id": "15da081a-869d-f505-4421-8354f035d470",
 		"name": "OAuth Demos (JWT)",
-		"description": "This collection is a \"pure\" OAuth set of calls that has no UI wrapped around the request \\ response that mimic OAuth Playground for PingFed.\n\nCalls that require a Web Browser (AuthZ Code or Implicit) are marked \"(Browser)\" these calls should be pasted into a Web Browser to be completed - this is to bypass any UI that Postman uses with the Authorization --> OAuth 2.0 mechanism.\n\nIn these calls, secrets are passed in as Authorization: Basic headers, PF supports other methods",
+		"description": "This collection is a \"pure\" OAuth set of calls that has no UI wrapped around the request \\ response that mimic OAuth Playground for PingFed.\n\nCalls that require a Web Browser (AuthZ Code or Implicit) are marked \"(Browser)\" these calls should be pasted into a Web Browser to be completed - this is to bypass any UI that Postman uses with the Authorization --> OAuth 2.0 mechanism.\n\nUpdate: 11/25/18\nAdded the following flows:\n    SAML Bearer\n    JWT Bearer\n    Device Flow (PF 9.2+)\nAdded examples using x-www-form-urlencoded body for call parameters\nOrganized calls a little better\nIndicated PF versions for more recent support",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "OAuth Token Flows",
+			"name": "OAuth Token Requests",
 			"item": [
 				{
-					"name": "AuthZ Code with PKCE",
+					"name": "User Authentication",
 					"item": [
 						{
-							"name": "OAuth Demo - AuthZ - Get Code with PKCE (Browser)",
+							"name": "AuthZ Code",
+							"item": [
+								{
+									"name": "OAuth Demo - AuthZ - Get AuthZ Code (Browser)",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "GET",
+										"header": [],
+										"body": {},
+										"url": {
+											"raw": "https://{{pingfed}}/as/authorization.oauth2?response_type=code&client_id={{authz_client}}&redirect_uri={{redirect_uri}}",
+											"protocol": "https",
+											"host": [
+												"{{pingfed}}"
+											],
+											"path": [
+												"as",
+												"authorization.oauth2"
+											],
+											"query": [
+												{
+													"key": "response_type",
+													"value": "code"
+												},
+												{
+													"key": "client_id",
+													"value": "{{authz_client}}"
+												},
+												{
+													"key": "redirect_uri",
+													"value": "{{redirect_uri}}"
+												}
+											]
+										},
+										"description": "Demonstrates a regular Authorization Code request.\n\nThe Code will be sent to the redirect_uri value. The code then needs to be posted to the AS to receive an access_token."
+									},
+									"response": []
+								},
+								{
+									"name": "OAuth Demo - AuthZ - Swap Code for Token(s)",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "dd800caa-57ad-41f8-b1e4-f9af9a53b000",
+												"exec": [
+													"pm.test(\"Access Token received\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"access_token\");",
+													"    ",
+													"    jsonData = pm.response.json();",
+													"    pm.environment.set(\"access_token\", jsonData.access_token);",
+													"});",
+													"",
+													"if (jsonData.refresh_token !== \"\") {",
+													"    pm.environment.set(\"refresh_token\", jsonData.refresh_token);",
+													"}",
+													"",
+													"if (jsonData.id_token !== \"\") {",
+													"    pm.environment.set(\"id_token\", jsonData.id_token);",
+													"}"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "basic",
+											"basic": [
+												{
+													"key": "username",
+													"value": "{{authz_client}}",
+													"type": "string"
+												},
+												{
+													"key": "password",
+													"value": "",
+													"type": "string"
+												},
+												{
+													"key": "saveHelperData",
+													"value": true,
+													"type": "boolean"
+												},
+												{
+													"key": "showPassword",
+													"value": false,
+													"type": "boolean"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/x-www-form-urlencoded"
+											}
+										],
+										"body": {},
+										"url": {
+											"raw": "https://{{pingfed}}/as/token.oauth2?grant_type=authorization_code&redirect_uri={{redirect_uri}}&code=<<Insert Returned AuthZ Code Here>>",
+											"protocol": "https",
+											"host": [
+												"{{pingfed}}"
+											],
+											"path": [
+												"as",
+												"token.oauth2"
+											],
+											"query": [
+												{
+													"key": "grant_type",
+													"value": "authorization_code"
+												},
+												{
+													"key": "redirect_uri",
+													"value": "{{redirect_uri}}"
+												},
+												{
+													"key": "code",
+													"value": "<<Insert Returned AuthZ Code Here>>"
+												}
+											]
+										},
+										"description": "Demonstrates the call to swap an AuthZ Code for an access_token"
+									},
+									"response": []
+								}
+							],
+							"_postman_isSubFolder": true
+						},
+						{
+							"name": "AuthZ Code with PKCE (PF 8.4+)",
+							"item": [
+								{
+									"name": "OAuth Demo - AuthZ - Get Code with PKCE (Browser)",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "GET",
+										"header": [],
+										"body": {},
+										"url": {
+											"raw": "https://{{pingfed}}/as/authorization.oauth2?response_type=code&client_id={{authz_client}}&redirect_uri={{redirect_uri}}&code_challenge=Any-string-you-want-between-43-and-128-characters",
+											"protocol": "https",
+											"host": [
+												"{{pingfed}}"
+											],
+											"path": [
+												"as",
+												"authorization.oauth2"
+											],
+											"query": [
+												{
+													"key": "response_type",
+													"value": "code"
+												},
+												{
+													"key": "client_id",
+													"value": "{{authz_client}}"
+												},
+												{
+													"key": "redirect_uri",
+													"value": "{{redirect_uri}}"
+												},
+												{
+													"key": "scope",
+													"value": "openid",
+													"disabled": true
+												},
+												{
+													"key": "code_challenge",
+													"value": "Any-string-you-want-between-43-and-128-characters"
+												}
+											]
+										},
+										"description": "Demonstrates a regular Authorization Code request.\n\nThe Code will be sent to the redirect_uri value. The code then needs to be posted to the AS to receive an access_token.\n\nThis adds a ?code_challenge= string to the Code request."
+									},
+									"response": []
+								},
+								{
+									"name": "OAuth Demo - AuthZ - Swap Code for Token(s) with PKCE",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "dd800caa-57ad-41f8-b1e4-f9af9a53b000",
+												"exec": [
+													"pm.test(\"Access Token received\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"access_token\");",
+													"    ",
+													"    jsonData = pm.response.json();",
+													"    pm.environment.set(\"access_token\", jsonData.access_token);",
+													"});",
+													"",
+													"if (jsonData.refresh_token !== \"\") {",
+													"    pm.environment.set(\"refresh_token\", jsonData.refresh_token);",
+													"}",
+													"",
+													"if (jsonData.id_token !== \"\") {",
+													"    pm.environment.set(\"id_token\", jsonData.id_token);",
+													"}"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "basic",
+											"basic": [
+												{
+													"key": "username",
+													"value": "{{authz_client}}",
+													"type": "string"
+												},
+												{
+													"key": "password",
+													"value": "",
+													"type": "string"
+												},
+												{
+													"key": "saveHelperData",
+													"value": true,
+													"type": "boolean"
+												},
+												{
+													"key": "showPassword",
+													"value": false,
+													"type": "boolean"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/x-www-form-urlencoded"
+											}
+										],
+										"body": {},
+										"url": {
+											"raw": "https://{{pingfed}}/as/token.oauth2?grant_type=authorization_code&redirect_uri={{redirect_uri}}&code=<<Insert Returned AuthZ Code Here>>&code_verifier=Any-string-you-want-between-43-and-128-characters",
+											"protocol": "https",
+											"host": [
+												"{{pingfed}}"
+											],
+											"path": [
+												"as",
+												"token.oauth2"
+											],
+											"query": [
+												{
+													"key": "grant_type",
+													"value": "authorization_code"
+												},
+												{
+													"key": "redirect_uri",
+													"value": "{{redirect_uri}}"
+												},
+												{
+													"key": "code",
+													"value": "<<Insert Returned AuthZ Code Here>>"
+												},
+												{
+													"key": "code_verifier",
+													"value": "Any-string-you-want-between-43-and-128-characters"
+												}
+											]
+										},
+										"description": "Demonstrates the call to swap an AuthZ Code for an access_token when the call was made with PKCE.\n\nThe ?code_challenge= value from the previous call needs to be added as the ?code_verifier= parameter "
+									},
+									"response": []
+								}
+							],
+							"description": "These calls conform to RFC 7636 (https://tools.ietf.org/html/rfc7636) to add additional security into the acquisition of the Authorization Code",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "8704110c-607b-4cff-8cbb-df748d80ca2b",
+										"type": "text/javascript",
+										"exec": [
+											""
+										]
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "4a60740b-1923-4937-a808-740c46614c3a",
+										"type": "text/javascript",
+										"exec": [
+											""
+										]
+									}
+								}
+							],
+							"_postman_isSubFolder": true
+						},
+						{
+							"name": "SAML Bearer",
+							"item": [
+								{
+									"name": "Authenticate User for SAML Assertion (WSTrust)",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "1c63bfc2-7e84-40df-85d5-710f57d696e2",
+												"exec": [
+													"var xmlTree = xml2Json(responseBody);",
+													"",
+													"var samlAssertion = xmlTree[\"S11:Envelope\"][\"S11:Body\"][\"ns:RequestSecurityTokenResponseCollection\"][\"ns:RequestSecurityTokenResponse\"][\"ns:RequestedSecurityToken\"][\"wsse:BinarySecurityToken\"]._;",
+													"",
+													"pm.environment.set(\"samlAssertion\", samlAssertion);"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"value": "text/xml",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n    <soap:Header>\n        <wsa:Action xmlns:wsa=\"http://www.w3.org/2005/08/addressing\" xmlns:wsu=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\" wsu:Id=\"iJFJKoU2cJbfDgjZTwrmZKpS8nKM\">http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue</wsa:Action>\n        <wsse:Security xmlns:wsse=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\" soap:mustUnderstand=\"1\">\n            <wsse:UsernameToken xmlns:wsu=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\" wsu:Id=\"ijhaEN438vD_gRUQC06Apb8B43nE\">\n                <wsse:Username>joe</wsse:Username>\n                <wsse:Password Type=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText\">2Federate</wsse:Password>\n            </wsse:UsernameToken>\n        </wsse:Security>\n    </soap:Header>\n    <soap:Body xmlns:wsu=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\" wsu:Id=\"iGPI7F3OqQHNY_nNdIi6mxp16eqE\">\n        <wst:RequestSecurityToken xmlns:wst=\"http://docs.oasis-open.org/ws-sx/ws-trust/200512/\">\n            <wst:TokenType>urn:ietf:params:oauth:grant-type:saml2-bearer</wst:TokenType>\n            <wst:RequestType>http://docs.oasis-open.org/ws-sx/ws-trust/200512/Issue</wst:RequestType>\n            <wsp:AppliesTo xmlns:wsp=\"http://schemas.xmlsoap.org/ws/2004/09/policy\">\n                <wsa:EndpointReference xmlns:wsa=\"http://www.w3.org/2005/08/addressing\">\n                    <wsa:Address>https://{{pingfed}}</wsa:Address>\n                </wsa:EndpointReference>\n            </wsp:AppliesTo>\n            <wst:Claims/>\n            <wst:OnBehalfOf>\n                <wsse:SecurityTokenReference xmlns:wsse=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\">\n                    <wsse:Reference URI=\"#ijhaEN438vD_gRUQC06Apb8B43nE\" ValueType=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#UsernameToken\"/>\n                </wsse:SecurityTokenReference>\n            </wst:OnBehalfOf>\n        </wst:RequestSecurityToken>\n    </soap:Body>\n</soap:Envelope>"
+										},
+										"url": {
+											"raw": "https://{{pingfed}}/idp/sts.wst",
+											"protocol": "https",
+											"host": [
+												"{{pingfed}}"
+											],
+											"path": [
+												"idp",
+												"sts.wst"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Swap SAML Assertion for Access Token",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "f5a7b124-f613-4205-b6c8-f0fb0ce3c638",
+												"exec": [
+													"pm.test(\"Access Token received\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"access_token\");",
+													"    ",
+													"    jsonData = pm.response.json();",
+													"    pm.environment.set(\"access_token\", jsonData.access_token);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"value": "application/x-www-form-urlencoded",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "urlencoded",
+											"urlencoded": [
+												{
+													"key": "client_id",
+													"value": "saml_client",
+													"type": "text"
+												},
+												{
+													"key": "grant_type",
+													"value": "urn:ietf:params:oauth:grant-type:saml2-bearer",
+													"type": "text"
+												},
+												{
+													"key": "assertion",
+													"value": "{{samlAssertion}}",
+													"type": "text"
+												}
+											]
+										},
+										"url": {
+											"raw": "https://{{pingfed}}/as/token.oauth2",
+											"protocol": "https",
+											"host": [
+												"{{pingfed}}"
+											],
+											"path": [
+												"as",
+												"token.oauth2"
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"description": "Swap a SAML Assertion for an Access Token\n\nThis flow uses a WSTrustSTS call to swap a Username / Password credential for the SAML Assertion",
+							"_postman_isSubFolder": true
+						},
+						{
+							"name": "JWT Bearer",
+							"item": [
+								{
+									"name": "Authenticate User for JWT (WSTrust)",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "1c63bfc2-7e84-40df-85d5-710f57d696e2",
+												"exec": [
+													"var xmlTree = xml2Json(responseBody);",
+													"",
+													"var returnedToken = xmlTree[\"S11:Envelope\"][\"S11:Body\"][\"ns:RequestSecurityTokenResponseCollection\"][\"ns:RequestSecurityTokenResponse\"][\"ns:RequestedSecurityToken\"][\"wsse:BinarySecurityToken\"]._;",
+													"",
+													"// Base64 Decode the Token",
+													"var decodedToken = CryptoJS.enc.Base64.parse(returnedToken);",
+													"var jwtBearer = CryptoJS.enc.Utf8.stringify(decodedToken)",
+													"",
+													"pm.environment.set(\"jwtBearer\", jwtBearer);"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"value": "text/xml",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n    <soap:Header>\n        <wsa:Action xmlns:wsa=\"http://www.w3.org/2005/08/addressing\" xmlns:wsu=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\" wsu:Id=\"iJFJKoU2cJbfDgjZTwrmZKpS8nKM\">http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue</wsa:Action>\n        <wsse:Security xmlns:wsse=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\" soap:mustUnderstand=\"1\">\n            <wsse:UsernameToken xmlns:wsu=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\" wsu:Id=\"ijhaEN438vD_gRUQC06Apb8B43nE\">\n                <wsse:Username>joe</wsse:Username>\n                <wsse:Password Type=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText\">2Federate</wsse:Password>\n            </wsse:UsernameToken>\n        </wsse:Security>\n    </soap:Header>\n    <soap:Body xmlns:wsu=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\" wsu:Id=\"iGPI7F3OqQHNY_nNdIi6mxp16eqE\">\n        <wst:RequestSecurityToken xmlns:wst=\"http://docs.oasis-open.org/ws-sx/ws-trust/200512/\">\n            <wst:TokenType>urn:ietf:params:oauth:grant-type:jwt-bearer</wst:TokenType>\n            <wst:RequestType>http://docs.oasis-open.org/ws-sx/ws-trust/200512/Issue</wst:RequestType>\n            <wsp:AppliesTo xmlns:wsp=\"http://schemas.xmlsoap.org/ws/2004/09/policy\">\n                <wsa:EndpointReference xmlns:wsa=\"http://www.w3.org/2005/08/addressing\">\n                    <wsa:Address>https://{{pingfed}}</wsa:Address>\n                </wsa:EndpointReference>\n            </wsp:AppliesTo>\n            <wst:Claims/>\n            <wst:OnBehalfOf>\n                <wsse:SecurityTokenReference xmlns:wsse=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\">\n                    <wsse:Reference URI=\"#ijhaEN438vD_gRUQC06Apb8B43nE\" ValueType=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#UsernameToken\"/>\n                </wsse:SecurityTokenReference>\n            </wst:OnBehalfOf>\n        </wst:RequestSecurityToken>\n    </soap:Body>\n</soap:Envelope>"
+										},
+										"url": {
+											"raw": "https://{{pingfed}}/idp/sts.wst",
+											"protocol": "https",
+											"host": [
+												"{{pingfed}}"
+											],
+											"path": [
+												"idp",
+												"sts.wst"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Swap JWT for Access Token",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "b4635664-0899-43e9-8e47-24e18b3ee447",
+												"exec": [
+													"pm.test(\"Access Token received\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"access_token\");",
+													"    ",
+													"    jsonData = pm.response.json();",
+													"    pm.environment.set(\"access_token\", jsonData.access_token);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"type": "text",
+												"value": "application/x-www-form-urlencoded"
+											}
+										],
+										"body": {
+											"mode": "urlencoded",
+											"urlencoded": [
+												{
+													"key": "client_id",
+													"value": "jwt_client",
+													"type": "text"
+												},
+												{
+													"key": "grant_type",
+													"value": "urn:ietf:params:oauth:grant-type:jwt-bearer",
+													"type": "text"
+												},
+												{
+													"key": "assertion",
+													"value": "{{jwtBearer}}",
+													"type": "text"
+												}
+											]
+										},
+										"url": {
+											"raw": "https://{{pingfed}}/as/token.oauth2",
+											"protocol": "https",
+											"host": [
+												"{{pingfed}}"
+											],
+											"path": [
+												"as",
+												"token.oauth2"
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"description": "Swap a JWT for an Access Token\n\nThis flow uses a WSTrustSTS call to swap a Username / Password credential for the JWT",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "dbd37b18-8fac-4df6-b908-f5d8055ed581",
+										"type": "text/javascript",
+										"exec": [
+											""
+										]
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "b537cf20-cadb-4d2d-8ae0-d50c5dda8bc2",
+										"type": "text/javascript",
+										"exec": [
+											""
+										]
+									}
+								}
+							],
+							"_postman_isSubFolder": true
+						},
+						{
+							"name": "OAuth Demo - Implicit (Browser)",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
 							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{client_secret}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{client_id}}",
+											"type": "string"
+										},
+										{
+											"key": "saveHelperData",
+											"value": true,
+											"type": "boolean"
+										},
+										{
+											"key": "showPassword",
+											"value": false,
+											"type": "boolean"
+										}
+									]
+								},
 								"method": "GET",
 								"header": [],
 								"body": {},
 								"url": {
-									"raw": "https://<<your PingFed server>>/as/authorization.oauth2?response_type=code&client_id=ac_client&redirect_uri=https://apps.cpricedomain.net/OAuthDecode/&code_challenge=Any-string-you-want-between-43-and-128-characters",
+									"raw": "https://{{pingfed}}/as/authorization.oauth2?response_type=token&redirect_uri={{redirect_uri}}&client_id={{implicit_client}}",
 									"protocol": "https",
 									"host": [
-										"<<your PingFed server>>"
+										"{{pingfed}}"
 									],
 									"path": [
 										"as",
@@ -31,48 +621,39 @@
 									"query": [
 										{
 											"key": "response_type",
-											"value": "code"
-										},
-										{
-											"key": "client_id",
-											"value": "ac_client"
+											"value": "token"
 										},
 										{
 											"key": "redirect_uri",
-											"value": "https://apps.cpricedomain.net/OAuthDecode/"
+											"value": "{{redirect_uri}}"
 										},
 										{
-											"key": "scope",
-											"value": "openid",
-											"disabled": true
-										},
-										{
-											"key": "code_challenge",
-											"value": "Any-string-you-want-between-43-and-128-characters"
+											"key": "client_id",
+											"value": "{{implicit_client}}"
 										}
 									]
 								},
-								"description": "Demonstrates a regular Authorization Code request.\n\nThe Code will be sent to the redirect_uri value. The code then needs to be posted to the AS to receive an access_token.\n\nThis adds a ?code_challenge= string to the Code request."
+								"description": "Demonstrates an OAuth Implicit call"
 							},
 							"response": []
 						},
 						{
-							"name": "OAuth Demo - AuthZ - Swap Code for Token(s) with PKCE",
+							"name": "OAuth Demo - Resource Owner",
 							"event": [
 								{
 									"listen": "test",
 									"script": {
-										"id": "dd800caa-57ad-41f8-b1e4-f9af9a53b000",
+										"id": "c815082b-f94f-46c4-bfaa-4a3afbd82afc",
 										"exec": [
-											"jsonData = pm.response.json();",
-											"pm.environment.set(\"access_token\", jsonData.access_token);",
+											"pm.test(\"Access Token received\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"access_token\");",
+											"    ",
+											"    jsonData = pm.response.json();",
+											"    pm.environment.set(\"access_token\", jsonData.access_token);",
+											"});",
 											"",
 											"if (jsonData.refresh_token !== \"\") {",
 											"    pm.environment.set(\"refresh_token\", jsonData.refresh_token);",
-											"}",
-											"",
-											"if (jsonData.id_token !== \"\") {",
-											"    pm.environment.set(\"id_token\", jsonData.id_token);",
 											"}"
 										],
 										"type": "text/javascript"
@@ -85,7 +666,7 @@
 									"basic": [
 										{
 											"key": "username",
-											"value": "ac_client",
+											"value": "{{resource_owner}}",
 											"type": "string"
 										},
 										{
@@ -106,15 +687,10 @@
 									]
 								},
 								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/x-www-form-urlencoded"
-									}
-								],
+								"header": [],
 								"body": {},
 								"url": {
-									"raw": "https://{{pingfed}}/as/token.oauth2?grant_type=authorization_code&redirect_uri=https://apps.cpricedomain.net/OAuthDecode/&code=&code_verifier=Any-string-you-want-between-43-and-128-characters",
+									"raw": "https://{{pingfed}}/as/token.oauth2?grant_type=password&username=joe&password=2Federate",
 									"protocol": "https",
 									"host": [
 										"{{pingfed}}"
@@ -126,414 +702,528 @@
 									"query": [
 										{
 											"key": "grant_type",
-											"value": "authorization_code"
+											"value": "password"
 										},
 										{
-											"key": "redirect_uri",
-											"value": "https://apps.cpricedomain.net/OAuthDecode/"
+											"key": "username",
+											"value": "joe"
 										},
 										{
-											"key": "code",
-											"value": ""
-										},
-										{
-											"key": "code_verifier",
-											"value": "Any-string-you-want-between-43-and-128-characters"
+											"key": "password",
+											"value": "2Federate"
 										}
 									]
 								},
-								"description": "Demonstrates the call to swap an AuthZ Code for an access_token when the call was made with PKCE.\n\nThe ?code_challenge= value from the previous call needs to be added as the ?code_verifier= parameter "
+								"description": "Demonstrates a Resource Owner call to swap a user credential for an access_token.\n\nTypically, this call should be avoided due to the risks of collecting and storing credentials in the app."
 							},
 							"response": []
 						}
 					],
-					"description": "These calls conform to RFC 7636 (https://tools.ietf.org/html/rfc7636) to add additional security into the acquisition of the Authorization Code",
+					"description": "These flows involve a User Authentication before an access_token is issued",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "57006f10-c4f9-4af8-9111-951d1b676160",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "812cc2b8-cd46-41b8-a3a0-c1742922606c",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
 					"_postman_isSubFolder": true
 				},
 				{
-					"name": "OAuth Demo - AuthZ - Get AuthZ Code (Browser)",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"body": {},
-						"url": {
-							"raw": "https://<<your PingFed server>>/as/authorization.oauth2?response_type=code&client_id=ac_client&redirect_uri=https://apps.cpricedomain.net/OAuthDecode/",
-							"protocol": "https",
-							"host": [
-								"<<your PingFed server>>"
-							],
-							"path": [
-								"as",
-								"authorization.oauth2"
-							],
-							"query": [
-								{
-									"key": "response_type",
-									"value": "code"
-								},
-								{
-									"key": "client_id",
-									"value": "ac_client"
-								},
-								{
-									"key": "redirect_uri",
-									"value": "https://apps.cpricedomain.net/OAuthDecode/"
-								}
-							]
-						},
-						"description": "Demonstrates a regular Authorization Code request.\n\nThe Code will be sent to the redirect_uri value. The code then needs to be posted to the AS to receive an access_token."
-					},
-					"response": []
-				},
-				{
-					"name": "OAuth Demo - AuthZ - Swap Code for Token(s)",
-					"event": [
+					"name": "Service Authentication",
+					"item": [
 						{
-							"listen": "test",
-							"script": {
-								"id": "dd800caa-57ad-41f8-b1e4-f9af9a53b000",
-								"exec": [
-									"jsonData = pm.response.json();",
-									"pm.environment.set(\"access_token\", jsonData.access_token);",
-									"",
-									"if (jsonData.refresh_token !== \"\") {",
-									"    pm.environment.set(\"refresh_token\", jsonData.refresh_token);",
-									"}",
-									"",
-									"if (jsonData.id_token !== \"\") {",
-									"    pm.environment.set(\"id_token\", jsonData.id_token);",
-									"}"
+							"name": "OAuth Demo - Client Credentials (Basic AuthZ Header)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "9e996932-72ca-4c3d-b565-2b6ff36b6e3b",
+										"exec": [
+											"pm.test(\"Access Token received\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"access_token\");",
+											"    ",
+											"    jsonData = pm.response.json();",
+											"    pm.environment.set(\"access_token\", jsonData.access_token);",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{client_secret}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{client_credentials}}",
+											"type": "string"
+										},
+										{
+											"key": "saveHelperData",
+											"value": true,
+											"type": "boolean"
+										},
+										{
+											"key": "showPassword",
+											"value": false,
+											"type": "boolean"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {},
+								"url": {
+									"raw": "https://{{pingfed}}/as/token.oauth2?grant_type=client_credentials",
+									"protocol": "https",
+									"host": [
+										"{{pingfed}}"
+									],
+									"path": [
+										"as",
+										"token.oauth2"
+									],
+									"query": [
+										{
+											"key": "grant_type",
+											"value": "client_credentials"
+										}
+									]
+								},
+								"description": "Demonstrates an OAuth client_credential call"
+							},
+							"response": []
+						},
+						{
+							"name": "OAuth Demo - Client Credentials (x-www-form-urlencoded)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "9e996932-72ca-4c3d-b565-2b6ff36b6e3b",
+										"exec": [
+											"pm.test(\"Access Token received\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"access_token\");",
+											"    ",
+											"    jsonData = pm.response.json();",
+											"    pm.environment.set(\"access_token\", jsonData.access_token);",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/x-www-form-urlencoded",
+										"type": "text"
+									}
 								],
-								"type": "text/javascript"
-							}
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "client_id",
+											"value": "{{client_credentials}}",
+											"type": "text"
+										},
+										{
+											"key": "client_secret",
+											"value": "{{client_secret}}",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "https://{{pingfed}}/as/token.oauth2?grant_type=client_credentials",
+									"protocol": "https",
+									"host": [
+										"{{pingfed}}"
+									],
+									"path": [
+										"as",
+										"token.oauth2"
+									],
+									"query": [
+										{
+											"key": "grant_type",
+											"value": "client_credentials"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "OAuth Demo - Client Credentials (JWT) - Not Working",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "9e996932-72ca-4c3d-b565-2b6ff36b6e3b",
+										"exec": [
+											"jsonData = pm.response.json();",
+											"pm.environment.set(\"access_token\", jsonData.access_token);",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "4ea50f30-7473-41dd-997e-419e80742ed4",
+										"exec": [
+											"function base64url(source) {",
+											"  // Encode in classical base64",
+											"  encodedSource = CryptoJS.enc.Base64.stringify(source);",
+											"",
+											"  // Remove padding equal characters",
+											"  encodedSource = encodedSource.replace(/=+$/, '');",
+											"",
+											"  // Replace characters according to base64url specifications",
+											"  encodedSource = encodedSource.replace(/\\+/g, '-');",
+											"  encodedSource = encodedSource.replace(/\\//g, '_');",
+											"",
+											"  return encodedSource;",
+											"}",
+											"",
+											"var header = {",
+											"  \"kid\": \"k1\",",
+											"  \"alg\": \"ES256\"",
+											"};",
+											"",
+											"var stringifiedHeader = CryptoJS.enc.Utf8.parse(JSON.stringify(header));",
+											"var encodedHeader = base64url(stringifiedHeader);",
+											"",
+											"// Generate current timestamp with moment library",
+											"var moment = require(\"moment\");",
+											"var issued = new Date();",
+											"var issued = moment(issued).valueOf();",
+											"",
+											"var data = {",
+											"  \"iss\": pm.environment.get(\"client_credentials_jwt\"),",
+											"  \"aud\": pm.environment.get(\"pingfed\")+\"/as/token.oauth2\",",
+											"  \"sub\": pm.environment.get(\"client_credentials_jwt\"),",
+											"  \"iat\": issued,",
+											"  \"exp\": issued+600",
+											"};",
+											"",
+											"var stringifiedData = CryptoJS.enc.Utf8.parse(JSON.stringify(data));",
+											"var encodedData = base64url(stringifiedData);",
+											"",
+											"var token = encodedHeader + \".\" + encodedData;",
+											"",
+											"var privateKey=\"-----BEGIN EC PRIVATE KEY-----MCQCAQEEH0laOSuEdwlQT087zu28YwaccdYYjQDPhQIBy5kkYz8=-----END EC PRIVATE KEY-----\"",
+											"",
+											"// Postman CryptoJS doesn't support RSA or ECDSA signing algorithms - either is needed by PingFed for the signed JWTs in this request",
+											"",
+											"//var signature = CryptoJS.HmacSHA256(token, secret);",
+											"//signature = base64url(signature);",
+											"",
+											"// Alternative may be to use an API to handle the signature - https://documenter.getpostman.com/view/4289664/RWaC4D7b",
+											"",
+											"var signedToken = token + \".\" + signature;",
+											"",
+											"pm.environment.set(\"client_assertion\", signedToken);",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/x-www-form-urlencoded",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "grant_type",
+											"value": "client_credentials",
+											"type": "text"
+										},
+										{
+											"key": "client_id",
+											"value": "cc_jwt_pm_client",
+											"type": "text"
+										},
+										{
+											"key": "client_assertion_type",
+											"value": "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
+											"type": "text"
+										},
+										{
+											"key": "client_assertion",
+											"value": "{{client_assertion}}",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "https://{{pingfed}}/as/token.oauth2",
+									"protocol": "https",
+									"host": [
+										"{{pingfed}}"
+									],
+									"path": [
+										"as",
+										"token.oauth2"
+									]
+								}
+							},
+							"response": []
 						}
 					],
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "username",
-									"value": "ac_client",
-									"type": "string"
-								},
-								{
-									"key": "password",
-									"value": "",
-									"type": "string"
-								},
-								{
-									"key": "saveHelperData",
-									"value": true,
-									"type": "boolean"
-								},
-								{
-									"key": "showPassword",
-									"value": false,
-									"type": "boolean"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded"
-							}
-						],
-						"body": {},
-						"url": {
-							"raw": "https://{{pingfed}}/as/token.oauth2?grant_type=authorization_code&redirect_uri=https://apps.cpricedomain.net/OAuthDecode/&code=",
-							"protocol": "https",
-							"host": [
-								"{{pingfed}}"
-							],
-							"path": [
-								"as",
-								"token.oauth2"
-							],
-							"query": [
-								{
-									"key": "grant_type",
-									"value": "authorization_code"
-								},
-								{
-									"key": "redirect_uri",
-									"value": "https://apps.cpricedomain.net/OAuthDecode/"
-								},
-								{
-									"key": "code",
-									"value": ""
-								}
-							]
-						},
-						"description": "Demonstrates the call to swap an AuthZ Code for an access_token"
-					},
-					"response": []
-				},
-				{
-					"name": "OAuth Demo - Implicit (Browser)",
-					"request": {
-						"method": "GET",
-						"body": {},
-						"url": {
-							"raw": "https://<<your PingFed server>>/as/authorization.oauth2?response_type=token&redirect_uri=https://www.getpostman.com/oauth2/callback&client_id=im_client",
-							"protocol": "https",
-							"host": [
-                "<<your PingFed server>>"
-							],
-							"path": [
-								"as",
-								"authorization.oauth2"
-							],
-							"query": [
-								{
-									"key": "response_type",
-									"value": "token"
-								},
-								{
-									"key": "redirect_uri",
-									"value": "https://www.getpostman.com/oauth2/callback"
-								},
-								{
-									"key": "client_id",
-									"value": "im_client"
-								}
-							]
-						},
-						"description": "Demonstrates an OAuth Implicit call"
-					},
-					"response": []
-				},
-				{
-					"name": "OAuth Demo - Client Credentials",
+					"description": "These flows involve a Service Authentication before an access_token is issued",
 					"event": [
 						{
-							"listen": "test",
+							"listen": "prerequest",
 							"script": {
-								"id": "9e996932-72ca-4c3d-b565-2b6ff36b6e3b",
+								"id": "a777dca6-91c9-4a2a-9da8-86e64bd4ecb7",
+								"type": "text/javascript",
 								"exec": [
-									"jsonData = pm.response.json();",
-									"pm.environment.set(\"access_token\", jsonData.access_token);",
 									""
-								],
-								"type": "text/javascript"
+								]
 							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "username",
-									"value": "cc_client",
-									"type": "string"
-								},
-								{
-									"key": "password",
-									"value": "2Federate",
-									"type": "string"
-								},
-								{
-									"key": "saveHelperData",
-									"value": true,
-									"type": "boolean"
-								},
-								{
-									"key": "showPassword",
-									"value": false,
-									"type": "boolean"
-								}
-							]
 						},
-						"method": "POST",
-						"header": [],
-						"body": {},
-						"url": {
-							"raw": "https://{{pingfed}}/as/token.oauth2?grant_type=client_credentials&redirect_uri=https://www.getpostman.com/oauth2/callback&scope=openid",
-							"protocol": "https",
-							"host": [
-								"{{pingfed}}"
-							],
-							"path": [
-								"as",
-								"token.oauth2"
-							],
-							"query": [
-								{
-									"key": "grant_type",
-									"value": "client_credentials"
-								},
-								{
-									"key": "redirect_uri",
-									"value": "https://www.getpostman.com/oauth2/callback"
-								},
-								{
-									"key": "scope",
-									"value": "openid"
-								}
-							]
-						},
-						"description": "Demonstrates an OAuth client_credential call"
-					},
-					"response": []
-				},
-				{
-					"name": "OAuth Demo - Resource Owner",
-					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "c815082b-f94f-46c4-bfaa-4a3afbd82afc",
+								"id": "1c7fe43d-6853-4239-a17d-d942c3823e17",
+								"type": "text/javascript",
 								"exec": [
-									"jsonData = pm.response.json();",
-									"pm.environment.set(\"access_token\", jsonData.access_token);",
-									"",
-									"if (jsonData.refresh_token !== \"\") {",
-									"    pm.environment.set(\"refresh_token\", jsonData.refresh_token);",
-									"}"
-								],
-								"type": "text/javascript"
+									""
+								]
 							}
 						}
 					],
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "username",
-									"value": "ro_client",
-									"type": "string"
-								},
-								{
-									"key": "password",
-									"value": "",
-									"type": "string"
-								},
-								{
-									"key": "saveHelperData",
-									"value": true,
-									"type": "boolean"
-								},
-								{
-									"key": "showPassword",
-									"value": false,
-									"type": "boolean"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"body": {},
-						"url": {
-							"raw": "https://{{pingfed}}/as/token.oauth2?grant_type=password&username=&password=",
-							"protocol": "https",
-							"host": [
-								"{{pingfed}}"
-							],
-							"path": [
-								"as",
-								"token.oauth2"
-							],
-							"query": [
-								{
-									"key": "grant_type",
-									"value": "password"
-								},
-								{
-									"key": "username",
-									"value": ""
-								},
-								{
-									"key": "password",
-									"value": ""
-								}
-							]
-						},
-						"description": "Demonstrates a Resource Owner call to swap a user credential for an access_token.\n\nTypically, this call should be avoided due to the risks of collecting and storing credentials in the app."
-					},
-					"response": []
+					"_postman_isSubFolder": true
 				},
 				{
-					"name": "OAuth Demo - Swap Refresh Token for AT",
+					"name": "Device Authentication (PF 9.2+)",
+					"item": [
+						{
+							"name": "Get Device Code",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "38e7e7c1-125c-4578-a52f-75abd6dcfe8a",
+										"exec": [
+											"pm.test(\"Device Code received\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"access_token\");",
+											"    ",
+											"jsonData = pm.response.json();",
+											"pm.environment.set(\"device_code\", jsonData.device_code);",
+											"pm.environment.set(\"device_user_code\", jsonData.user_code);",
+											"pm.environment.set(\"device_verify\", jsonData.verification_uri);",
+											"pm.environment.set(\"device_verify_uri\", jsonData.verification_uri_complete);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/x-www-form-urlencoded",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "client_id",
+											"value": "df_client",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "https://{{pingfed}}/as/device_authz.oauth2",
+									"protocol": "https",
+									"host": [
+										"{{pingfed}}"
+									],
+									"path": [
+										"as",
+										"device_authz.oauth2"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Swap Device Code for Token",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "7845185a-1319-4d3f-87ce-b426af4cda0e",
+										"exec": [
+											"pm.test(\"Access Token received\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"access_token\");",
+											"    ",
+											"    jsonData = pm.response.json();",
+											"    pm.environment.set(\"access_token\", jsonData.access_token);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/x-www-form-urlencoded",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "client_id",
+											"value": "df_client",
+											"type": "text"
+										},
+										{
+											"key": "grant_type",
+											"value": "urn:ietf:params:oauth:grant-type:device_code",
+											"type": "text"
+										},
+										{
+											"key": "device_code",
+											"value": "{{device_code}}",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "https://{{pingfed}}/as/token.oauth2",
+									"protocol": "https",
+									"host": [
+										"{{pingfed}}"
+									],
+									"path": [
+										"as",
+										"token.oauth2"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "User Verification - User Code Embedded (Browser)",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{device_verify_uri}}",
+									"host": [
+										"{{device_verify_uri}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "User Verification - User Code Input (Browser)",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{device_verify}}",
+									"host": [
+										"{{device_verify}}"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "Support for Draft Device Flow - https://tools.ietf.org/html/draft-ietf-oauth-device-flow-13",
 					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "77edf5f1-f29a-4562-a87e-7cbba4326a3e",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
 						{
 							"listen": "test",
 							"script": {
-								"id": "829e3367-89cb-46ff-9e7c-61f1a422832e",
+								"id": "a82bba3d-9fab-4847-a3c9-30ccf6fa725c",
+								"type": "text/javascript",
 								"exec": [
-									"jsonData = pm.response.json();",
-									"pm.environment.set(\"access_token\", jsonData.access_token);",
-									"pm.environment.set(\"refresh_token\", jsonData.refresh_token);"
-								],
-								"type": "text/javascript"
+									""
+								]
 							}
 						}
 					],
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "username",
-									"value": "ac_client",
-									"type": "string"
-								},
-								{
-									"key": "password",
-									"value": "",
-									"type": "string"
-								},
-								{
-									"key": "saveHelperData",
-									"value": true,
-									"type": "boolean"
-								},
-								{
-									"key": "showPassword",
-									"value": false,
-									"type": "boolean"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded"
-							}
-						],
-						"body": {},
-						"url": {
-							"raw": "https://<<your PingFed server>>/as/token.oauth2?grant_type=refresh_token&redirect_uri=https://www.getpostman.com/oauth2/callback&refresh_token={{refresh_token}}",
-							"protocol": "https",
-							"host": [
-								"<<your PingFed server>>"
-							],
-							"path": [
-								"as",
-								"token.oauth2"
-							],
-							"query": [
-								{
-									"key": "grant_type",
-									"value": "refresh_token"
-								},
-								{
-									"key": "redirect_uri",
-									"value": "https://www.getpostman.com/oauth2/callback"
-								},
-								{
-									"key": "refresh_token",
-									"value": "{{refresh_token}}"
-								}
-							]
-						},
-						"description": "Used to swap out a refresh_token for an access_token."
-					},
-					"response": []
+					"_postman_isSubFolder": true
 				}
 			],
 			"description": "These calls demonstrate the OAuth 2.0 flows for getting an Access Token.\n\nThe results will depend on how PingFed is configured with the Acces Token Mananger and the Access Token Mappings that are linked to the OAuth clients.\n\nOIDC tokens can be minted by adding the OIDC scopes (openid [address | email | phone | profile]) to the Code \\ Access Token requests.",
@@ -564,19 +1254,108 @@
 			"name": "Token Calls",
 			"item": [
 				{
-					"name": "OAuth Demo - Validate Token",
+					"name": "OAuth Demo - Swap Refresh Token for AT",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "829e3367-89cb-46ff-9e7c-61f1a422832e",
+								"exec": [
+									"pm.test(\"Access Token received\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"access_token\");",
+									"    ",
+									"    jsonData = pm.response.json();",
+									"    pm.environment.set(\"access_token\", jsonData.access_token);",
+									"});",
+									"",
+									"pm.test(\"Refresh Token received\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"refresh_token\");",
+									"    ",
+									"    jsonData = pm.response.json();",
+									"    pm.environment.set(\"refresh_token\", jsonData.refresh_token);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"auth": {
 							"type": "basic",
 							"basic": [
 								{
 									"key": "username",
-									"value": "rs_client",
+									"value": "{{authz_client}}",
 									"type": "string"
 								},
 								{
 									"key": "password",
-									"value": "2Federate",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "saveHelperData",
+									"value": true,
+									"type": "boolean"
+								},
+								{
+									"key": "showPassword",
+									"value": false,
+									"type": "boolean"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "https://{{pingfed}}/as/token.oauth2?grant_type=refresh_token&redirect_uri={{redirect_uri}}&refresh_token={{refresh_token}}",
+							"protocol": "https",
+							"host": [
+								"{{pingfed}}"
+							],
+							"path": [
+								"as",
+								"token.oauth2"
+							],
+							"query": [
+								{
+									"key": "grant_type",
+									"value": "refresh_token"
+								},
+								{
+									"key": "redirect_uri",
+									"value": "{{redirect_uri}}"
+								},
+								{
+									"key": "refresh_token",
+									"value": "{{refresh_token}}"
+								}
+							]
+						},
+						"description": "Used to swap out a refresh_token for an access_token."
+					},
+					"response": []
+				},
+				{
+					"name": "OAuth Demo - Token Validation (PingFed)",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{client_secret}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{resource_server}}",
 									"type": "string"
 								},
 								{
@@ -625,19 +1404,19 @@
 					"response": []
 				},
 				{
-					"name": "OAuth Demo - Token Introspection (RFC 7662)",
+					"name": "OAuth Demo - Token Introspection (PF 8.2+)",
 					"request": {
 						"auth": {
 							"type": "basic",
 							"basic": [
 								{
-									"key": "username",
-									"value": "rs_client",
+									"key": "password",
+									"value": "{{client_secret}}",
 									"type": "string"
 								},
 								{
-									"key": "password",
-									"value": "2Federate",
+									"key": "username",
+									"value": "{{resource_server}}",
 									"type": "string"
 								},
 								{
@@ -676,7 +1455,8 @@
 									"value": "{{access_token}}"
 								}
 							]
-						}
+						},
+						"description": "Support for Token Introspection (RFC 7662) - https://tools.ietf.org/html/rfc7662"
 					},
 					"response": []
 				},
@@ -688,7 +1468,7 @@
 							"basic": [
 								{
 									"key": "username",
-									"value": "ac_client",
+									"value": "{{authz_client}}",
 									"type": "string"
 								},
 								{
@@ -745,7 +1525,7 @@
 							"basic": [
 								{
 									"key": "username",
-									"value": "ac_client",
+									"value": "{{authz_client}}",
 									"type": "string"
 								},
 								{
@@ -801,7 +1581,7 @@
 			"description": "These calls are used when you've already obtained the access_token"
 		},
 		{
-			"name": "Dynamic Client Registation (RFC 7591)",
+			"name": "Dynamic Client Registation (PF 9.0+)",
 			"item": [
 				{
 					"name": "OAuth Demo - Dynamic Client Registration - Get Token",
@@ -898,7 +1678,29 @@
 					"response": []
 				}
 			],
-			"description": "These calls can be used to show PF support for RFC 7591 - OAuth 2.0 Dynamic Client Registration Protocol (https://tools.ietf.org/html/rfc7591)"
+			"description": "These calls can be used to show PF support for RFC 7591 - OAuth 2.0 Dynamic Client Registration Protocol (https://tools.ietf.org/html/rfc7591)",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "a189c6bb-efe4-4164-9d75-ed9880a9f61b",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "9af8bc30-94a9-405d-8663-c474cdb39b36",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
 		},
 		{
 			"name": "OIDC Endpoints",
@@ -913,7 +1715,10 @@
 								"value": "application/x-www-form-urlencoded"
 							}
 						],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "https://{{pingfed}}/.well-known/openid-configuration",
 							"protocol": "https",
@@ -933,7 +1738,10 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "https://{{pingfed}}/pf/JWKS",
 							"protocol": "https",
@@ -958,7 +1766,10 @@
 								"value": "Bearer {{access_token}}"
 							}
 						],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "https://{{pingfed}}/idp/userinfo.openid",
 							"protocol": "https",
@@ -970,7 +1781,7 @@
 								"userinfo.openid"
 							]
 						},
-						"description": "Use access_token in the Authorization: Bearer header to present a User to the UserInfo API.\n\nPF OIDC Policy will use the claims in the AT to figure out the rest of the data.\n\nAttributes in the response will be tied to the AT scopes - minimally must be \"openid\""
+						"description": "Use access_token in the Authorization: Bearer header to present a User to the UserInfo API.\n\nPF OIDC Policy will use the claims in the AT to figure out th rest of the data.\n\nAttributes in the response will be tied to the AT scopes - minimally must be \"openid\""
 					},
 					"response": []
 				}
