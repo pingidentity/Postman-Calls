@@ -7,9 +7,9 @@ https://www.pingidentity.com/content/dam/ping-6-2-assets/Software/toolkits/OAuth
 
 Update: 11/25/18
 * Added the following flows:
-... SAML Bearer
-... JWT Bearer
-... Device Flow (PF 9.2+)
+...SAML Bearer
+...JWT Bearer
+...Device Flow (PF 9.2+)
 * Added examples using x-www-form-urlencoded body for call parameters
 * Organized calls a little better
 * Indicated PF versions for more recent support
