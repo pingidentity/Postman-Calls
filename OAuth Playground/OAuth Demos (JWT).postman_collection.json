@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "15da081a-869d-f505-4421-8354f035d470",
 		"name": "OAuth Demos (JWT)",
-		"description": "This collection is a \"pure\" OAuth set of calls that has no UI wrapped around the request \\ response that mimic OAuth Playground for PingFed.\n\nCalls that require a Web Browser (AuthZ Code or Implicit) are marked \"(Browser)\" these calls should be pasted into a Web Browser to be completed - this is to bypass any UI that Postman uses with the Authorization --> OAuth 2.0 mechanism.\n\nUpdate: 11/25/18\nAdded the following flows:\n    SAML Bearer\n    JWT Bearer\n    Device Flow (PF 9.2+)\nAdded examples using x-www-form-urlencoded body for call parameters\nOrganized calls a little better\nIndicated PF versions for more recent support\n\nUpdate: 11/26/18\nAdded Scope parameter \\ field to all requests\nAdded Client Credential with client_assertion JWT flow",
+		"description": "This collection is a \"pure\" OAuth set of calls that has no UI wrapped around the request \\ response that mimic OAuth Playground for PingFed.\n\nCalls that require a Web Browser (AuthZ Code or Implicit) are marked \"(Browser)\" these calls should be pasted into a Web Browser to be completed - this is to bypass any UI that Postman uses with the Authorization --> OAuth 2.0 mechanism.\n\nOIDC Calls can be made by adding \"openid\" to any scope parameter in a getToken call. Optional OIDC scoped of \"address\", \"email\", \"phone\", \"profile\" can also be added.\n\nUpdate: 11/25/18\nAdded the following flows:\n    SAML Bearer\n    JWT Bearer\n    Device Flow (PF 9.2+)\nAdded examples using x-www-form-urlencoded body for call parameters\nOrganized calls a little better\nIndicated PF versions for more recent support\n\nUpdate: 11/26/18\nAdded Scope parameter \\ field to all requests\nAdded Client Credential with client_assertion JWT flow (PEM)\n\nUpdate 11/27/18\nAdded Folder - Client Authentication with Private JWT\nMoved Client Credential with client_assertion JWT flow (PEM)\nAdded Client Credential with client_assertion JWT flow (JWK)",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -25,7 +25,7 @@
 										"header": [],
 										"body": {},
 										"url": {
-											"raw": "https://{{pingfed}}/as/authorization.oauth2?response_type=code&client_id={{authz_client}}&redirect_uri={{redirect_uri}}&scope=",
+											"raw": "https://{{pingfed}}/as/authorization.oauth2?response_type=code&client_id={{authz_client}}&redirect_uri={{redirect_uri}}&scope= ",
 											"protocol": "https",
 											"host": [
 												"{{pingfed}}"
@@ -49,7 +49,7 @@
 												},
 												{
 													"key": "scope",
-													"value": ""
+													"value": " "
 												}
 											]
 										},
@@ -146,9 +146,32 @@
 												}
 											]
 										},
-										"description": "Demonstrates the call to swap an AuthZ Code for an access_token"
+										"description": "Swap the Authorization Code for an access_token (and refresh_token | id_token)"
 									},
 									"response": []
+								}
+							],
+							"description": "redirect_uri needs to be a URL that can receive the POST of the Authorization Code. This URL needs to be added to the OAuth client in PingFed.\n\nFor example -- https://apps.cpricedomain.net/OAuthDecode",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "38df9a4d-7173-4132-8272-b93d1e3a4e55",
+										"type": "text/javascript",
+										"exec": [
+											""
+										]
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "b05d4587-626b-47db-9743-1094395597c0",
+										"type": "text/javascript",
+										"exec": [
+											""
+										]
+									}
 								}
 							],
 							"_postman_isSubFolder": true
@@ -591,7 +614,7 @@
 							"_postman_isSubFolder": true
 						},
 						{
-							"name": "OAuth Demo - Implicit (Browser)",
+							"name": "OAuth Demo - Implicit (Browser)..",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -653,7 +676,7 @@
 										}
 									]
 								},
-								"description": "Demonstrates an OAuth Implicit call"
+								"description": "Demonstrates an OAuth Implicit call.\n\nredirect_uri needs to be a URL that can receive the POST of the access_token as a URL fragment. This URL needs to be added to the OAuth client in PingFed.\n\nFor example -- https://apps.cpricedomain.net/OAuthDecode"
 							},
 							"response": []
 						},
@@ -916,165 +939,6 @@
 								}
 							},
 							"response": []
-						},
-						{
-							"name": "OAuth Demo - Client Credentials with client_assertion (JWT)",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"id": "9e996932-72ca-4c3d-b565-2b6ff36b6e3b",
-										"exec": [
-											"pm.test(\"Access Token received\", function () {",
-											"    pm.expect(pm.response.text()).to.include(\"access_token\");",
-											"    ",
-											"    jsonData = pm.response.json();",
-											"    pm.environment.set(\"access_token\", jsonData.access_token);",
-											"});"
-										],
-										"type": "text/javascript"
-									}
-								},
-								{
-									"listen": "prerequest",
-									"script": {
-										"id": "4ea50f30-7473-41dd-997e-419e80742ed4",
-										"exec": [
-											"// Sketchy loading of the jsrsasign library into Postman Sandbox",
-											"var navigator = {}; //fake a navigator object for the lib",
-											"var window = {}; //fake a window object for the lib",
-											"eval(pm.globals.get(\"jsrsasign-js\")); //import javascript jsrsasign",
-											"",
-											"var currentTime = +new Date(); // the current time in milliseconds",
-											"var issuedAtTimeSeconds = currentTime/1000;",
-											"var expirationTimeSeconds = currentTime/1000 + 3600;",
-											"",
-											"// Create Header and Payload objects",
-											"var header = {",
-											"  \"kid\": pm.environment.get(\"client_assertion_kid\"),",
-											"  \"alg\": \"RS256\"",
-											"};",
-											"",
-											"var payload = {",
-											"  \"iss\": pm.environment.get(\"client_credentials_jwt\"),",
-											"  \"aud\": \"https://\"+pm.environment.get(\"pingfed\")+\"/as/token.oauth2\",",
-											"  \"sub\": pm.environment.get(\"client_credentials_jwt\"),",
-											"  \"exp\" : Math.ceil(expirationTimeSeconds),",
-											"  \"iat\" : Math.ceil(issuedAtTimeSeconds)",
-											"};",
-											"",
-											"// Prep the objects for a JWT",
-											"var sHeader = JSON.stringify(header);",
-											"var sPayload = JSON.stringify(payload);",
-											"",
-											"// Use the jsrsasign module to create the signed JWT ",
-											"var privateKey = pm.environment.get(\"private_key\");",
-											"var password = pm.environment.get(\"keyPassword\");",
-											"",
-											"var prvKey = KEYUTIL.getKey(privateKey, password);",
-											"var sJWT = KJUR.jws.JWS.sign(header.alg, sHeader, sPayload, prvKey);",
-											"",
-											"pm.environment.set(\"client_assertion\", sJWT);",
-											""
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"auth": {
-									"type": "noauth"
-								},
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"name": "Content-Type",
-										"value": "application/x-www-form-urlencoded",
-										"type": "text"
-									}
-								],
-								"body": {
-									"mode": "urlencoded",
-									"urlencoded": [
-										{
-											"key": "grant_type",
-											"value": "client_credentials",
-											"type": "text"
-										},
-										{
-											"key": "client_id",
-											"value": "{{client_credentials_jwt}}",
-											"type": "text"
-										},
-										{
-											"key": "client_assertion_type",
-											"value": "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
-											"type": "text"
-										},
-										{
-											"key": "client_assertion",
-											"value": "{{client_assertion}}",
-											"type": "text"
-										},
-										{
-											"key": "scope",
-											"value": "",
-											"type": "text"
-										}
-									]
-								},
-								"url": {
-									"raw": "https://{{pingfed}}/as/token.oauth2",
-									"protocol": "https",
-									"host": [
-										"{{pingfed}}"
-									],
-									"path": [
-										"as",
-										"token.oauth2"
-									]
-								},
-								"description": "This call creates a signed JWT that is sent to PF and is swapped for an access_token.\n\nThe signature is handled by a sideloaded library - jsrsasign. The \"Get jsrsasign library\" call should be made to populate the code into a global variable that is invoked at the start of the pre-request script.\n\nA new Client Credential OAuth Client will need to be created so you can import your own keys.\n\nThe client_credential client needs a corresponding JWKS for the public cert - this can be generated here:\nhttps://8gwifi.org/jwkconvertfunctions.jsp\n\nThe generated JWK can be placed into JWKS format by wrapping it with this:\n\n{\n  \"keys\": [\n    << Insert JWK object here >>\n  ]\n}\n\nThe \"kid\" value in the Header should be pulled from this JWK\n\nprivate_key - the encrypted cert as a PEM\nkeyPassword - the password to unlock private_key\n\n"
-							},
-							"response": []
-						},
-						{
-							"name": "Get jsrsasign library - used for JWT Signing with RSA \\ ECDSA",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"id": "5e8fbd26-7506-4458-893a-abd195448c3d",
-										"exec": [
-											"pm.globals.set(\"jsrsasign-js\", responseBody);"
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"method": "GET",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
-								"url": {
-									"raw": "http://kjur.github.io/jsrsasign/jsrsasign-latest-all-min.js",
-									"protocol": "http",
-									"host": [
-										"kjur",
-										"github",
-										"io"
-									],
-									"path": [
-										"jsrsasign",
-										"jsrsasign-latest-all-min.js"
-									]
-								}
-							},
-							"response": []
 						}
 					],
 					"description": "These flows involve a Service Authentication before an access_token is issued",
@@ -1282,6 +1146,319 @@
 							"listen": "test",
 							"script": {
 								"id": "a82bba3d-9fab-4847-a3c9-30ccf6fa725c",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Client Authentication with Private JWT",
+					"item": [
+						{
+							"name": "Get jsrsasign library - used for JWT Signing with RSA \\ ECDSA",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "5e8fbd26-7506-4458-893a-abd195448c3d",
+										"exec": [
+											"pm.globals.set(\"jsrsasign-js\", responseBody);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://kjur.github.io/jsrsasign/jsrsasign-latest-all-min.js",
+									"protocol": "http",
+									"host": [
+										"kjur",
+										"github",
+										"io"
+									],
+									"path": [
+										"jsrsasign",
+										"jsrsasign-latest-all-min.js"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "OAuth Demo - Client Credentials with client_assertion (JWK)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "9e996932-72ca-4c3d-b565-2b6ff36b6e3b",
+										"exec": [
+											"pm.test(\"Access Token received\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"access_token\");",
+											"    ",
+											"    jsonData = pm.response.json();",
+											"    pm.environment.set(\"access_token\", jsonData.access_token);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "4ea50f30-7473-41dd-997e-419e80742ed4",
+										"exec": [
+											"// Sketchy loading of the jsrsasign library into Postman Sandbox",
+											"var navigator = {}; //fake a navigator object for the lib",
+											"var window = {}; //fake a window object for the lib",
+											"eval(pm.globals.get(\"jsrsasign-js\")); //import javascript jsrsasign",
+											"",
+											"var currentTime = +new Date(); // the current time in milliseconds",
+											"var issuedAtTimeSeconds = currentTime/1000;",
+											"var expirationTimeSeconds = currentTime/1000 + 3600;",
+											"",
+											"// Grab the JWK from the Environment and change to JSON object",
+											"var jwk = JSON.parse(pm.environment.get(\"jwk\"));",
+											"",
+											"// Create Header and Payload objects",
+											"var header = {",
+											"  \"kid\": jwk.kid,",
+											"  \"alg\": jwk.alg",
+											"};",
+											"",
+											"var payload = {",
+											"  \"iss\": pm.environment.get(\"client_credentials_jwt\"),",
+											"  \"aud\": \"https://\"+pm.environment.get(\"pingfed\")+\"/as/token.oauth2\",",
+											"  \"sub\": pm.environment.get(\"client_credentials_jwt\"),",
+											"  \"exp\" : Math.ceil(expirationTimeSeconds),",
+											"  \"iat\" : Math.ceil(issuedAtTimeSeconds)",
+											"};",
+											"",
+											"// Prep the objects for a JWT",
+											"var sHeader = JSON.stringify(header);",
+											"var sPayload = JSON.stringify(payload);",
+											"",
+											"var jwk = JSON.parse(pm.environment.get(\"jwk\"));",
+											"var prvKey = KEYUTIL.getKey(jwk);",
+											"",
+											"var sJWT = KJUR.jws.JWS.sign(header.alg, sHeader, sPayload, prvKey);",
+											"",
+											"pm.environment.set(\"client_assertion\", sJWT);",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/x-www-form-urlencoded",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "grant_type",
+											"value": "client_credentials",
+											"type": "text"
+										},
+										{
+											"key": "client_id",
+											"value": "{{client_credentials_jwt}}",
+											"type": "text"
+										},
+										{
+											"key": "client_assertion_type",
+											"value": "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
+											"type": "text"
+										},
+										{
+											"key": "client_assertion",
+											"value": "{{client_assertion}}",
+											"type": "text"
+										},
+										{
+											"key": "scope",
+											"value": "",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "https://{{pingfed}}/as/token.oauth2",
+									"protocol": "https",
+									"host": [
+										"{{pingfed}}"
+									],
+									"path": [
+										"as",
+										"token.oauth2"
+									]
+								},
+								"description": "This call creates a signed JWT that is sent to PF and is swapped for an access_token.\n\nThe signature is handled by a sideloaded library - jsrsasign. The \"Get jsrsasign library\" call should be made to populate the code into a global variable that is invoked at the start of the pre-request script.\n\nA new Client Credential OAuth Client will need to be created so you can import your own keys.\n\nThis script can work with both RSA and EC JWK objects - they can be generated from here:\nhttps://mkjwk.org/\n\nThe KeyPair is stored in Postman, and the Public Key should be added to the OAuth Client\n\nThe Public JWK in PingFed should be placed into JWKS format by wrapping it with this:\n\n{\n  \"keys\": [\n    << Insert Public JWK object here >>\n  ]\n}\n\nThe script will use the JWK to define the Algorithm and KID that is used in the Signing\n\n"
+							},
+							"response": []
+						},
+						{
+							"name": "OAuth Demo - Client Credentials with client_assertion (PEM)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "9e996932-72ca-4c3d-b565-2b6ff36b6e3b",
+										"exec": [
+											"pm.test(\"Access Token received\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"access_token\");",
+											"    ",
+											"    jsonData = pm.response.json();",
+											"    pm.environment.set(\"access_token\", jsonData.access_token);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "4ea50f30-7473-41dd-997e-419e80742ed4",
+										"exec": [
+											"// Sketchy loading of the jsrsasign library into Postman Sandbox",
+											"var navigator = {}; //fake a navigator object for the lib",
+											"var window = {}; //fake a window object for the lib",
+											"eval(pm.globals.get(\"jsrsasign-js\")); //import javascript jsrsasign",
+											"",
+											"var currentTime = +new Date(); // the current time in milliseconds",
+											"var issuedAtTimeSeconds = currentTime/1000;",
+											"var expirationTimeSeconds = currentTime/1000 + 3600;",
+											"",
+											"// Create Header and Payload objects",
+											"var header = {",
+											"  \"kid\": pm.environment.get(\"client_assertion_kid\"),",
+											"  \"alg\": \"RS256\"",
+											"};",
+											"",
+											"var payload = {",
+											"  \"iss\": pm.environment.get(\"client_credentials_jwt\"),",
+											"  \"aud\": \"https://\"+pm.environment.get(\"pingfed\")+\"/as/token.oauth2\",",
+											"  \"sub\": pm.environment.get(\"client_credentials_jwt\"),",
+											"  \"exp\" : Math.ceil(expirationTimeSeconds),",
+											"  \"iat\" : Math.ceil(issuedAtTimeSeconds)",
+											"};",
+											"",
+											"// Prep the objects for a JWT",
+											"var sHeader = JSON.stringify(header);",
+											"var sPayload = JSON.stringify(payload);",
+											"",
+											"// Use the jsrsasign module to create the signed JWT ",
+											"var privateKey = pm.environment.get(\"private_key\");",
+											"var password = pm.environment.get(\"keyPassword\");",
+											"",
+											"var prvKey = KEYUTIL.getKey(privateKey, password);",
+											"var sJWT = KJUR.jws.JWS.sign(header.alg, sHeader, sPayload, prvKey);",
+											"",
+											"console.log(sJWT);",
+											"",
+											"pm.environment.set(\"client_assertion\", sJWT);",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/x-www-form-urlencoded"
+									}
+								],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "grant_type",
+											"value": "client_credentials",
+											"type": "text"
+										},
+										{
+											"key": "client_id",
+											"value": "{{client_credentials_jwt}}",
+											"type": "text"
+										},
+										{
+											"key": "client_assertion_type",
+											"value": "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
+											"type": "text"
+										},
+										{
+											"key": "client_assertion",
+											"value": "{{client_assertion}}",
+											"type": "text"
+										},
+										{
+											"key": "scope",
+											"value": "",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "https://{{pingfed}}/as/token.oauth2",
+									"protocol": "https",
+									"host": [
+										"{{pingfed}}"
+									],
+									"path": [
+										"as",
+										"token.oauth2"
+									]
+								},
+								"description": "This call creates a signed JWT that is sent to PF and is swapped for an access_token.\n\nThe signature is handled by a sideloaded library - jsrsasign. The \"Get jsrsasign library\" call should be made to populate the code into a global variable that is invoked at the start of the pre-request script.\n\nA new Client Credential OAuth Client will need to be created so you can import your own keys.\n\nThis script will work with PEM formatted keys\n\nThe Private PEM is stored in Postman (with encryption password, if appropriate), and the Public Key should be added to the OAuth Client as a JWKS.\n\nThe Public JWK can be generated from the Public PEM here:\nhttps://8gwifi.org/jwkconvertfunctions.jsp\n\nIn PingFed should be placed into JWKS format by wrapping it with this:\n\n{\n  \"keys\": [\n    << Insert Public JWK object here >>\n  ]\n}"
+							},
+							"response": []
+						}
+					],
+					"description": "Demonstrates using a Private JWT as the authentication with the OAuth client.\n\nThe JWT for the call can be signed as Symmetric & Asymmetric algorithms - these samples show using Asymmetric keys.\n\nRSA keys can be presented as PEM or JWK",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "589bf349-a1f9-4530-8588-57bbe2167c30",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "82ea5fa0-6c1c-4b6d-861e-f0edc61a5bb8",
 								"type": "text/javascript",
 								"exec": [
 									""
