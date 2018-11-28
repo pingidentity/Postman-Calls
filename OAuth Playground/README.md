@@ -18,3 +18,8 @@ Update: 11/25/18
 Update: 11/26/18
 * Added Scope parameter \ field to all requests
 * Added Client Credential with client_assertion JWT flow
+
+Update 11/27/18
+* Added Folder - Client Authentication with Private JWT
+* Moved Client Credential with client_assertion JWT flow (PEM)
+* Added Client Credential with client_assertion JWT flow (JWK)
