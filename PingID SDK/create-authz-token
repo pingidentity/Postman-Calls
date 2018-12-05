@@ -2,12 +2,17 @@
 
 // The tenant secrets - sdkApiKey && sdkApiToken - should be defined in the Collection Environment.
 
-// PM Variables can be used in the URL - this script will pull the replace the following with corresponding values from the Environment:
+// PM Variables can be used in the URL - this script will replace the following with corresponding values from the Environment:
 //    {{sdkAccountId}}
 //    {{sdkAppId}}
 //    {{userId}}
 //    {{deviceId}}
 //    {{id}}
+//
+// https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/users/{{userId}}
+// https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/users/{{userId}}/devices/{{deviceId}}
+// https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/users/{{userId}}/smspairings/{{id}}
+//
 
 var removeIllegalCharacters = function(input) {
     return input
@@ -38,10 +43,10 @@ var path = pm.request.url.path.toString().replace(/,/g, "/");
 
 // Due to the way PM handles the request object, the URL Path needs to be rebuilt with the value substitution
 var path = path.replace("{{sdkAccountId}}", sdkAccountId);
-var path = path.replace("{{sdkAppId}}", pm.variables.get("sdkAppId"));
-var path = path.replace("{{userId}}", pm.variables.get("userId"));
-var path = path.replace("{{deviceId}}", pm.variables.get("deviceId"));
-var path = path.replace("{{id}}", pm.variables.get("id"));
+var path = path.replace("{{sdkAppId}}", pm.environment.get("sdkAppId"));
+var path = path.replace("{{userId}}", pm.environment.get("userId"));
+var path = path.replace("{{deviceId}}", pm.environment.get("deviceId"));
+var path = path.replace("{{id}}", pm.environment.get("id"));
 
 //Grab any parameters
 var parameters = pm.request.url.query.toString();
