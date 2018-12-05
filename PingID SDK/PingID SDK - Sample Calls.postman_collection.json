@@ -1,0 +1,1786 @@
+{
+	"info": {
+		"_postman_id": "8536481f-8152-4693-9d3c-3aedb9ad90f2",
+		"name": "PingID SDK - Sample Calls",
+		"description": "This is a collection of calls that can be made to perform MFA events with the PingID SDK service.\n\nTokens and Secrets should be placed into an Environment - the calls will pull from there.\n\nAll calls to the service require the proper Authorization token - the Collection has a pre-request script that will generate that for any call within it.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "User Management",
+			"item": [
+				{
+					"name": "Create User",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "d233a3a0-96e2-4332-85cc-29459758b524",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "d8e3e244-fc47-412c-8cf9-b3bf46fedeb7",
+								"exec": [
+									"var response = pm.response.json();",
+									"",
+									"pm.environment.set(\"userId\", response.username);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "PINGID-HMAC={{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \n\t\"username\": \"sdkuser1\",\n\t\"firstName\": \"SDK\",\n\t\"lastName\": \"User1\"\n}"
+						},
+						"url": {
+							"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/users/",
+							"protocol": "https",
+							"host": [
+								"sdk",
+								"pingid",
+								"com"
+							],
+							"path": [
+								"pingid",
+								"v1",
+								"accounts",
+								"{{sdkAccountId}}",
+								"users",
+								""
+							]
+						},
+						"description": "Creates a User object in the PingID SDK service\n\nStatus: \"NON_ACTIVE\" because no devices have been associated with the user at this point."
+					},
+					"response": []
+				},
+				{
+					"name": "Get User (Account)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "56e6c888-1cdf-4b56-ab20-c5daec69425b",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "PINGID-HMAC={{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/users/{{userId}}",
+							"protocol": "https",
+							"host": [
+								"sdk",
+								"pingid",
+								"com"
+							],
+							"path": [
+								"pingid",
+								"v1",
+								"accounts",
+								"{{sdkAccountId}}",
+								"users",
+								"{{userId}}"
+							]
+						},
+						"description": "Retrieves the User on the PingID ADK Account.\n\nstatus: \"UNKNOWN\" because the object is not associated with a particular Application\n\nA User can be associated with mutiple apps for the customer - the {{appId}} will tell you if the User is enrolled into it."
+					},
+					"response": []
+				},
+				{
+					"name": "Get User (Application)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "d233a3a0-96e2-4332-85cc-29459758b524",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "PINGID-HMAC={{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/users/{{userId}}",
+							"protocol": "https",
+							"host": [
+								"sdk",
+								"pingid",
+								"com"
+							],
+							"path": [
+								"pingid",
+								"v1",
+								"accounts",
+								"{{sdkAccountId}}",
+								"applications",
+								"{{sdkAppId}}",
+								"users",
+								"{{userId}}"
+							]
+						},
+						"description": "Retrieves the User for the PingID SDK Application.\n\nStatus: value reflects if the User has an enrolled device for this application."
+					},
+					"response": []
+				},
+				{
+					"name": "Get User (Application) - Expanded",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "74040e49-5236-4d07-8332-3b8854959a96",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "PINGID-HMAC={{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/users/{{userId}}?expand=devices,seendevices",
+							"protocol": "https",
+							"host": [
+								"sdk",
+								"pingid",
+								"com"
+							],
+							"path": [
+								"pingid",
+								"v1",
+								"accounts",
+								"{{sdkAccountId}}",
+								"applications",
+								"{{sdkAppId}}",
+								"users",
+								"{{userId}}"
+							],
+							"query": [
+								{
+									"key": "expand",
+									"value": "devices,seendevices"
+								}
+							]
+						},
+						"description": "Retrieves the User on the PingID ADK Account.\n\nstatus: value is accurate\n\nCall expands the devices & seenDevices without needing separate calls to retrieve them"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "d233a3a0-96e2-4332-85cc-29459758b524",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "PINGID-HMAC={{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/users/{{userId}}",
+							"protocol": "https",
+							"host": [
+								"sdk",
+								"pingid",
+								"com"
+							],
+							"path": [
+								"pingid",
+								"v1",
+								"accounts",
+								"{{sdkAccountId}}",
+								"users",
+								"{{userId}}"
+							]
+						},
+						"description": "Deletes the User from PingID SDK - this includes any enrolled devices\n"
+					},
+					"response": []
+				}
+			],
+			"description": "Calls to handle User Enrollement.\n\nNote: Adding a User does not include adding their Device - the User object needs to be created first, with whatever identifier you consider appropriate (I prefer an Immutable ID instead of username or email address).",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "ecc57bee-a072-4ea3-ae17-aa3747729949",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "6c1c9536-244d-4114-9857-bb093fa388bb",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Email Templates",
+			"item": [
+				{
+					"name": "SDK - Retrieve Email Template(s)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "2a6f3782-8fb4-495e-89b2-523b2704445e",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "PINGID-HMAC={{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/emailconfigurations",
+							"protocol": "https",
+							"host": [
+								"sdk",
+								"pingid",
+								"com"
+							],
+							"path": [
+								"pingid",
+								"v1",
+								"accounts",
+								"{{sdkAccountId}}",
+								"applications",
+								"{{sdkAppId}}",
+								"emailconfigurations"
+							]
+						},
+						"description": "Retrieves emailTemplate objects for an Application"
+					},
+					"response": []
+				},
+				{
+					"name": "SDK - Create Email Template (Custom)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "0ba39ca1-197a-4172-b874-a829d96a1f28",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "PINGID-HMAC={{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \n\t\"fromAddress\": \"noreply@pingidentity.com\", \n\t\"emailSubject\": \"CPriceLab - Grade Verify Request\", \n\t\"emailBody\": \"A request to verify your Grade record has been made. Please use this code to authorize the request - ${OTP}\", \n\t\"replyToAddress\": \"noreply@pingidentity.com\", \n\t\"type\": \"powerschool_grade_verify\"\n\t\n}"
+						},
+						"url": {
+							"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/emailconfigurations/",
+							"protocol": "https",
+							"host": [
+								"sdk",
+								"pingid",
+								"com"
+							],
+							"path": [
+								"pingid",
+								"v1",
+								"accounts",
+								"{{sdkAccountId}}",
+								"applications",
+								"{{sdkAppId}}",
+								"emailconfigurations",
+								""
+							]
+						},
+						"description": "Creates an emailTemplate for a custom type"
+					},
+					"response": []
+				},
+				{
+					"name": "SDK - Create Email Template (PingFed Integration)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "0ba39ca1-197a-4172-b874-a829d96a1f28",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "PINGID-HMAC={{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \n\t\"fromAddress\": \"noreply@pingidentity.com\", \n\t\"emailSubject\": \"CPriceLab - Authentication Request\", \n\t\"emailBody\": \"New authentication request - OTP is ${OTP}\", \n\t\"replyToAddress\": \"noreply@pingidentity.com\", \n\t\"type\": \"authentication\"\n\t\n}"
+						},
+						"url": {
+							"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/emailconfigurations/",
+							"protocol": "https",
+							"host": [
+								"sdk",
+								"pingid",
+								"com"
+							],
+							"path": [
+								"pingid",
+								"v1",
+								"accounts",
+								"{{sdkAccountId}}",
+								"applications",
+								"{{sdkAppId}}",
+								"emailconfigurations",
+								""
+							]
+						},
+						"description": "Creates an emailTemplate for \"auth_without_payload\" that is used by the PingFed SDK Adapter"
+					},
+					"response": []
+				}
+			],
+			"description": "Sample calls for managing emailTemplate objects\n\nemailTemplates can be fully customized and contain HTML. Custom values can be passed into the templates as part of the Authentication calls that use the templates.",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "dce45dfc-2227-4313-8035-0327ab906678",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "06eeccc2-f068-490b-a43a-e5f7214dce73",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Device Enrollment",
+			"item": [
+				{
+					"name": "Automatic Pairing",
+					"item": [
+						{
+							"name": "Enroll Voice Device (Automatic)",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "d233a3a0-96e2-4332-85cc-29459758b524",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "PINGID-HMAC={{authToken}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"automaticPairing\": true,\n  \"deviceNickname\": \"My Mobile Phone\",\n  \"phoneNumber\": \"+17072972287\",\n  \"message\": \"This is your code\",\n  \"vendor\": \"Twilio\",\n  \"voiceParameters\": {},\n  \"voice\": \"Alice\"\n}"
+								},
+								"url": {
+									"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/users/{{userId}}/voicepairings",
+									"protocol": "https",
+									"host": [
+										"sdk",
+										"pingid",
+										"com"
+									],
+									"path": [
+										"pingid",
+										"v1",
+										"accounts",
+										"{{sdkAccountId}}",
+										"applications",
+										"{{sdkAppId}}",
+										"users",
+										"{{userId}}",
+										"voicepairings"
+									]
+								},
+								"description": "Enrolls a Voice device for the User - automaticPairing: true"
+							},
+							"response": []
+						},
+						{
+							"name": "Enroll Email Device (Automatic) - emailTemplate required",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "d233a3a0-96e2-4332-85cc-29459758b524",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "PINGID-HMAC={{authToken}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\"automaticPairing\": true,\n\"deviceNickname\": \"My Email Address\",\n\"locale\": \"en\",\n\"type\": \"auth_without_payload\",\n\"recipient\": \"kpuser9999@mailinator.com\",\n\"emailParameters\": \"\"\n}"
+								},
+								"url": {
+									"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/users/{{userId}}/emailpairings",
+									"protocol": "https",
+									"host": [
+										"sdk",
+										"pingid",
+										"com"
+									],
+									"path": [
+										"pingid",
+										"v1",
+										"accounts",
+										"{{sdkAccountId}}",
+										"applications",
+										"{{sdkAppId}}",
+										"users",
+										"{{userId}}",
+										"emailpairings"
+									]
+								},
+								"description": "Enrolls a Voice device for the User - automaticPairing: true"
+							},
+							"response": []
+						},
+						{
+							"name": "Enroll SMS Device - (Automatic)",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "d233a3a0-96e2-4332-85cc-29459758b524",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "PINGID-HMAC={{authToken}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"automaticPairing\": true,\n  \"phoneNumber\": \"+17072972287\",\n  \"message\": \"Use this passcode to add your SMS device to Kaiser Permanente - \",\n  \"sender\": \"\",\n  \"deviceNickname\": \"My Text Device\"\n}"
+								},
+								"url": {
+									"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/users/{{userId}}/smspairings",
+									"protocol": "https",
+									"host": [
+										"sdk",
+										"pingid",
+										"com"
+									],
+									"path": [
+										"pingid",
+										"v1",
+										"accounts",
+										"{{sdkAccountId}}",
+										"applications",
+										"{{sdkAppId}}",
+										"users",
+										"{{userId}}",
+										"smspairings"
+									]
+								},
+								"description": "Enrolls a SMS device for the User - automaticPairing: false"
+							},
+							"response": []
+						}
+					],
+					"description": "Show calls that handle the device enrollment without needing a User intervention (i.e. enter an OTP)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "6e02f78f-6d59-4149-bef5-54358d350731",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "72137eed-3dbe-4011-a068-1de7485ec400",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Manual Pairing - SMS",
+					"item": [
+						{
+							"name": "Enroll SMS Device - (Verified)",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "d233a3a0-96e2-4332-85cc-29459758b524",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "78bdc920-8648-4a05-b4f3-5fe959a09363",
+										"exec": [
+											"var response = pm.response.json();",
+											"",
+											"pm.variables.set(\"id\", response.id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "PINGID-HMAC={{authToken}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"automaticPairing\": false,\n  \"phoneNumber\": \"+17072972287\",\n  \"message\": \"Use this passcode to add your SMS device to CPriceLab - \",\n  \"sender\": \"\",\n  \"deviceNickname\": \"My Text Device\"\n}"
+								},
+								"url": {
+									"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/users/{{userId}}/smspairings",
+									"protocol": "https",
+									"host": [
+										"sdk",
+										"pingid",
+										"com"
+									],
+									"path": [
+										"pingid",
+										"v1",
+										"accounts",
+										"{{sdkAccountId}}",
+										"applications",
+										"{{sdkAppId}}",
+										"users",
+										"{{userId}}",
+										"smspairings"
+									]
+								},
+								"description": "Enrolls a SMS device for the User - automaticPairing: false"
+							},
+							"response": []
+						},
+						{
+							"name": "Check Pairing Status",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "d233a3a0-96e2-4332-85cc-29459758b524",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "78bdc920-8648-4a05-b4f3-5fe959a09363",
+										"exec": [
+											"var response = pm.response.json();",
+											"",
+											"pm.variables.set(\"id\", response.id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "PINGID-HMAC={{authToken}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"automaticPairing\": false,\n  \"phoneNumber\": \"+17072972287\",\n  \"message\": \"Use this passcode to add your SMS device to CPriceLab - \",\n  \"sender\": \"\",\n  \"deviceNickname\": \"My Text Device\"\n}"
+								},
+								"url": {
+									"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/users/{{userId}}/smspairings",
+									"protocol": "https",
+									"host": [
+										"sdk",
+										"pingid",
+										"com"
+									],
+									"path": [
+										"pingid",
+										"v1",
+										"accounts",
+										"{{sdkAccountId}}",
+										"applications",
+										"{{sdkAppId}}",
+										"users",
+										"{{userId}}",
+										"smspairings"
+									]
+								},
+								"description": "Enrolls a SMS device for the User - automaticPairing: false"
+							},
+							"response": []
+						},
+						{
+							"name": "Enroll SMS Device - Finalise",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "d233a3a0-96e2-4332-85cc-29459758b524",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "PINGID-HMAC={{authToken}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"otp\": \"513368\"\n}"
+								},
+								"url": {
+									"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/users/{{userId}}/smspairings/{{id}}/otp",
+									"protocol": "https",
+									"host": [
+										"sdk",
+										"pingid",
+										"com"
+									],
+									"path": [
+										"pingid",
+										"v1",
+										"accounts",
+										"{{sdkAccountId}}",
+										"applications",
+										"{{sdkAppId}}",
+										"users",
+										"{{userId}}",
+										"smspairings",
+										"{{id}}",
+										"otp"
+									]
+								},
+								"description": "Enrolls a SMS device for the User - automaticPairing: false"
+							},
+							"response": []
+						}
+					],
+					"description": "Demonstrates sending a Pairing OTP to an SMS device, and the subsequent call needed to return and validate before adding the device to the User.\n\nOther OTP methods (Email \\ Voice) follow a similar pattern",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "d5c8a7e9-c5be-44bd-93a8-d58ad8d9333f",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "1ade2934-0bb0-42e1-882f-062c26b5a777",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Get User Devices",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "74040e49-5236-4d07-8332-3b8854959a96",
+								"exec": [
+									"var removeIllegalCharacters = function(input) {",
+									"    return input",
+									"        .replace(/=/g, '')",
+									"        .replace(/\\+/g, '-')",
+									"        .replace(/\\//g, '_');",
+									"};",
+									"",
+									"// Base64 Encoding function",
+									"var base64object = function(input) {",
+									"    var inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));",
+									"    var base64 = CryptoJS.enc.Base64.stringify(inputWords);",
+									"    var output = removeIllegalCharacters(base64);",
+									"    return output;",
+									"};",
+									"",
+									"//Get Environment variables",
+									"",
+									"// Get the AccountID out of the Request URL",
+									"var sdkAccountId = pm.request.url.path[3];",
+									"var sdkApiToken = pm.environment.get(\"sdkApiToken\");",
+									"var sdkApiKey = pm.environment.get(\"sdkApiKey\");",
+									"",
+									"// Create Canonical String",
+									"",
+									"//Parse the Request",
+									"var method = pm.request.method;",
+									"var payload = pm.request.body.raw;",
+									"var path = pm.request.url.path.toString().replace(/,/g, \"/\");",
+									"",
+									"//Grab any parameters",
+									"var parameters = pm.request.url.query.toString();",
+									"",
+									"// console.log(pm.request.url.query.toString());",
+									"",
+									"// Hash and Hex Encode Request Payload",
+									"var payloadHash = CryptoJS.SHA256(payload);",
+									"var payloadHex = CryptoJS.enc.Hex.stringify(payloadHash);",
+									"",
+									"// Build the proper canonicalString",
+									"if (parameters === \"\") {",
+									"    var canonicalString = method + \":\" + \"sdk.pingid.com\" + \":\" + \"/\" + path + \":\" + payloadHex + \":\";",
+									"}",
+									"else",
+									"{",
+									"    var canonicalString = method + \":\" + \"sdk.pingid.com\" + \":\" + \"/\" + path + \":\" + parameters + \":\" + payloadHex + \":\";",
+									"}",
+									"",
+									"// console.log(canonicalString);",
+									"",
+									"// Hash the Canonical String",
+									"var stringHash = CryptoJS.SHA256(canonicalString);",
+									"var stringHex = CryptoJS.enc.Hex.stringify(stringHash);",
+									"",
+									"// console.log(stringHex);",
+									"",
+									"// Construct JWT Header",
+									"var jwtHeader = { 'alg': 'HS256', 'typ': 'JWT', 'account_id': sdkAccountId, 'token': sdkApiToken, 'jwt_version': 'v4' };",
+									"",
+									"// console.log(jwtHeader);",
+									"",
+									"// Construct Payload",
+									"var jwtPayload = { 'data': stringHex };",
+									"",
+									"// console.log(jwtPayload);",
+									"",
+									"// Create Signed JWT",
+									"var unsignedToken = base64object(jwtHeader) + \".\" + base64object(jwtPayload);",
+									"",
+									"var sdkApiKeyBytes = CryptoJS.enc.Base64.parse(sdkApiKey);",
+									"var signatureHash = CryptoJS.HmacSHA256(unsignedToken, sdkApiKeyBytes);",
+									"var signature = CryptoJS.enc.Base64.stringify(signatureHash);",
+									"var signature2 = removeIllegalCharacters(signature);",
+									"",
+									"var token = unsignedToken + '.' + signature2;",
+									"",
+									"// console.log(token);",
+									"",
+									"// Set the token in the environment to be included in the Authorization: PINGID-HMAC={{authToken}} header for the request",
+									"pm.environment.set(\"authToken\", token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "PINGID-HMAC={{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/users/{{userId}}/devices",
+							"protocol": "https",
+							"host": [
+								"sdk",
+								"pingid",
+								"com"
+							],
+							"path": [
+								"pingid",
+								"v1",
+								"accounts",
+								"{{sdkAccountId}}",
+								"applications",
+								"{{sdkAppId}}",
+								"users",
+								"{{userId}}",
+								"devices"
+							]
+						},
+						"description": "Direct call to retrieve just the User Devices"
+					},
+					"response": []
+				},
+				{
+					"name": "Make Device Primary",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "74040e49-5236-4d07-8332-3b8854959a96",
+								"exec": [
+									"var removeIllegalCharacters = function(input) {",
+									"    return input",
+									"        .replace(/=/g, '')",
+									"        .replace(/\\+/g, '-')",
+									"        .replace(/\\//g, '_');",
+									"};",
+									"",
+									"// Base64 Encoding function",
+									"var base64object = function(input) {",
+									"    var inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));",
+									"    var base64 = CryptoJS.enc.Base64.stringify(inputWords);",
+									"    var output = removeIllegalCharacters(base64);",
+									"    return output;",
+									"};",
+									"",
+									"//Get Environment variables",
+									"",
+									"// Get the AccountID out of the Request URL",
+									"var sdkAccountId = pm.request.url.path[3];",
+									"var sdkApiToken = pm.environment.get(\"sdkApiToken\");",
+									"var sdkApiKey = pm.environment.get(\"sdkApiKey\");",
+									"",
+									"// Create Canonical String",
+									"",
+									"//Parse the Request",
+									"var method = pm.request.method;",
+									"var payload = pm.request.body.raw;",
+									"var path = pm.request.url.path.toString().replace(/,/g, \"/\");",
+									"",
+									"//Grab any parameters",
+									"var parameters = pm.request.url.query.toString();",
+									"",
+									"// console.log(pm.request.url.query.toString());",
+									"",
+									"// Hash and Hex Encode Request Payload",
+									"var payloadHash = CryptoJS.SHA256(payload);",
+									"var payloadHex = CryptoJS.enc.Hex.stringify(payloadHash);",
+									"",
+									"// Build the proper canonicalString",
+									"if (parameters === \"\") {",
+									"    var canonicalString = method + \":\" + \"sdk.pingid.com\" + \":\" + \"/\" + path + \":\" + payloadHex + \":\";",
+									"}",
+									"else",
+									"{",
+									"    var canonicalString = method + \":\" + \"sdk.pingid.com\" + \":\" + \"/\" + path + \":\" + parameters + \":\" + payloadHex + \":\";",
+									"}",
+									"",
+									"// console.log(canonicalString);",
+									"",
+									"// Hash the Canonical String",
+									"var stringHash = CryptoJS.SHA256(canonicalString);",
+									"var stringHex = CryptoJS.enc.Hex.stringify(stringHash);",
+									"",
+									"// console.log(stringHex);",
+									"",
+									"// Construct JWT Header",
+									"var jwtHeader = { 'alg': 'HS256', 'typ': 'JWT', 'account_id': sdkAccountId, 'token': sdkApiToken, 'jwt_version': 'v4' };",
+									"",
+									"// console.log(jwtHeader);",
+									"",
+									"// Construct Payload",
+									"var jwtPayload = { 'data': stringHex };",
+									"",
+									"// console.log(jwtPayload);",
+									"",
+									"// Create Signed JWT",
+									"var unsignedToken = base64object(jwtHeader) + \".\" + base64object(jwtPayload);",
+									"",
+									"var sdkApiKeyBytes = CryptoJS.enc.Base64.parse(sdkApiKey);",
+									"var signatureHash = CryptoJS.HmacSHA256(unsignedToken, sdkApiKeyBytes);",
+									"var signature = CryptoJS.enc.Base64.stringify(signatureHash);",
+									"var signature2 = removeIllegalCharacters(signature);",
+									"",
+									"var token = unsignedToken + '.' + signature2;",
+									"",
+									"// console.log(token);",
+									"",
+									"// Set the token in the environment to be included in the Authorization: PINGID-HMAC={{authToken}} header for the request",
+									"pm.environment.set(\"authToken\", token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "PINGID-HMAC={{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \n\t\"operations\": [\n\t\t{\n\t\t\t\"op\": \"add\",\n\t\t\t\"path\": \"/deviceRole\",\n\t\t\t\"value\": \"primary\"\n\t\t}\n\t]\n\t\n}"
+						},
+						"url": {
+							"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/users/{{userId}}/devices/{{deviceId}}",
+							"protocol": "https",
+							"host": [
+								"sdk",
+								"pingid",
+								"com"
+							],
+							"path": [
+								"pingid",
+								"v1",
+								"accounts",
+								"{{sdkAccountId}}",
+								"users",
+								"{{userId}}",
+								"devices",
+								"{{deviceId}}"
+							]
+						},
+						"description": "Set an Enrolled Device to \"deviceRole: primary\""
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Device",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "74040e49-5236-4d07-8332-3b8854959a96",
+								"exec": [
+									"var removeIllegalCharacters = function(input) {",
+									"    return input",
+									"        .replace(/=/g, '')",
+									"        .replace(/\\+/g, '-')",
+									"        .replace(/\\//g, '_');",
+									"};",
+									"",
+									"// Base64 Encoding function",
+									"var base64object = function(input) {",
+									"    var inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));",
+									"    var base64 = CryptoJS.enc.Base64.stringify(inputWords);",
+									"    var output = removeIllegalCharacters(base64);",
+									"    return output;",
+									"};",
+									"",
+									"//Get Environment variables",
+									"",
+									"// Get the AccountID out of the Request URL",
+									"var sdkAccountId = pm.request.url.path[3];",
+									"var sdkApiToken = pm.environment.get(\"sdkApiToken\");",
+									"var sdkApiKey = pm.environment.get(\"sdkApiKey\");",
+									"",
+									"// Create Canonical String",
+									"",
+									"//Parse the Request",
+									"var method = pm.request.method;",
+									"var payload = pm.request.body.raw;",
+									"var path = pm.request.url.path.toString().replace(/,/g, \"/\");",
+									"",
+									"//Grab any parameters",
+									"var parameters = pm.request.url.query.toString();",
+									"",
+									"// console.log(pm.request.url.query.toString());",
+									"",
+									"// Hash and Hex Encode Request Payload",
+									"var payloadHash = CryptoJS.SHA256(payload);",
+									"var payloadHex = CryptoJS.enc.Hex.stringify(payloadHash);",
+									"",
+									"// Build the proper canonicalString",
+									"if (parameters === \"\") {",
+									"    var canonicalString = method + \":\" + \"sdk.pingid.com\" + \":\" + \"/\" + path + \":\" + payloadHex + \":\";",
+									"}",
+									"else",
+									"{",
+									"    var canonicalString = method + \":\" + \"sdk.pingid.com\" + \":\" + \"/\" + path + \":\" + parameters + \":\" + payloadHex + \":\";",
+									"}",
+									"",
+									"// console.log(canonicalString);",
+									"",
+									"// Hash the Canonical String",
+									"var stringHash = CryptoJS.SHA256(canonicalString);",
+									"var stringHex = CryptoJS.enc.Hex.stringify(stringHash);",
+									"",
+									"// console.log(stringHex);",
+									"",
+									"// Construct JWT Header",
+									"var jwtHeader = { 'alg': 'HS256', 'typ': 'JWT', 'account_id': sdkAccountId, 'token': sdkApiToken, 'jwt_version': 'v4' };",
+									"",
+									"// console.log(jwtHeader);",
+									"",
+									"// Construct Payload",
+									"var jwtPayload = { 'data': stringHex };",
+									"",
+									"// console.log(jwtPayload);",
+									"",
+									"// Create Signed JWT",
+									"var unsignedToken = base64object(jwtHeader) + \".\" + base64object(jwtPayload);",
+									"",
+									"var sdkApiKeyBytes = CryptoJS.enc.Base64.parse(sdkApiKey);",
+									"var signatureHash = CryptoJS.HmacSHA256(unsignedToken, sdkApiKeyBytes);",
+									"var signature = CryptoJS.enc.Base64.stringify(signatureHash);",
+									"var signature2 = removeIllegalCharacters(signature);",
+									"",
+									"var token = unsignedToken + '.' + signature2;",
+									"",
+									"// console.log(token);",
+									"",
+									"// Set the token in the environment to be included in the Authorization: PINGID-HMAC={{authToken}} header for the request",
+									"pm.environment.set(\"authToken\", token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "PINGID-HMAC={{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \n\t\"fromAddress\": \"no-reply@cpricedomain.net\", \n\t\"emailSubject\": \"CPriceLab MFA Request\", \n\t\"emailBody\": \"This is the body of my template\", \n\t\"replyToAddress\": \"no-reply@cpricedomain.net\", \n\t\"type\": \"authentication\"\n\t\n}"
+						},
+						"url": {
+							"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/users/{{userId}}/devices/{{deviceId}}",
+							"protocol": "https",
+							"host": [
+								"sdk",
+								"pingid",
+								"com"
+							],
+							"path": [
+								"pingid",
+								"v1",
+								"accounts",
+								"{{sdkAccountId}}",
+								"users",
+								"{{userId}}",
+								"devices",
+								"{{deviceId}}"
+							]
+						},
+						"description": "Remove device from User Account"
+					},
+					"response": []
+				}
+			],
+			"description": "Sample calls to enroll (Pair) a device for the User in the Application.\n\nThese show both Automatic and Manual pairing flows for OTP-based (SMS \\ Email \\ Voice). \n\nPush Notification enrollment is handled by the Mobile SDK within the mobile app itself.",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "c49ea061-1db0-499d-b303-0b0f1a29cf7f",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "83778f37-c9c7-477f-b74a-33d72e3c5c2d",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Authentication Requests",
+			"item": [
+				{
+					"name": "Send AuthN Request to Primary",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "eca8e484-0a62-451f-99fe-ae368085b620",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "1ae04eac-f66a-4aed-808e-1fe22a4f76f5",
+								"exec": [
+									"var response = pm.response.json();",
+									"",
+									"pm.environment.set(\"id\", response.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "PINGID-HMAC={{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"authenticationType\": \"AUTHENTICATE\",\n\t\"emailConfigurationType\": \"authentication\",\n\t\"smsMessage\": \"Please enter this code to authenticate to CPriceLab - \",\n\t\"pushMessageTitle\": \"Request from Customer Service\",\n\t\"pushMessageBody\": \"Please verify that you are Chris Price\",\n\t\"voiceMessage\": \"Your CPriceLab authentication code is: ${OTP}\"\n}"
+						},
+						"url": {
+							"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/users/{{userId}}/authentications/",
+							"protocol": "https",
+							"host": [
+								"sdk",
+								"pingid",
+								"com"
+							],
+							"path": [
+								"pingid",
+								"v1",
+								"accounts",
+								"{{sdkAccountId}}",
+								"applications",
+								"{{sdkAppId}}",
+								"users",
+								"{{userId}}",
+								"authentications",
+								""
+							]
+						},
+						"description": "This call sends an Authenticate request to whatever is the Primary device for the User, without needing to Get Devices in order to locate the deviceId.\n\nAll MFA methods are referenced in the body, with the SDK choosing the correct one."
+					},
+					"response": []
+				},
+				{
+					"name": "Send OTP to Trusted Voice device",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "eca8e484-0a62-451f-99fe-ae368085b620",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "PINGID-HMAC={{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \n  \"deviceId\": \"<enrolled Voice device>\",\n  \"voiceMessage\": \"Your CPriceLab authentication code is: ${OTP}\",\n  \"voiceVendor\": \"Twilio\",\n  \"locale\": \"en_US\",\n  \"voiceParameters\": {},\n  \"voice\": \"Alice\" \n}"
+						},
+						"url": {
+							"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/users/{{userId}}/authentications",
+							"protocol": "https",
+							"host": [
+								"sdk",
+								"pingid",
+								"com"
+							],
+							"path": [
+								"pingid",
+								"v1",
+								"accounts",
+								"{{sdkAccountId}}",
+								"applications",
+								"{{sdkAppId}}",
+								"users",
+								"{{userId}}",
+								"authentications"
+							]
+						},
+						"description": "Sends a Voice Authentication to the only Trusted Voice Device.\n\n\"deviceId\" can be added to the payload to send to the specific device"
+					},
+					"response": []
+				},
+				{
+					"name": "Send OTP to Trusted Email device",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "eca8e484-0a62-451f-99fe-ae368085b620",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "PINGID-HMAC={{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"locale\": \"en\",\n  \"emailConfigurationType\": \"authentication\",\n  \"emailParameters\": {\"transfer\": \"1000$\", \"product\": \"book\"}\n\n}"
+						},
+						"url": {
+							"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/users/{{userId}}/authentications",
+							"protocol": "https",
+							"host": [
+								"sdk",
+								"pingid",
+								"com"
+							],
+							"path": [
+								"pingid",
+								"v1",
+								"accounts",
+								"{{sdkAccountId}}",
+								"applications",
+								"{{sdkAppId}}",
+								"users",
+								"{{userId}}",
+								"authentications"
+							]
+						},
+						"description": "Sends a email to the Trusted email device - emailTemplate is sent according to \"type\"\n\n\"deviceId\" can be added to the payload to send to the specific device"
+					},
+					"response": []
+				},
+				{
+					"name": "Send Custom Push to Trusted device",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "eca8e484-0a62-451f-99fe-ae368085b620",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "PINGID-HMAC={{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \n\t\"pushMessageTitle\": \"Request from Customer Service\",\n\t\"pushMessageBody\": \"Please verify that you are Chris Price\"\n}"
+						},
+						"url": {
+							"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/users/{{userId}}/authentications",
+							"protocol": "https",
+							"host": [
+								"sdk",
+								"pingid",
+								"com"
+							],
+							"path": [
+								"pingid",
+								"v1",
+								"accounts",
+								"{{sdkAccountId}}",
+								"applications",
+								"{{sdkAppId}}",
+								"users",
+								"{{userId}}",
+								"authentications"
+							]
+						},
+						"description": "Sends a Custom Push Authentication to the only Trusted Device\n\n\"deviceId\" can be added to the payload to send to the specific device"
+					},
+					"response": []
+				},
+				{
+					"name": "Check Authentication Status",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "eca8e484-0a62-451f-99fe-ae368085b620",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "PINGID-HMAC={{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://sdk.pingid.com/pingid/v1/accounts/c6d8cf58-6d78-49da-938a-4fb44f746397/applications/5cedc1b0-0fdf-434e-9b2b-bbeb9832adeb/users/kpuser9999/authentications/webs_9c4ab040-5f3c-453e-9794-b0b674f59640",
+							"protocol": "https",
+							"host": [
+								"sdk",
+								"pingid",
+								"com"
+							],
+							"path": [
+								"pingid",
+								"v1",
+								"accounts",
+								"c6d8cf58-6d78-49da-938a-4fb44f746397",
+								"applications",
+								"5cedc1b0-0fdf-434e-9b2b-bbeb9832adeb",
+								"users",
+								"kpuser9999",
+								"authentications",
+								"webs_9c4ab040-5f3c-453e-9794-b0b674f59640"
+							]
+						},
+						"description": "Checks the status of an Authentication Request"
+					},
+					"response": []
+				},
+				{
+					"name": "Send Authentication OTP response",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "eca8e484-0a62-451f-99fe-ae368085b620",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "PINGID-HMAC={{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"otp\": \"210007\"}"
+						},
+						"url": {
+							"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/users/{{userId}}/authentications/{{id}}/otp",
+							"protocol": "https",
+							"host": [
+								"sdk",
+								"pingid",
+								"com"
+							],
+							"path": [
+								"pingid",
+								"v1",
+								"accounts",
+								"{{sdkAccountId}}",
+								"applications",
+								"{{sdkAppId}}",
+								"users",
+								"{{userId}}",
+								"authentications",
+								"{{id}}",
+								"otp"
+							]
+						},
+						"description": "Reqply with the OTP to an AuthN request"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "2705261d-f4a8-4562-acba-abef266970eb",
+				"type": "text/javascript",
+				"exec": [
+					"// This script can be used to create the proper Authorization token needed for any call made to the PingID SDK service.",
+					"",
+					"// The tenant secrets - sdkApiKey && sdkApiToken - should be defined in the Collection Environment.",
+					"",
+					"// PM Variables can be used in the URL - this script will replace the following with corresponding values from the Environment:",
+					"//    {{sdkAccountId}}",
+					"//    {{sdkAppId}}",
+					"//    {{userId}}",
+					"//    {{deviceId}}",
+					"//    {{id}}",
+					"//",
+					"// https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/users/{{userId}}",
+					"// https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/users/{{userId}}/devices/{{deviceId}}",
+					"// https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/users/{{userId}}/smspairings/{{id}}",
+					"//",
+					"",
+					"var removeIllegalCharacters = function(input) {",
+					"    return input",
+					"        .replace(/=/g, '')",
+					"        .replace(/\\+/g, '-')",
+					"        .replace(/\\//g, '_');",
+					"};",
+					"",
+					"// Base64 Encoding function",
+					"var base64object = function(input) {",
+					"    var inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));",
+					"    var base64 = CryptoJS.enc.Base64.stringify(inputWords);",
+					"    var output = removeIllegalCharacters(base64);",
+					"    return output;",
+					"};",
+					"",
+					"// Get the Tenant Secrets from the environment (the values are in the pingidsdk.properties file)",
+					"var sdkApiToken = pm.environment.get(\"sdkApiToken\");",
+					"var sdkApiKey = pm.environment.get(\"sdkApiKey\");",
+					"",
+					"//Get the AccountId",
+					"var sdkAccountId = pm.environment.get(\"sdkAccountId\");",
+					"",
+					"//Parse the Request",
+					"var method = pm.request.method;",
+					"var payload = pm.request.body.raw;",
+					"var path = pm.request.url.path.toString().replace(/,/g, \"/\");",
+					"",
+					"// Due to the way PM handles the request object, the URL Path needs to be rebuilt with the value substitution",
+					"var path = path.replace(\"{{sdkAccountId}}\", sdkAccountId);",
+					"var path = path.replace(\"{{sdkAppId}}\", pm.environment.get(\"sdkAppId\"));",
+					"var path = path.replace(\"{{userId}}\", pm.environment.get(\"userId\"));",
+					"var path = path.replace(\"{{deviceId}}\", pm.environment.get(\"deviceId\"));",
+					"var path = path.replace(\"{{id}}\", pm.environment.get(\"id\"));",
+					"",
+					"//Grab any parameters",
+					"var parameters = pm.request.url.query.toString();",
+					"",
+					"// Hash and Hex Encode Request Payload",
+					"var payloadHash = CryptoJS.SHA256(payload);",
+					"var payloadHex = CryptoJS.enc.Hex.stringify(payloadHash);",
+					"",
+					"// Build the proper canonicalString",
+					"if (parameters === \"\") {",
+					"    var canonicalString = method + \":\" + \"sdk.pingid.com\" + \":\" + \"/\" + path + \":\" + payloadHex + \":\";",
+					"}",
+					"else",
+					"{",
+					"    var canonicalString = method + \":\" + \"sdk.pingid.com\" + \":\" + \"/\" + path + \":\" + parameters + \":\" + payloadHex + \":\";",
+					"}",
+					"",
+					"// Hash the Canonical String",
+					"var stringHash = CryptoJS.SHA256(canonicalString);",
+					"var stringHex = CryptoJS.enc.Hex.stringify(stringHash);",
+					"",
+					"// Construct JWT Header",
+					"var jwtHeader = { 'alg': 'HS256', 'typ': 'JWT', 'account_id': sdkAccountId, 'token': sdkApiToken, 'jwt_version': 'v4' };",
+					"",
+					"// Construct JWT Payload",
+					"var jwtPayload = { 'data': stringHex };",
+					"",
+					"// Create JWT",
+					"var unsignedToken = base64object(jwtHeader) + \".\" + base64object(jwtPayload);",
+					"",
+					"// Sign the JWT",
+					"var sdkApiKeyBytes = CryptoJS.enc.Base64.parse(sdkApiKey);",
+					"var signatureHash = CryptoJS.HmacSHA256(unsignedToken, sdkApiKeyBytes);",
+					"var signature = CryptoJS.enc.Base64.stringify(signatureHash);",
+					"var signature2 = removeIllegalCharacters(signature);",
+					"",
+					"var token = unsignedToken + '.' + signature2;",
+					"",
+					"// Set the token in the environment to be included in an Authorization: PINGID-HMAC={{authToken}} header for the request",
+					"pm.environment.set(\"authToken\", token);"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "b0f839f8-9a0e-4eef-8eb1-6293e22b4c7b",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
