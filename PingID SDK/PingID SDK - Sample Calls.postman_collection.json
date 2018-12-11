@@ -49,7 +49,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{ \n\t\"username\": \"sdkuser1\",\n\t\"firstName\": \"SDK\",\n\t\"lastName\": \"User1\"\n}"
+							"raw": "{ \n\t\"username\": \"<<User Identifier>>\",\n\t\"firstName\": \"<<First Name>>\",\n\t\"lastName\": \"<<Last Name>>\"\n}"
 						},
 						"url": {
 							"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/users/",
@@ -367,7 +367,7 @@
 					"response": []
 				},
 				{
-					"name": "SDK - Create Email Template (Custom)",
+					"name": "SDK - Create Email Template (Custom - Pairing Example)",
 					"event": [
 						{
 							"listen": "prerequest",
@@ -394,7 +394,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{ \n\t\"fromAddress\": \"noreply@pingidentity.com\", \n\t\"emailSubject\": \"CPriceLab - Grade Verify Request\", \n\t\"emailBody\": \"A request to verify your Grade record has been made. Please use this code to authorize the request - ${OTP}\", \n\t\"replyToAddress\": \"noreply@pingidentity.com\", \n\t\"type\": \"powerschool_grade_verify\"\n\t\n}"
+							"raw": "{ \n\t\"fromAddress\": \"noreply@pingidentity.com\", \n\t\"emailSubject\": \"<<Email Subject>>\", \n\t\"emailBody\": \"A request to Pair a device has been made.<br><br>Please use this code to authorize the enrollment - <b>${OTP}</b>\", \n\t\"replyToAddress\": \"noreply@pingidentity.com\", \n\t\"type\": \"pairing_request\"\n}"
 						},
 						"url": {
 							"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/emailconfigurations/",
@@ -447,7 +447,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{ \n\t\"fromAddress\": \"noreply@pingidentity.com\", \n\t\"emailSubject\": \"CPriceLab - Authentication Request\", \n\t\"emailBody\": \"New authentication request - OTP is ${OTP}\", \n\t\"replyToAddress\": \"noreply@pingidentity.com\", \n\t\"type\": \"auth_without_payload\"\n\t\n}"
+							"raw": "{ \n\t\"fromAddress\": \"noreply@pingidentity.com\", \n\t\"emailSubject\": \"<<Email Subject>>\", \n\t\"emailBody\": \"New authentication request - OTP is ${OTP}\", \n\t\"replyToAddress\": \"noreply@pingidentity.com\", \n\t\"type\": \"auth_without_payload\"\n\t\n}"
 						},
 						"url": {
 							"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/emailconfigurations/",
@@ -504,7 +504,7 @@
 					"name": "Automatic Pairing",
 					"item": [
 						{
-							"name": "Enroll Voice Device (Automatic)",
+							"name": "Enroll SMS Device - (Automatic)",
 							"event": [
 								{
 									"listen": "prerequest",
@@ -531,10 +531,10 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"automaticPairing\": true,\n  \"deviceNickname\": \"My Mobile Phone\",\n  \"phoneNumber\": \"+17072972287\",\n  \"message\": \"This is your code\",\n  \"vendor\": \"Twilio\",\n  \"voiceParameters\": {},\n  \"voice\": \"Alice\"\n}"
+									"raw": "{\n  \"automaticPairing\": true,\n  \"phoneNumber\": \"<<User SMS Number>>\",\n  \"message\": \"Use this passcode to pair your SMS device - \",\n  \"sender\": \"\",\n  \"deviceNickname\": \"My Text Device\"\n}"
 								},
 								"url": {
-									"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/users/{{userId}}/voicepairings",
+									"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/users/{{userId}}/smspairings",
 									"protocol": "https",
 									"host": [
 										"sdk",
@@ -550,10 +550,10 @@
 										"{{sdkAppId}}",
 										"users",
 										"{{userId}}",
-										"voicepairings"
+										"smspairings"
 									]
 								},
-								"description": "Enrolls a Voice device for the User - automaticPairing: true"
+								"description": "Enrolls a SMS device for the User - automaticPairing: false"
 							},
 							"response": []
 						},
@@ -585,7 +585,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\"automaticPairing\": true,\n\"deviceNickname\": \"My Email Address\",\n\"locale\": \"en\",\n\"type\": \"auth_without_payload\",\n\"recipient\": \"kpuser9999@mailinator.com\",\n\"emailParameters\": \"\"\n}"
+									"raw": "{\n\t\"automaticPairing\": true,\n\t\"deviceNickname\": \"My Email Address\",\n\t\"locale\": \"en\",\n\t\"type\": \"<<Email Template Type>>\",\n\t\"recipient\": \"<<User Email Address>>\",\n\t\"emailParameters\": \"<<Optional Parameters - remove if not used>>\"\n}"
 								},
 								"url": {
 									"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/users/{{userId}}/emailpairings",
@@ -612,7 +612,7 @@
 							"response": []
 						},
 						{
-							"name": "Enroll SMS Device - (Automatic)",
+							"name": "Enroll Voice Device (Automatic)",
 							"event": [
 								{
 									"listen": "prerequest",
@@ -639,10 +639,10 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"automaticPairing\": true,\n  \"phoneNumber\": \"+17072972287\",\n  \"message\": \"Use this passcode to add your SMS device to Kaiser Permanente - \",\n  \"sender\": \"\",\n  \"deviceNickname\": \"My Text Device\"\n}"
+									"raw": "{\n  \"automaticPairing\": true,\n  \"deviceNickname\": \"My Mobile Phone\",\n  \"phoneNumber\": \"<<Your Voice Number>>\",\n  \"message\": \"This is your code\",\n  \"vendor\": \"Twilio\",\n  \"voiceParameters\": {},\n  \"voice\": \"Alice\"\n}"
 								},
 								"url": {
-									"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/users/{{userId}}/smspairings",
+									"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/users/{{userId}}/voicepairings",
 									"protocol": "https",
 									"host": [
 										"sdk",
@@ -658,10 +658,10 @@
 										"{{sdkAppId}}",
 										"users",
 										"{{userId}}",
-										"smspairings"
+										"voicepairings"
 									]
 								},
-								"description": "Enrolls a SMS device for the User - automaticPairing: false"
+								"description": "Enrolls a Voice device for the User - automaticPairing: true"
 							},
 							"response": []
 						}
@@ -714,7 +714,7 @@
 										"exec": [
 											"var response = pm.response.json();",
 											"",
-											"pm.variables.set(\"id\", response.id);"
+											"pm.environment.set(\"id\", response.id);"
 										],
 										"type": "text/javascript"
 									}
@@ -734,7 +734,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"automaticPairing\": false,\n  \"phoneNumber\": \"+17072972287\",\n  \"message\": \"Use this passcode to add your SMS device to CPriceLab - \",\n  \"sender\": \"\",\n  \"deviceNickname\": \"My Text Device\"\n}"
+									"raw": "{\n  \"automaticPairing\": false,\n  \"phoneNumber\": \"<<User SMS Number>>\",\n  \"message\": \"Use this passcode to add your SMS device - \",\n  \"sender\": \"\",\n  \"deviceNickname\": \"My Text Device\"\n}"
 								},
 								"url": {
 									"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/users/{{userId}}/smspairings",
@@ -778,16 +778,17 @@
 									"script": {
 										"id": "78bdc920-8648-4a05-b4f3-5fe959a09363",
 										"exec": [
-											"var response = pm.response.json();",
-											"",
-											"pm.variables.set(\"id\", response.id);"
+											""
 										],
 										"type": "text/javascript"
 									}
 								}
 							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
 							"request": {
-								"method": "POST",
+								"method": "GET",
 								"header": [
 									{
 										"key": "Authorization",
@@ -800,7 +801,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"automaticPairing\": false,\n  \"phoneNumber\": \"+17072972287\",\n  \"message\": \"Use this passcode to add your SMS device to CPriceLab - \",\n  \"sender\": \"\",\n  \"deviceNickname\": \"My Text Device\"\n}"
+									"raw": ""
 								},
 								"url": {
 									"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/users/{{userId}}/smspairings",
@@ -854,7 +855,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"otp\": \"513368\"\n}"
+									"raw": "{\n  \"otp\": \"<<OTP recieved in SMS>>\"\n}"
 								},
 								"url": {
 									"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/users/{{userId}}/smspairings/{{id}}/otp",
@@ -884,6 +885,444 @@
 						}
 					],
 					"description": "Demonstrates sending a Pairing OTP to an SMS device, and the subsequent call needed to return and validate before adding the device to the User.\n\nOther OTP methods (Email \\ Voice) follow a similar pattern",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "d5c8a7e9-c5be-44bd-93a8-d58ad8d9333f",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "1ade2934-0bb0-42e1-882f-062c26b5a777",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Manual Pairing - Email",
+					"item": [
+						{
+							"name": "Enroll Email Device - (Verified)",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "d233a3a0-96e2-4332-85cc-29459758b524",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "78bdc920-8648-4a05-b4f3-5fe959a09363",
+										"exec": [
+											"var response = pm.response.json();",
+											"",
+											"pm.variables.set(\"id\", response.id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "PINGID-HMAC={{authToken}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"automaticPairing\": false,\n\t\"deviceNickname\": \"My Email Address\",\n\t\"locale\": \"en\",\n\t\"type\": \"<<Email Template Type>>\",\n\t\"recipient\": \"<<User Email Address>>\",\n\t\"emailParameters\": \"<<Optional Parameters for email - remove if not used>>\"\n}"
+								},
+								"url": {
+									"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/users/{{userId}}/emailpairings",
+									"protocol": "https",
+									"host": [
+										"sdk",
+										"pingid",
+										"com"
+									],
+									"path": [
+										"pingid",
+										"v1",
+										"accounts",
+										"{{sdkAccountId}}",
+										"applications",
+										"{{sdkAppId}}",
+										"users",
+										"{{userId}}",
+										"emailpairings"
+									]
+								},
+								"description": "Enrolls a SMS device for the User - automaticPairing: false"
+							},
+							"response": []
+						},
+						{
+							"name": "Check Pairing Status",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "d233a3a0-96e2-4332-85cc-29459758b524",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "78bdc920-8648-4a05-b4f3-5fe959a09363",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "PINGID-HMAC={{authToken}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/users/{{userId}}/emailpairings/{{id}}",
+									"protocol": "https",
+									"host": [
+										"sdk",
+										"pingid",
+										"com"
+									],
+									"path": [
+										"pingid",
+										"v1",
+										"accounts",
+										"{{sdkAccountId}}",
+										"applications",
+										"{{sdkAppId}}",
+										"users",
+										"{{userId}}",
+										"emailpairings",
+										"{{id}}"
+									]
+								},
+								"description": "Enrolls a SMS device for the User - automaticPairing: false"
+							},
+							"response": []
+						},
+						{
+							"name": "Enroll Email Device - Finalise",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "d233a3a0-96e2-4332-85cc-29459758b524",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "PINGID-HMAC={{authToken}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"otp\": \"<<OTP received in Email>>\"\n}"
+								},
+								"url": {
+									"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/users/{{userId}}/emailpairings/{{id}}/otp",
+									"protocol": "https",
+									"host": [
+										"sdk",
+										"pingid",
+										"com"
+									],
+									"path": [
+										"pingid",
+										"v1",
+										"accounts",
+										"{{sdkAccountId}}",
+										"applications",
+										"{{sdkAppId}}",
+										"users",
+										"{{userId}}",
+										"emailpairings",
+										"{{id}}",
+										"otp"
+									]
+								},
+								"description": "Enrolls a SMS device for the User - automaticPairing: false"
+							},
+							"response": []
+						}
+					],
+					"description": "Demonstrates sending a Pairing OTP to an Email device, and the subsequent call needed to return and validate before adding the device to the User.\n\nOther OTP methods (SMS \\ Voice) follow a similar pattern\n\nNote: Email transactions require an emailTemplate to have been created",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "d5c8a7e9-c5be-44bd-93a8-d58ad8d9333f",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "1ade2934-0bb0-42e1-882f-062c26b5a777",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Manual Pairing - Voice",
+					"item": [
+						{
+							"name": "Enroll Voice Device - (Verified)",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "d233a3a0-96e2-4332-85cc-29459758b524",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "78bdc920-8648-4a05-b4f3-5fe959a09363",
+										"exec": [
+											"var response = pm.response.json();",
+											"",
+											"pm.variables.set(\"id\", response.id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "PINGID-HMAC={{authToken}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"automaticPairing\": false,\n  \"deviceNickname\": \"My Mobile Phone\",\n  \"phoneNumber\": \"<<Your Voice Number>>\",\n  \"message\": \"This is your Pairing code\",\n  \"vendor\": \"Twilio\",\n  \"voiceParameters\": {},\n  \"voice\": \"Alice\"\n}"
+								},
+								"url": {
+									"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/users/{{userId}}/voicepairings",
+									"protocol": "https",
+									"host": [
+										"sdk",
+										"pingid",
+										"com"
+									],
+									"path": [
+										"pingid",
+										"v1",
+										"accounts",
+										"{{sdkAccountId}}",
+										"applications",
+										"{{sdkAppId}}",
+										"users",
+										"{{userId}}",
+										"voicepairings"
+									]
+								},
+								"description": "Enrolls a SMS device for the User - automaticPairing: false"
+							},
+							"response": []
+						},
+						{
+							"name": "Check Pairing Status",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "d233a3a0-96e2-4332-85cc-29459758b524",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "78bdc920-8648-4a05-b4f3-5fe959a09363",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "PINGID-HMAC={{authToken}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/users/{{userId}}/voicepairings/{{id}}",
+									"protocol": "https",
+									"host": [
+										"sdk",
+										"pingid",
+										"com"
+									],
+									"path": [
+										"pingid",
+										"v1",
+										"accounts",
+										"{{sdkAccountId}}",
+										"applications",
+										"{{sdkAppId}}",
+										"users",
+										"{{userId}}",
+										"voicepairings",
+										"{{id}}"
+									]
+								},
+								"description": "Enrolls a SMS device for the User - automaticPairing: false"
+							},
+							"response": []
+						},
+						{
+							"name": "Enroll Email Device - Finalise",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "d233a3a0-96e2-4332-85cc-29459758b524",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "PINGID-HMAC={{authToken}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"otp\": \"<<OTP received in Voice>>\"\n}"
+								},
+								"url": {
+									"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/users/{{userId}}/voicepairings/{{id}}/otp",
+									"protocol": "https",
+									"host": [
+										"sdk",
+										"pingid",
+										"com"
+									],
+									"path": [
+										"pingid",
+										"v1",
+										"accounts",
+										"{{sdkAccountId}}",
+										"applications",
+										"{{sdkAppId}}",
+										"users",
+										"{{userId}}",
+										"voicepairings",
+										"{{id}}",
+										"otp"
+									]
+								},
+								"description": "Enrolls a SMS device for the User - automaticPairing: false"
+							},
+							"response": []
+						}
+					],
+					"description": "Demonstrates sending a Pairing OTP to an Voice device, and the subsequent call needed to return and validate before adding the device to the User.\n\nOther OTP methods (SMS \\ Email) follow a similar pattern",
 					"event": [
 						{
 							"listen": "prerequest",
@@ -1043,7 +1482,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{ \n\t\"fromAddress\": \"no-reply@cpricedomain.net\", \n\t\"emailSubject\": \"CPriceLab MFA Request\", \n\t\"emailBody\": \"This is the body of my template\", \n\t\"replyToAddress\": \"no-reply@cpricedomain.net\", \n\t\"type\": \"authentication\"\n\t\n}"
+							"raw": ""
 						},
 						"url": {
 							"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/users/{{userId}}/devices/{{deviceId}}",
@@ -1136,7 +1575,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"authenticationType\": \"AUTHENTICATE\",\n\t\"emailConfigurationType\": \"authentication\",\n\t\"smsMessage\": \"Please enter this code to authenticate to CPriceLab - \",\n\t\"pushMessageTitle\": \"Request from Customer Service\",\n\t\"pushMessageBody\": \"Please verify that you are Chris Price\",\n\t\"voiceMessage\": \"Your CPriceLab authentication code is: ${OTP}\"\n}"
+							"raw": "{\n\t\"authenticationType\": \"AUTHENTICATE\",\n\t\"emailConfigurationType\": \"authentication\",\n\t\"smsMessage\": \"Please enter this code to authenticate - \",\n\t\"pushMessageTitle\": \"Request from Customer Service\",\n\t\"pushMessageBody\": \"Please verify that you are ${usr}\",\n\t\"voiceMessage\": \"Your authentication code is: ${OTP}\"\n}"
 						},
 						"url": {
 							"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/users/{{userId}}/authentications/",
@@ -1175,6 +1614,18 @@
 								],
 								"type": "text/javascript"
 							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "d1dacdcf-705e-4390-9cc7-1e154f38d163",
+								"exec": [
+									"var response = pm.response.json();",
+									"",
+									"pm.environment.set(\"id\", response.id);"
+								],
+								"type": "text/javascript"
+							}
 						}
 					],
 					"request": {
@@ -1191,7 +1642,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{ \n  \"deviceId\": \"<enrolled Voice device>\",\n  \"voiceMessage\": \"Your CPriceLab authentication code is: ${OTP}\",\n  \"voiceVendor\": \"Twilio\",\n  \"locale\": \"en_US\",\n  \"voiceParameters\": {},\n  \"voice\": \"Alice\" \n}"
+							"raw": "{ \n  \"deviceId\": \"<<Enrolled Voice deviceId>>\",\n  \"voiceMessage\": \"Your authentication code is: ${OTP}\",\n  \"voiceVendor\": \"Twilio\",\n  \"locale\": \"en_US\",\n  \"voiceParameters\": {},\n  \"voice\": \"Alice\" \n}"
 						},
 						"url": {
 							"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/users/{{userId}}/authentications",
@@ -1229,6 +1680,18 @@
 								],
 								"type": "text/javascript"
 							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "4299a57d-208f-4eef-b040-a17257c12779",
+								"exec": [
+									"var response = pm.response.json();",
+									"",
+									"pm.environment.set(\"id\", response.id);"
+								],
+								"type": "text/javascript"
+							}
 						}
 					],
 					"request": {
@@ -1245,7 +1708,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"locale\": \"en\",\n  \"emailConfigurationType\": \"authentication\",\n  \"emailParameters\": {\"transfer\": \"1000$\", \"product\": \"book\"}\n\n}"
+							"raw": "{\n  \"locale\": \"en\",\n  \"emailConfigurationType\": \"<<Email Template Type>>\",\n  \"emailParameters\": {}\n}"
 						},
 						"url": {
 							"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/users/{{userId}}/authentications",
@@ -1283,6 +1746,18 @@
 								],
 								"type": "text/javascript"
 							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "b7f3bcd9-8622-4af1-9f83-5771f1587d96",
+								"exec": [
+									"var response = pm.response.json();",
+									"",
+									"pm.environment.set(\"id\", response.id);"
+								],
+								"type": "text/javascript"
+							}
 						}
 					],
 					"request": {
@@ -1299,7 +1774,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{ \n\t\"pushMessageTitle\": \"Request from Customer Service\",\n\t\"pushMessageBody\": \"Please verify that you are Chris Price\"\n}"
+							"raw": "{ \n\t\"pushMessageTitle\": \"<<Notification Subject>>\",\n\t\"pushMessageBody\": \"<<Notification Message>>\"\n}"
 						},
 						"url": {
 							"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/users/{{userId}}/authentications",
@@ -1332,10 +1807,10 @@
 							"listen": "prerequest",
 							"script": {
 								"id": "eca8e484-0a62-451f-99fe-ae368085b620",
-								"type": "text/javascript",
 								"exec": [
 									""
-								]
+								],
+								"type": "text/javascript"
 							}
 						}
 					],
@@ -1356,7 +1831,7 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "https://sdk.pingid.com/pingid/v1/accounts/c6d8cf58-6d78-49da-938a-4fb44f746397/applications/5cedc1b0-0fdf-434e-9b2b-bbeb9832adeb/users/kpuser9999/authentications/webs_9c4ab040-5f3c-453e-9794-b0b674f59640",
+							"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/users/{{userId}}/authentications/{{id}}",
 							"protocol": "https",
 							"host": [
 								"sdk",
@@ -1367,13 +1842,13 @@
 								"pingid",
 								"v1",
 								"accounts",
-								"c6d8cf58-6d78-49da-938a-4fb44f746397",
+								"{{sdkAccountId}}",
 								"applications",
-								"5cedc1b0-0fdf-434e-9b2b-bbeb9832adeb",
+								"{{sdkAppId}}",
 								"users",
-								"kpuser9999",
+								"{{userId}}",
 								"authentications",
-								"webs_9c4ab040-5f3c-453e-9794-b0b674f59640"
+								"{{id}}"
 							]
 						},
 						"description": "Checks the status of an Authentication Request"
@@ -1408,7 +1883,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\"otp\": \"210007\"}"
+							"raw": "{\n\t\"otp\": \"<<Enter OTP that was sent>>\"\n}"
 						},
 						"url": {
 							"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/users/{{userId}}/authentications/{{id}}/otp",
