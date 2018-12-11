@@ -932,7 +932,7 @@
 										"exec": [
 											"var response = pm.response.json();",
 											"",
-											"pm.variables.set(\"id\", response.id);"
+											"pm.environment.set(\"id\", response.id);"
 										],
 										"type": "text/javascript"
 									}
@@ -1151,7 +1151,7 @@
 										"exec": [
 											"var response = pm.response.json();",
 											"",
-											"pm.variables.set(\"id\", response.id);"
+											"pm.environment.set(\"id\", response.id);"
 										],
 										"type": "text/javascript"
 									}
