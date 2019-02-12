@@ -102,10 +102,10 @@
 					"raw": "{{jwtToken}}"
 				},
 				"url": {
-					"raw": "https://test-idpxnyl3m.pingidentity.com/pingid/rest/4/getuserdetails/do",
+					"raw": "https://idpxnyl3m.pingidentity.com/pingid/rest/4/getuserdetails/do",
 					"protocol": "https",
 					"host": [
-						"test-idpxnyl3m",
+						"idpxnyl3m",
 						"pingidentity",
 						"com"
 					],
@@ -118,93 +118,7 @@
 					]
 				}
 			},
-			"response": [
-				{
-					"name": "GetUserDetails",
-					"originalRequest": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{{jwtToken}}"
-						},
-						"url": {
-							"raw": "https://test-idpxnyl3m.pingidentity.com/pingid/rest/4/getuserdetails/do",
-							"protocol": "https",
-							"host": [
-								"test-idpxnyl3m",
-								"pingidentity",
-								"com"
-							],
-							"path": [
-								"pingid",
-								"rest",
-								"4",
-								"getuserdetails",
-								"do"
-							]
-						}
-					},
-					"status": "OK",
-					"code": 200,
-					"_postman_previewlanguage": "json",
-					"header": [
-						{
-							"key": "Date",
-							"value": "Mon, 11 Feb 2019 16:15:12 GMT"
-						},
-						{
-							"key": "Server",
-							"value": ""
-						},
-						{
-							"key": "Content-Type",
-							"value": "application/json"
-						},
-						{
-							"key": "Set-Cookie",
-							"value": "AccellsSessionID=webs_AOkUVQcF1iN0Mm3Z5MfcvM8qQJBXPzoKDquJxgepDME; Path=/AccellServer"
-						},
-						{
-							"key": "Vary",
-							"value": "Accept-Encoding"
-						},
-						{
-							"key": "Content-Encoding",
-							"value": "gzip"
-						},
-						{
-							"key": "Content-Length",
-							"value": "1330"
-						},
-						{
-							"key": "Connection",
-							"value": "close"
-						},
-						{
-							"key": "Strict-Transport-Security",
-							"value": "max-age=15768000; preload;"
-						},
-						{
-							"key": "Public-Key-Pins-Report-Only",
-							"value": "pin-sha256=\"PbNCVpVasMJxps3IqFfLTRKkVnRCLrTlZVc5kspqlkw=\";\\ max-age=10;"
-						},
-						{
-							"key": "X-Content-Type-Options",
-							"value": "nosniff"
-						}
-					],
-					"cookie": [],
-					"body": "eyJhbGciOiJIUzI1NiIsIm9yZ19hbGlhcyI6IjExMGEyYjUyLTlkYmQtNGY3MC05ZWY5LWMxZDM1MThiZTUyZSIsInRva2VuIjoiYjRpbHRqRFJYTjZhUDJsS1FvK1BpU1V3REpCOU80MlgifQ.eyJyZXNwb25zZUJvZHkiOnsic2FtZURldmljZVVzZXJzRGV0YWlscyI6W10sInVzZXJEZXRhaWxzIjp7InVzZXJOYW1lIjoiQXNhZiIsInVzZXJJZCI6MCwidXNlckluQnlwYXNzIjpmYWxzZSwiZW1haWwiOiIiLCJsbmFtZSI6IiIsImZuYW1lIjpudWxsLCJwaWNVUkwiOiJYQ1ZINEJZR0lCSFpST1gzRVZGUUlDV1dRQUJRVUxZVEFHV1FCSVBGU0ZaVlBPS0ZRQU1DNVFBPSIsInNwTGlzdCI6W3sic3BBbGlhcyI6InBpbmdvbmUiLCJieXBhc3NFeHBpcmF0aW9uIjpudWxsLCJzcE5hbWUiOiJTU08iLCJzdGF0dXMiOiJBQ1RJVkUifSx7InNwQWxpYXMiOiJ2cG4iLCJieXBhc3NFeHBpcmF0aW9uIjpudWxsLCJzcE5hbWUiOiJWUE4iLCJzdGF0dXMiOiJBQ1RJVkUifSx7InNwQWxpYXMiOiJ3ZWIiLCJieXBhc3NFeHBpcmF0aW9uIjpudWxsLCJzcE5hbWUiOiJXRUIiLCJzdGF0dXMiOiJBQ1RJVkUifV0sImxhc3RMb2dpbiI6bnVsbCwiYnlwYXNzRXhwaXJhdGlvbiI6bnVsbCwiZGV2aWNlRGV0YWlscyI6eyJkZXZpY2VJZCI6NDgwNTQ2NTg4NDM4OTAzMDAwLCJjb3VudHJ5Q29kZSI6bnVsbCwiZGV2aWNlTW9kZWwiOm51bGwsImFwcFZlcnNpb24iOm51bGwsImhhc1dhdGNoIjpmYWxzZSwiZGV2aWNlVXVpZCI6IjA2YWIzZTkzLTdkZWQtMzhkOC0wNmFiLTNlOTM3ZGVkMzhkOCIsInBob25lTnVtYmVyIjpudWxsLCJlbWFpbCI6ImFkYXZpZEBwaW5naWRlbnRpdHkuY29tIiwiZGV2aWNlUm9sZSI6IlBSSU1BUlkiLCJuaWNrbmFtZSI6IkVtYWlsIDEiLCJlbnJvbGxtZW50IjoiMjAxOC0wNS0wOCAwNDoyMTozMC44OTEiLCJzZW50Tm90Q2xhaW1lZFNtcyI6LTEsInNlbnRDbGFpbWVkU21zIjotMSwiYXZhaWxhYmxlTm90Q2xhaW1lZFNtcyI6MCwiYXZhaWxhYmxlQ2xhaW1lZFNtcyI6MCwicHVzaEVuYWJsZWQiOmZhbHNlLCJkaXNwbGF5SUQiOiJhZGF2aWRAcGluZ2lkZW50aXR5LmNvbSIsIm9zVmVyc2lvbiI6bnVsbCwidHlwZSI6IkVtYWlsIn0sImxhc3RUcmFuc2FjdGlvbnMiOltdLCJkZXZpY2VzRGV0YWlscyI6W3siZGV2aWNlSWQiOjQ4MDU0NjU4ODQzODkwMzAwMCwiY291bnRyeUNvZGUiOm51bGwsImRldmljZU1vZGVsIjpudWxsLCJhcHBWZXJzaW9uIjpudWxsLCJoYXNXYXRjaCI6ZmFsc2UsImRldmljZVV1aWQiOiIwNmFiM2U5My03ZGVkLTM4ZDgtMDZhYi0zZTkzN2RlZDM4ZDgiLCJwaG9uZU51bWJlciI6bnVsbCwiZW1haWwiOiJhZGF2aWRAcGluZ2lkZW50aXR5LmNvbSIsImRldmljZVJvbGUiOiJQUklNQVJZIiwibmlja25hbWUiOiJFbWFpbCAxIiwiZW5yb2xsbWVudCI6IjIwMTgtMDUtMDggMDQ6MjE6MzAuODkxIiwic2VudE5vdENsYWltZWRTbXMiOi0xLCJzZW50Q2xhaW1lZFNtcyI6LTEsImF2YWlsYWJsZU5vdENsYWltZWRTbXMiOjAsImF2YWlsYWJsZUNsYWltZWRTbXMiOjAsInB1c2hFbmFibGVkIjpmYWxzZSwiZGlzcGxheUlEIjoiYWRhdmlkQHBpbmdpZGVudGl0eS5jb20iLCJvc1ZlcnNpb24iOm51bGwsInR5cGUiOiJFbWFpbCJ9XSwidXNlckVuYWJsZWQiOnRydWUsInN0YXR1cyI6IkFDVElWRSIsInJvbGUiOiJBRE1JTiJ9LCJlcnJvck1zZyI6Im9rIiwidW5pcXVlTXNnSWQiOiJ3ZWJzX0FPa1VWUWNGMWlOME1tM1o1TWZjdk04cVFKQlhQem9LRHF1SnhnZXBETUUiLCJlcnJvcklkIjoyMDAsImNsaWVudERhdGEiOm51bGx9fQ.n3B3BvtdqAb7_gExfXp4SIZIpUEZPmDgzLy8V6EQzFU"
-				}
-			]
+			"response": []
 		}
 	]
 }
