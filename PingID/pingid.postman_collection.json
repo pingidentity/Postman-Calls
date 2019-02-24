@@ -1,0 +1,124 @@
+{
+	"info": {
+		"_postman_id": "b72bdcd5-5e5a-4373-a418-ea7eb742e4e5",
+		"name": "pingid",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GetUserDetails",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "c78740c7-e494-4354-aee6-b5babe86b0a0",
+						"exec": [
+							"// --------------- REQUEST BODY ---------------",
+							"reqBody = {",
+							"    userName: \"asaf\", ",
+							"    getSameDeviceUsers: \"false\"",
+							"};",
+							"// --------------- REQUEST BODY ---------------",
+							"",
+							"",
+							"reqHeader = {",
+							"    locale: \"en\", ",
+							"    secretKey: pm.environment.get(\"token\"), ",
+							"    version: pm.environment.get(\"version\"), ",
+							"    orgAlias: pm.environment.get(\"org_alias\"), ",
+							"    timestamp: new Date()",
+							"}",
+							"",
+							"jwtPayload = {};",
+							"jwtPayload.reqHeader = reqHeader;",
+							"jwtPayload.reqBody = reqBody;",
+							"",
+							"jwtHeader = {",
+							"\t\t\"alg\" : \"HS256\",",
+							"\t\t\"org_alias\" : pm.environment.get(\"org_alias\"),",
+							"\t\t\"token\" : pm.environment.get(\"token\")",
+							"};",
+							"",
+							"// Base64 Encoding function",
+							"var base64object = function(input) {",
+							" var inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));",
+							" var base64 = CryptoJS.enc.Base64.stringify(inputWords);",
+							" var output = removeIllegalCharacters(base64);",
+							" return output;",
+							"};",
+							"",
+							"var removeIllegalCharacters = function(input) {",
+							" return input",
+							" .replace(/=/g, '')",
+							" .replace(/\\+/g, '-')",
+							" .replace(/\\//g, '_');",
+							"};",
+							"",
+							"// Create Signed JWT",
+							"var unsignedToken = base64object(jwtHeader) + \".\" + base64object(jwtPayload);",
+							"var apiKeyBytes = CryptoJS.enc.Base64.parse(pm.environment.get(\"key\"));",
+							"var signatureHash = CryptoJS.HmacSHA256(unsignedToken, apiKeyBytes);",
+							"var signature = CryptoJS.enc.Base64.stringify(signatureHash);",
+							"var signature2 = removeIllegalCharacters(signature);",
+							"var jwtToken = unsignedToken + '.' + signature2;",
+							"//console.log(jwtToken);",
+							"",
+							"",
+							"pm.environment.set(\"jwtToken\", jwtToken);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "32648b5e-a396-4d9a-8ed5-56a865029ea8",
+						"exec": [
+							"console.log(\"RAW Response:\",pm.response.text());",
+							"body = pm.response.text().split(\".\")[1];",
+							"var parsedWordArray = CryptoJS.enc.Base64.parse(body);",
+							"var parsedStr = parsedWordArray.toString(CryptoJS.enc.Utf8);",
+							"console.log(\"Decoded JSON Response:\",JSON.parse(parsedStr));",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{{jwtToken}}"
+				},
+				"url": {
+					"raw": "https://idpxnyl3m.pingidentity.com/pingid/rest/4/getuserdetails/do",
+					"protocol": "https",
+					"host": [
+						"idpxnyl3m",
+						"pingidentity",
+						"com"
+					],
+					"path": [
+						"pingid",
+						"rest",
+						"4",
+						"getuserdetails",
+						"do"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
