@@ -19,7 +19,7 @@ You can also download the collection file from this repo, then import directly i
 The collection is arranged in folders according to the Admin API endpoints.
 
 All requests require the host of the PingAccess Admin node, Admin credentials, and the Admin API version.  The collection requests have placeholder environment variables called `host`, `un`, `pw`, and `v`, respectively, for these values.
-You can setup these values in your [Postman environment](https://www.getpostman.com/docs/v6/postman/environments_and_globals/manage_environments).  There is also an environment file that can be downloaded from this repo, and imported directory into Postman for connivence.
+You can setup these values in your [Postman environment](https://www.getpostman.com/docs/v6/postman/environments_and_globals/manage_environments).  There is also an environment file that can be downloaded from this repo, and imported directory into Postman for convenience.
 
 
 More information on managing Postman environments and variables can be found [here](https://www.getpostman.com/docs/v6/postman/environments_and_globals/variables).
