@@ -6,7 +6,7 @@ Postman Collection demonstrating how to use the [PingFederate](https://support.p
 
 To use the latest published version, click the following button to import the PingFederate Admin API as a collection:
 
-[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/d671fbbcc3fe9ccdf36a)
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/6347ba9962c564395251)
 
 You can also download the collection file from this repo, then import directly into Postman.
 
