@@ -8,6 +8,14 @@ Some of the calls are individual, others may be to demonstrate a flow of transac
 
 This is Postman collection that demonstrates the OAuth \ OIDC flows without the UI of the PingFed OAuth Playground
 
+# PingAccess Admin API
+
+This Postman collection contains all of the endpoints that make up the PingAccess Admin APIs.
+
+# PingFederate Admin API
+
+This Postman collection contains all of the endpoints that make up the PingFederate Admin APIs.
+
 # PingID SDK
 
 These are examples of how to use the PingID SDK service to perform transactional MFA calls.
