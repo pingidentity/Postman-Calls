@@ -49,7 +49,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{ \n\t\"username\": \"<<User Identifier>>\",\n\t\"firstName\": \"<<First Name>>\",\n\t\"lastName\": \"<<Last Name>>\"\n}"
+							"raw": "{ \n\t\"username\": \"{{userId}}\",\n\t\"firstName\": \"Yuri\",\n\t\"lastName\": \"Postman\"\n}"
 						},
 						"url": {
 							"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/users/",
@@ -394,7 +394,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{ \n\t\"fromAddress\": \"noreply@pingidentity.com\", \n\t\"emailSubject\": \"<<Email Subject>>\", \n\t\"emailBody\": \"A request to Pair a device has been made.<br><br>Please use this code to authorize the enrollment - <b>${OTP}</b>\", \n\t\"replyToAddress\": \"noreply@pingidentity.com\", \n\t\"type\": \"pairing_request\"\n}"
+							"raw": "{ \n\t\"fromAddress\": \"noreply@pingidentity.com\", \n\t\"emailSubject\": \"New Pairing\", \n\t\"emailBody\": \"A request to Pair a device has been made.<br><br>Please use this code to authorize the enrollment - <b>${OTP}</b>\", \n\t\"replyToAddress\": \"noreply@pingidentity.com\", \n\t\"type\": \"pairing_request_postman_test\"\n}"
 						},
 						"url": {
 							"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/emailconfigurations/",
@@ -447,7 +447,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{ \n\t\"fromAddress\": \"noreply@pingidentity.com\", \n\t\"emailSubject\": \"<<Email Subject>>\", \n\t\"emailBody\": \"New authentication request - OTP is ${OTP}\", \n\t\"replyToAddress\": \"noreply@pingidentity.com\", \n\t\"type\": \"auth_without_payload\"\n\t\n}"
+							"raw": "{ \n\t\"fromAddress\": \"noreply@pingidentity.com\", \n\t\"emailSubject\": \"New authentication\", \n\t\"emailBody\": \"New authentication request - OTP is ${OTP}\", \n\t\"replyToAddress\": \"noreply@pingidentity.com\", \n\t\"type\": \"auth_without_payload_postman_test_1\"\n\t\n}"
 						},
 						"url": {
 							"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/emailconfigurations/",
@@ -1963,6 +1963,15 @@
 					"var method = pm.request.method;",
 					"var payload = pm.request.body.raw;",
 					"var path = pm.request.url.path.toString().replace(/,/g, \"/\");",
+					"",
+					"// This checks for the body of the *Get Registration Token* call and pulls the payload value from the environment. ",
+					"// if (request.name == \"Get Registration Token\" ) {",
+					"//    payload = JSON.stringify({\"payload\":pm.variables.get(\"payload\")});",
+					"// }",
+					"",
+					"var payload = payload.replace(\"{{userId}}\", pm.environment.get(\"userId\"));",
+					"",
+					"console.log(payload);",
 					"",
 					"// Due to the way PM handles the request object, the URL Path needs to be rebuilt with the value substitution",
 					"var path = path.replace(\"{{sdkAccountId}}\", sdkAccountId);",

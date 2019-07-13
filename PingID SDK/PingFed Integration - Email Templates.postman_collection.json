@@ -37,7 +37,7 @@
 					"raw": "{ \n\t\"fromAddress\": \"noreply@pingidentity.com\", \n\t\"emailSubject\": \"CPriceLab - Authentication Request\", \n\t\"emailBody\": \"New authentication request - OTP is ${OTP}\", \n\t\"replyToAddress\": \"noreply@pingidentity.com\", \n\t\"type\": \"authentication\"\n\t\n}"
 				},
 				"url": {
-					"raw": "https://sdk.pingid.com/pingid/v1/accounts/<<your PingID SDK TenantID>>/applications/<<your PingID SDK applicationID>>/emailconfigurations",
+					"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/emailconfigurations",
 					"protocol": "https",
 					"host": [
 						"sdk",
@@ -48,9 +48,9 @@
 						"pingid",
 						"v1",
 						"accounts",
-						"<<your PingID SDK TenantID>>",
+						"{{sdkAccountId}}",
 						"applications",
-						"<<your PingID SDK applicationID>>",
+						"{{sdkAppId}}",
 						"emailconfigurations"
 					]
 				},
@@ -89,7 +89,7 @@
 					"raw": "{ \n\t\"fromAddress\": \"noreply@pingidentity.com\", \n\t\"emailSubject\": \"Your App - Authentication Request (Browser)\", \n\t\"emailBody\": \"New authentication request to Your Application from a Browser - Your One Time Passcode is <b>${OTP}</b>. <br><br>If this is unexpected, please Reset your Password\", \n\t\"replyToAddress\": \"noreply@pingidentity.com\", \n\t\"type\": \"auth_without_payload\"\n\t\n}"
 				},
 				"url": {
-					"raw": "https://sdk.pingid.com/pingid/v1/accounts/<<your PingID SDK TenantID>>/applications/<<your PingID SDK applicationID>>/emailconfigurations/",
+					"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/emailconfigurations/",
 					"protocol": "https",
 					"host": [
 						"sdk",
@@ -100,9 +100,9 @@
 						"pingid",
 						"v1",
 						"accounts",
-						"<<your PingID SDK TenantID>>",
+						"{{sdkAccountId}}",
 						"applications",
-						"<<your PingID SDK applicationID>>",
+						"{{sdkAppId}}",
 						"emailconfigurations",
 						""
 					]
@@ -142,7 +142,7 @@
 					"raw": "{ \n\t\"fromAddress\": \"noreply@pingidentity.com\", \n\t\"emailSubject\": \"Your App - Authentication Request (Mobile Device)\", \n\t\"emailBody\": \"New authentication request to Your Application from a Mobile Device - Your One Time Passcode is <b>${OTP}</b>. <br><br>If this is unexpected, please Reset your Password\", \n\t\"replyToAddress\": \"noreply@pingidentity.com\", \n\t\"type\": \"auth_with_payload\"\n\t\n}"
 				},
 				"url": {
-					"raw": "https://sdk.pingid.com/pingid/v1/accounts/<<your PingID SDK TenantID>>/applications/<<your PingID SDK applicationID>>/emailconfigurations/",
+					"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/emailconfigurations/",
 					"protocol": "https",
 					"host": [
 						"sdk",
@@ -153,9 +153,9 @@
 						"pingid",
 						"v1",
 						"accounts",
-						"<<your PingID SDK TenantID>>",
+						"{{sdkAccountId}}",
 						"applications",
-						"<<your PingID SDK applicationID>>",
+						"{{sdkAppId}}",
 						"emailconfigurations",
 						""
 					]
