@@ -515,6 +515,18 @@
 										],
 										"type": "text/javascript"
 									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "2013806e-a03e-4914-a8a9-88a9492d2aca",
+										"exec": [
+											"var response = pm.response.json();",
+											"",
+											"pm.environment.set(\"pairingSessionId\", response.id);"
+										],
+										"type": "text/javascript"
+									}
 								}
 							],
 							"request": {
@@ -569,6 +581,18 @@
 										],
 										"type": "text/javascript"
 									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "32bb9f8f-1543-410f-8120-4133ecafbe06",
+										"exec": [
+											"var response = pm.response.json();",
+											"",
+											"pm.environment.set(\"pairingSessionId\", response.id);"
+										],
+										"type": "text/javascript"
+									}
 								}
 							],
 							"request": {
@@ -620,6 +644,18 @@
 										"id": "d233a3a0-96e2-4332-85cc-29459758b524",
 										"exec": [
 											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "9fe37e91-60d0-462d-8363-4c4cb69c031a",
+										"exec": [
+											"var response = pm.response.json();",
+											"",
+											"pm.environment.set(\"pairingSessionId\", response.id);"
 										],
 										"type": "text/javascript"
 									}
@@ -714,7 +750,7 @@
 										"exec": [
 											"var response = pm.response.json();",
 											"",
-											"pm.environment.set(\"id\", response.id);"
+											"pm.environment.set(\"pairingSessionId\", response.id);"
 										],
 										"type": "text/javascript"
 									}
@@ -858,7 +894,7 @@
 									"raw": "{\n  \"otp\": \"<<OTP recieved in SMS>>\"\n}"
 								},
 								"url": {
-									"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/users/{{userId}}/smspairings/{{id}}/otp",
+									"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/users/{{userId}}/smspairings/{{pairingSessionId}}/otp",
 									"protocol": "https",
 									"host": [
 										"sdk",
@@ -875,7 +911,7 @@
 										"users",
 										"{{userId}}",
 										"smspairings",
-										"{{id}}",
+										"{{pairingSessionId}}",
 										"otp"
 									]
 								},
@@ -932,7 +968,7 @@
 										"exec": [
 											"var response = pm.response.json();",
 											"",
-											"pm.environment.set(\"id\", response.id);"
+											"pm.environment.set(\"pairingSessionId\", response.id);"
 										],
 										"type": "text/javascript"
 									}
@@ -1022,7 +1058,7 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/users/{{userId}}/emailpairings/{{id}}",
+									"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/users/{{userId}}/emailpairings/{{pairingSessionId}}",
 									"protocol": "https",
 									"host": [
 										"sdk",
@@ -1039,7 +1075,7 @@
 										"users",
 										"{{userId}}",
 										"emailpairings",
-										"{{id}}"
+										"{{pairingSessionId}}"
 									]
 								},
 								"description": "Enrolls a SMS device for the User - automaticPairing: false"
@@ -1077,7 +1113,7 @@
 									"raw": "{\n  \"otp\": \"<<OTP received in Email>>\"\n}"
 								},
 								"url": {
-									"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/users/{{userId}}/emailpairings/{{id}}/otp",
+									"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/users/{{userId}}/emailpairings/{{pairingSessionId}}/otp",
 									"protocol": "https",
 									"host": [
 										"sdk",
@@ -1094,7 +1130,7 @@
 										"users",
 										"{{userId}}",
 										"emailpairings",
-										"{{id}}",
+										"{{pairingSessionId}}",
 										"otp"
 									]
 								},
@@ -1151,7 +1187,7 @@
 										"exec": [
 											"var response = pm.response.json();",
 											"",
-											"pm.environment.set(\"id\", response.id);"
+											"pm.environment.set(\"pairingSessionId\", response.id);"
 										],
 										"type": "text/javascript"
 									}
@@ -1296,7 +1332,7 @@
 									"raw": "{\n  \"otp\": \"<<OTP received in Voice>>\"\n}"
 								},
 								"url": {
-									"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/users/{{userId}}/voicepairings/{{id}}/otp",
+									"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/users/{{userId}}/voicepairings/{{pairingSessionId}}/otp",
 									"protocol": "https",
 									"host": [
 										"sdk",
@@ -1313,7 +1349,7 @@
 										"users",
 										"{{userId}}",
 										"voicepairings",
-										"{{id}}",
+										"{{pairingSessionId}}",
 										"otp"
 									]
 								},
@@ -1599,6 +1635,72 @@
 							]
 						},
 						"description": "This call sends an Authenticate request to whatever is the Primary device for the User, without needing to Get Devices in order to locate the deviceId.\n\nAll MFA methods are referenced in the body, with the SDK choosing the correct one."
+					},
+					"response": []
+				},
+				{
+					"name": "Send OTP to Trusted SMS device",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "eca8e484-0a62-451f-99fe-ae368085b620",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "d1dacdcf-705e-4390-9cc7-1e154f38d163",
+								"exec": [
+									"var response = pm.response.json();",
+									"",
+									"pm.environment.set(\"id\", response.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "PINGID-HMAC={{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \n  \"deviceId\": \"7e5ea155-7f45-4c9e-7e5e-a1557f454c9e\",\n  \"smsMessage\": \"Your authentication code is: ${OTP}\",\n  \"smsVendor\": \"Twilio\",\n  \"locale\": \"en_US\",\n  \"smsParameters\": {}\n}"
+						},
+						"url": {
+							"raw": "https://sdk.pingid.com/pingid/v1/accounts/{{sdkAccountId}}/applications/{{sdkAppId}}/users/{{userId}}/authentications",
+							"protocol": "https",
+							"host": [
+								"sdk",
+								"pingid",
+								"com"
+							],
+							"path": [
+								"pingid",
+								"v1",
+								"accounts",
+								"{{sdkAccountId}}",
+								"applications",
+								"{{sdkAppId}}",
+								"users",
+								"{{userId}}",
+								"authentications"
+							]
+						},
+						"description": "Sends a Voice Authentication to the only Trusted Voice Device.\n\n\"deviceId\" can be added to the payload to send to the specific device"
 					},
 					"response": []
 				},
@@ -1978,6 +2080,7 @@
 					"var path = path.replace(\"{{sdkAppId}}\", pm.environment.get(\"sdkAppId\"));",
 					"var path = path.replace(\"{{userId}}\", pm.environment.get(\"userId\"));",
 					"var path = path.replace(\"{{deviceId}}\", pm.environment.get(\"deviceId\"));",
+					"var path = path.replace(\"{{pairingSessionId}}\", pm.environment.get(\"pairingSessionId\"));",
 					"var path = path.replace(\"{{id}}\", pm.environment.get(\"id\"));",
 					"",
 					"//Grab any parameters",
