@@ -38,7 +38,6 @@ var sdkAccountId = pm.environment.get("sdkAccountId");
 
 //Parse the Request
 var method = pm.request.method;
-var payload = pm.request.body.raw;
 var path = pm.request.url.path.toString().replace(/,/g, "/");
 
 // Due to the way PM handles the request object, the URL Path needs to be rebuilt with the value substitution
@@ -46,12 +45,20 @@ var path = path.replace("{{sdkAccountId}}", sdkAccountId);
 var path = path.replace("{{sdkAppId}}", pm.environment.get("sdkAppId"));
 var path = path.replace("{{userId}}", pm.environment.get("userId"));
 var path = path.replace("{{deviceId}}", pm.environment.get("deviceId"));
+var path = path.replace("{{pairingSessionId}}", pm.environment.get("pairingSessionId"));
 var path = path.replace("{{id}}", pm.environment.get("id"));
 
 //Grab any parameters
 var parameters = pm.request.url.query.toString();
 
 // Hash and Hex Encode Request Payload
+
+var payload = "";
+if (pm.request.body) {
+    payload = pm.request.body.raw;
+    payload = payload.replace("{{userId}}", pm.environment.get("userId"));
+}
+
 var payloadHash = CryptoJS.SHA256(payload);
 var payloadHex = CryptoJS.enc.Hex.stringify(payloadHash);
 
