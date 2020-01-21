@@ -45,7 +45,6 @@ var path = path.replace("{{sdkAccountId}}", sdkAccountId);
 var path = path.replace("{{sdkAppId}}", pm.environment.get("sdkAppId"));
 var path = path.replace("{{userId}}", pm.environment.get("userId"));
 var path = path.replace("{{deviceId}}", pm.environment.get("deviceId"));
-var path = path.replace("{{pairingSessionId}}", pm.environment.get("pairingSessionId"));
 var path = path.replace("{{id}}", pm.environment.get("id"));
 
 //Grab any parameters
