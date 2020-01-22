@@ -50,14 +50,13 @@ var path = path.replace("{{id}}", pm.environment.get("id"));
 //Grab any parameters
 var parameters = pm.request.url.query.toString();
 
-// Hash and Hex Encode Request Payload
-
 var payload = "";
 if (pm.request.body) {
     payload = pm.request.body.raw;
     payload = payload.replace("{{userId}}", pm.environment.get("userId"));
 }
 
+// Hash and Hex Encode Request Payload
 var payloadHash = CryptoJS.SHA256(payload);
 var payloadHex = CryptoJS.enc.Hex.stringify(payloadHash);
 
