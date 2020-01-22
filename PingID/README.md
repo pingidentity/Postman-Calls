@@ -1,13 +1,12 @@
 # PingID-Calls
-A script that calls GetUserDetails no PingID.
+After importing the pingid Postman Collection, all you need to do is set the Environment Variables (see below)
+with information from your pingid.properties file, then on the "Pre-request Script" tab edit the "reqBody"
+section to reflect the information or changes you wish to retrieve/make.
 
-You can add a call to any [PingID API](https://www.pingidentity.com/content/developer/en/api/pingid-api.html) - just set the right endpoint and edit the Pre-request Script with the right request body.
-
+Reference the [PingID API docs](https://apidocs.pingidentity.com/pingid-api/guide/pingid-api/pid_c_PingIDapiOverview/) for more information on the "reqBody" content.
 
 ## Environment variables
-1. org_alias (as appears in the properties file)
-2. token (as appears in the properties file)
-3. key (use_base64_key as appears in the properties file)
-3. version - the API version (see docs)
-
-
+1. org_alias (as appears in the PingID properties file)
+2. token (as appears in the PingID properties file)
+3. key (use_base64_key as appears in the PingID properties file)
+3. version - the API version (see docs - usually 4.9)
