@@ -1,808 +1,3508 @@
 {
 	"info": {
-		"_postman_id": "de5fa75b-ea1f-476b-bec0-90710d90edf9",
-		"name": "pingid",
+		"_postman_id": "3e4acfc3-b51a-4b74-9cd8-6ab6f8aea80f",
+		"name": "PingID APIs",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "GetUserDetails",
+			"name": "User Management",
+			"item": [
+				{
+					"name": "GetUserDetails",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "d734af05-a08b-4b84-ab9b-56d549eb8bb2",
+								"exec": [
+									"// --------------- REQUEST BODY ---------------",
+									"reqBody = {",
+									"    \"userName\": \"joe\", ",
+									"    \"getSameDeviceUsers\": \"false\"",
+									"    // Optional: clientData",
+									"};",
+									"// --------------- REQUEST BODY ---------------",
+									"",
+									"",
+									"reqHeader = {",
+									"    locale: \"en\", ",
+									"    secretKey: pm.environment.get(\"token\"), ",
+									"    version: pm.environment.get(\"version\"), ",
+									"    orgAlias: pm.environment.get(\"org_alias\"), ",
+									"    timestamp: new Date()",
+									"}",
+									"",
+									"jwtPayload = {};",
+									"jwtPayload.reqHeader = reqHeader;",
+									"jwtPayload.reqBody = reqBody;",
+									"",
+									"jwtHeader = {",
+									"\t\t\"alg\" : \"HS256\",",
+									"\t\t\"org_alias\" : pm.environment.get(\"org_alias\"),",
+									"\t\t\"token\" : pm.environment.get(\"token\")",
+									"};",
+									"",
+									"// Base64 Encoding function",
+									"var base64object = function(input) {",
+									" var inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));",
+									" var base64 = CryptoJS.enc.Base64.stringify(inputWords);",
+									" var output = removeIllegalCharacters(base64);",
+									" return output;",
+									"};",
+									"",
+									"var removeIllegalCharacters = function(input) {",
+									" return input",
+									" .replace(/=/g, '')",
+									" .replace(/\\+/g, '-')",
+									" .replace(/\\//g, '_');",
+									"};",
+									"",
+									"// Create Signed JWT",
+									"var unsignedToken = base64object(jwtHeader) + \".\" + base64object(jwtPayload);",
+									"var apiKeyBytes = CryptoJS.enc.Base64.parse(pm.environment.get(\"key\"));",
+									"var signatureHash = CryptoJS.HmacSHA256(unsignedToken, apiKeyBytes);",
+									"var signature = CryptoJS.enc.Base64.stringify(signatureHash);",
+									"var signature2 = removeIllegalCharacters(signature);",
+									"var jwtToken = unsignedToken + '.' + signature2;",
+									"//console.log(jwtToken);",
+									"",
+									"",
+									"pm.environment.set(\"jwtToken\", jwtToken);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "edb84099-81c1-4926-838f-248365e2db6e",
+								"exec": [
+									"console.log(\"RAW Response:\",pm.response.text());",
+									"body = pm.response.text().split(\".\")[1];",
+									"var parsedWordArray = CryptoJS.enc.Base64.parse(body);",
+									"var parsedStr = parsedWordArray.toString(CryptoJS.enc.Utf8);",
+									"console.log(\"Decoded JSON Response:\",JSON.parse(parsedStr));",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{jwtToken}}"
+						},
+						"url": {
+							"raw": "{{idp_url}}/rest/4/getuserdetails/do",
+							"host": [
+								"{{idp_url}}"
+							],
+							"path": [
+								"rest",
+								"4",
+								"getuserdetails",
+								"do"
+							]
+						},
+						"description": "See https://apidocs.pingidentity.com/pingid-api/guide/pingid-api/pid_c_PingIDapiUserManagement/#GetUserDetails"
+					},
+					"response": []
+				},
+				{
+					"name": "AddUser",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "289184dc-468d-4e10-b248-b31e9210de25",
+								"exec": [
+									"// --------------- REQUEST BODY ---------------",
+									"reqBody = {",
+									"    \"activateUser\": false,",
+									"    \"role\": \"REGULAR\",",
+									"    \"userName\": \"joe\"",
+									"    // Optional: clientData, email, fName, lName, deviceType",
+									"};",
+									"// --------------- REQUEST BODY ---------------",
+									"",
+									"reqHeader = {",
+									"    locale: \"en\",",
+									"    secretKey: pm.environment.get(\"token\"),",
+									"    version: pm.environment.get(\"version\"), ",
+									"    orgAlias: pm.environment.get(\"org_alias\"),",
+									"    timestamp: new Date()",
+									"};",
+									"",
+									"jwtPayload = {};",
+									"jwtPayload.reqHeader = reqHeader;",
+									"jwtPayload.reqBody = reqBody;",
+									"",
+									"jwtHeader = {",
+									"\t\t\"alg\" : \"HS256\",",
+									"\t\t\"org_alias\" : pm.environment.get(\"org_alias\"),",
+									"\t\t\"token\" : pm.environment.get(\"token\")",
+									"};",
+									"",
+									"// Base64 Encoding function",
+									"var base64object = function(input) {",
+									" var inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));",
+									" var base64 = CryptoJS.enc.Base64.stringify(inputWords);",
+									" var output = removeIllegalCharacters(base64);",
+									" return output;",
+									"};",
+									"",
+									"var removeIllegalCharacters = function(input) {",
+									" return input",
+									" .replace(/=/g, '')",
+									" .replace(/\\+/g, '-')",
+									" .replace(/\\//g, '_');",
+									"};",
+									"",
+									"// Create Signed JWT",
+									"var unsignedToken = base64object(jwtHeader) + \".\" + base64object(jwtPayload);",
+									"var apiKeyBytes = CryptoJS.enc.Base64.parse(pm.environment.get(\"key\"));",
+									"var signatureHash = CryptoJS.HmacSHA256(unsignedToken, apiKeyBytes);",
+									"var signature = CryptoJS.enc.Base64.stringify(signatureHash);",
+									"var signature2 = removeIllegalCharacters(signature);",
+									"var jwtToken = unsignedToken + '.' + signature2;",
+									"//console.log(jwtToken);",
+									"",
+									"",
+									"pm.environment.set(\"jwtToken\", jwtToken);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "bfb76d82-06fc-4ccf-ba3f-ab5cadfd144d",
+								"exec": [
+									"console.log(\"RAW Response:\",pm.response.text());",
+									"body = pm.response.text().split(\".\")[1];",
+									"var parsedWordArray = CryptoJS.enc.Base64.parse(body);",
+									"var parsedStr = parsedWordArray.toString(CryptoJS.enc.Utf8);",
+									"console.log(\"Decoded JSON Response:\",JSON.parse(parsedStr));",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{jwtToken}}"
+						},
+						"url": {
+							"raw": "{{idp_url}}/rest/4/adduser/do",
+							"host": [
+								"{{idp_url}}"
+							],
+							"path": [
+								"rest",
+								"4",
+								"adduser",
+								"do"
+							]
+						},
+						"description": "See https://apidocs.pingidentity.com/pingid-api/guide/pingid-api/pid_c_PingIDapiUserManagement/#AddUser"
+					},
+					"response": []
+				},
+				{
+					"name": "EditUser",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "f30f96e7-bf53-4165-9691-8c5594ca46e2",
+								"exec": [
+									"// --------------- REQUEST BODY ---------------",
+									"reqBody = {",
+									"    \"activateUser\": false,",
+									"    \"role\": \"REGULAR\",",
+									"    \"userName\": \"joe\"",
+									"    // Optional: clientData, email, fName, lName",
+									"};",
+									"// --------------- REQUEST BODY ---------------",
+									"",
+									"",
+									"reqHeader = {",
+									"    locale: \"en\", ",
+									"    secretKey: pm.environment.get(\"token\"), ",
+									"    version: pm.environment.get(\"version\"), ",
+									"    orgAlias: pm.environment.get(\"org_alias\"), ",
+									"    timestamp: new Date()",
+									"}",
+									"",
+									"jwtPayload = {};",
+									"jwtPayload.reqHeader = reqHeader;",
+									"jwtPayload.reqBody = reqBody;",
+									"",
+									"jwtHeader = {",
+									"\t\t\"alg\" : \"HS256\",",
+									"\t\t\"org_alias\" : pm.environment.get(\"org_alias\"),",
+									"\t\t\"token\" : pm.environment.get(\"token\")",
+									"};",
+									"",
+									"// Base64 Encoding function",
+									"var base64object = function(input) {",
+									" var inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));",
+									" var base64 = CryptoJS.enc.Base64.stringify(inputWords);",
+									" var output = removeIllegalCharacters(base64);",
+									" return output;",
+									"};",
+									"",
+									"var removeIllegalCharacters = function(input) {",
+									" return input",
+									" .replace(/=/g, '')",
+									" .replace(/\\+/g, '-')",
+									" .replace(/\\//g, '_');",
+									"};",
+									"",
+									"// Create Signed JWT",
+									"var unsignedToken = base64object(jwtHeader) + \".\" + base64object(jwtPayload);",
+									"var apiKeyBytes = CryptoJS.enc.Base64.parse(pm.environment.get(\"key\"));",
+									"var signatureHash = CryptoJS.HmacSHA256(unsignedToken, apiKeyBytes);",
+									"var signature = CryptoJS.enc.Base64.stringify(signatureHash);",
+									"var signature2 = removeIllegalCharacters(signature);",
+									"var jwtToken = unsignedToken + '.' + signature2;",
+									"//console.log(jwtToken);",
+									"",
+									"",
+									"pm.environment.set(\"jwtToken\", jwtToken);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "11d9b97a-aa27-433c-be5f-25f2d7fbf926",
+								"exec": [
+									"console.log(\"RAW Response:\",pm.response.text());",
+									"body = pm.response.text().split(\".\")[1];",
+									"var parsedWordArray = CryptoJS.enc.Base64.parse(body);",
+									"var parsedStr = parsedWordArray.toString(CryptoJS.enc.Utf8);",
+									"console.log(\"Decoded JSON Response:\",JSON.parse(parsedStr));",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{jwtToken}}"
+						},
+						"url": {
+							"raw": "{{idp_url}}/rest/4/edituser/do",
+							"host": [
+								"{{idp_url}}"
+							],
+							"path": [
+								"rest",
+								"4",
+								"edituser",
+								"do"
+							]
+						},
+						"description": "See https://apidocs.pingidentity.com/pingid-api/guide/pingid-api/pid_c_PingIDapiUserManagement/#EditUser"
+					},
+					"response": []
+				},
+				{
+					"name": "SuspendUser",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "999a268d-e471-4539-a3bf-b5a4ee1db3aa",
+								"exec": [
+									"// --------------- REQUEST BODY ---------------",
+									"reqBody = {",
+									"    \"userName\": \"joe\"",
+									"    // Optional: clientData",
+									"};",
+									"// --------------- REQUEST BODY ---------------",
+									"",
+									"reqHeader = {",
+									"    locale: \"en\",",
+									"    secretKey: pm.environment.get(\"token\"),",
+									"    version: pm.environment.get(\"version\"), ",
+									"    orgAlias: pm.environment.get(\"org_alias\"),",
+									"    timestamp: new Date()",
+									"};",
+									"",
+									"jwtPayload = {};",
+									"jwtPayload.reqHeader = reqHeader;",
+									"jwtPayload.reqBody = reqBody;",
+									"",
+									"jwtHeader = {",
+									"\t\t\"alg\" : \"HS256\",",
+									"\t\t\"org_alias\" : pm.environment.get(\"org_alias\"),",
+									"\t\t\"token\" : pm.environment.get(\"token\")",
+									"};",
+									"",
+									"// Base64 Encoding function",
+									"var base64object = function(input) {",
+									" var inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));",
+									" var base64 = CryptoJS.enc.Base64.stringify(inputWords);",
+									" var output = removeIllegalCharacters(base64);",
+									" return output;",
+									"};",
+									"",
+									"var removeIllegalCharacters = function(input) {",
+									" return input",
+									" .replace(/=/g, '')",
+									" .replace(/\\+/g, '-')",
+									" .replace(/\\//g, '_');",
+									"};",
+									"",
+									"// Create Signed JWT",
+									"var unsignedToken = base64object(jwtHeader) + \".\" + base64object(jwtPayload);",
+									"var apiKeyBytes = CryptoJS.enc.Base64.parse(pm.environment.get(\"key\"));",
+									"var signatureHash = CryptoJS.HmacSHA256(unsignedToken, apiKeyBytes);",
+									"var signature = CryptoJS.enc.Base64.stringify(signatureHash);",
+									"var signature2 = removeIllegalCharacters(signature);",
+									"var jwtToken = unsignedToken + '.' + signature2;",
+									"//console.log(jwtToken);",
+									"",
+									"",
+									"pm.environment.set(\"jwtToken\", jwtToken);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "79d64618-71f1-406e-be7a-333476daeeb9",
+								"exec": [
+									"console.log(\"RAW Response:\",pm.response.text());",
+									"body = pm.response.text().split(\".\")[1];",
+									"var parsedWordArray = CryptoJS.enc.Base64.parse(body);",
+									"var parsedStr = parsedWordArray.toString(CryptoJS.enc.Utf8);",
+									"console.log(\"Decoded JSON Response:\",JSON.parse(parsedStr));",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{jwtToken}}"
+						},
+						"url": {
+							"raw": "{{idp_url}}/rest/4/suspenduser/do",
+							"host": [
+								"{{idp_url}}"
+							],
+							"path": [
+								"rest",
+								"4",
+								"suspenduser",
+								"do"
+							]
+						},
+						"description": "See https://apidocs.pingidentity.com/pingid-api/guide/pingid-api/pid_c_PingIDapiUserManagement/#SuspendUser"
+					},
+					"response": []
+				},
+				{
+					"name": "ActivateUser",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "a0cefcb1-8066-4d1c-91a3-b74e9076ae7c",
+								"exec": [
+									"// --------------- REQUEST BODY ---------------",
+									"reqBody = {",
+									"    \"userName\": \"joe\"",
+									"    // Optional: clientData, deviceType",
+									"};",
+									"// --------------- REQUEST BODY ---------------",
+									"",
+									"reqHeader = {",
+									"    locale: \"en\",",
+									"    secretKey: pm.environment.get(\"token\"),",
+									"    version: pm.environment.get(\"version\"), ",
+									"    orgAlias: pm.environment.get(\"org_alias\"),",
+									"    timestamp: new Date()",
+									"};",
+									"",
+									"jwtPayload = {};",
+									"jwtPayload.reqHeader = reqHeader;",
+									"jwtPayload.reqBody = reqBody;",
+									"",
+									"jwtHeader = {",
+									"\t\t\"alg\" : \"HS256\",",
+									"\t\t\"org_alias\" : pm.environment.get(\"org_alias\"),",
+									"\t\t\"token\" : pm.environment.get(\"token\")",
+									"};",
+									"",
+									"// Base64 Encoding function",
+									"var base64object = function(input) {",
+									" var inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));",
+									" var base64 = CryptoJS.enc.Base64.stringify(inputWords);",
+									" var output = removeIllegalCharacters(base64);",
+									" return output;",
+									"};",
+									"",
+									"var removeIllegalCharacters = function(input) {",
+									" return input",
+									" .replace(/=/g, '')",
+									" .replace(/\\+/g, '-')",
+									" .replace(/\\//g, '_');",
+									"};",
+									"",
+									"// Create Signed JWT",
+									"var unsignedToken = base64object(jwtHeader) + \".\" + base64object(jwtPayload);",
+									"var apiKeyBytes = CryptoJS.enc.Base64.parse(pm.environment.get(\"key\"));",
+									"var signatureHash = CryptoJS.HmacSHA256(unsignedToken, apiKeyBytes);",
+									"var signature = CryptoJS.enc.Base64.stringify(signatureHash);",
+									"var signature2 = removeIllegalCharacters(signature);",
+									"var jwtToken = unsignedToken + '.' + signature2;",
+									"//console.log(jwtToken);",
+									"",
+									"",
+									"pm.environment.set(\"jwtToken\", jwtToken);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "da249808-9f74-4f9d-a0a5-ea739d6c1cb6",
+								"exec": [
+									"console.log(\"RAW Response:\",pm.response.text());",
+									"body = pm.response.text().split(\".\")[1];",
+									"var parsedWordArray = CryptoJS.enc.Base64.parse(body);",
+									"var parsedStr = parsedWordArray.toString(CryptoJS.enc.Utf8);",
+									"console.log(\"Decoded JSON Response:\",JSON.parse(parsedStr));",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{jwtToken}}"
+						},
+						"url": {
+							"raw": "{{idp_url}}/rest/4/activateuser/do",
+							"host": [
+								"{{idp_url}}"
+							],
+							"path": [
+								"rest",
+								"4",
+								"activateuser",
+								"do"
+							]
+						},
+						"description": "See https://apidocs.pingidentity.com/pingid-api/guide/pingid-api/pid_c_PingIDapiUserManagement/#ActivateUser"
+					},
+					"response": []
+				},
+				{
+					"name": "ToggleUserBypass",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "691f67e0-eff1-4ec2-99a1-2240e2cb6bb6",
+								"exec": [
+									"// --------------- REQUEST BODY ---------------",
+									"reqBody = {",
+									"    \"bypassUntil\": 1640995199000,",
+									"    \"userName\": \"joe\"",
+									"    // Optional: clientData",
+									"};",
+									"// --------------- REQUEST BODY ---------------",
+									"",
+									"reqHeader = {",
+									"    locale: \"en\",",
+									"    secretKey: pm.environment.get(\"token\"),",
+									"    version: pm.environment.get(\"version\"), ",
+									"    orgAlias: pm.environment.get(\"org_alias\"),",
+									"    timestamp: new Date()",
+									"};",
+									"",
+									"jwtPayload = {};",
+									"jwtPayload.reqHeader = reqHeader;",
+									"jwtPayload.reqBody = reqBody;",
+									"",
+									"jwtHeader = {",
+									"\t\t\"alg\" : \"HS256\",",
+									"\t\t\"org_alias\" : pm.environment.get(\"org_alias\"),",
+									"\t\t\"token\" : pm.environment.get(\"token\")",
+									"};",
+									"",
+									"// Base64 Encoding function",
+									"var base64object = function(input) {",
+									" var inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));",
+									" var base64 = CryptoJS.enc.Base64.stringify(inputWords);",
+									" var output = removeIllegalCharacters(base64);",
+									" return output;",
+									"};",
+									"",
+									"var removeIllegalCharacters = function(input) {",
+									" return input",
+									" .replace(/=/g, '')",
+									" .replace(/\\+/g, '-')",
+									" .replace(/\\//g, '_');",
+									"};",
+									"",
+									"// Create Signed JWT",
+									"var unsignedToken = base64object(jwtHeader) + \".\" + base64object(jwtPayload);",
+									"var apiKeyBytes = CryptoJS.enc.Base64.parse(pm.environment.get(\"key\"));",
+									"var signatureHash = CryptoJS.HmacSHA256(unsignedToken, apiKeyBytes);",
+									"var signature = CryptoJS.enc.Base64.stringify(signatureHash);",
+									"var signature2 = removeIllegalCharacters(signature);",
+									"var jwtToken = unsignedToken + '.' + signature2;",
+									"//console.log(jwtToken);",
+									"",
+									"",
+									"pm.environment.set(\"jwtToken\", jwtToken);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "7089b858-7a15-4d8f-9304-2ae69909a94e",
+								"exec": [
+									"console.log(\"RAW Response:\",pm.response.text());",
+									"body = pm.response.text().split(\".\")[1];",
+									"var parsedWordArray = CryptoJS.enc.Base64.parse(body);",
+									"var parsedStr = parsedWordArray.toString(CryptoJS.enc.Utf8);",
+									"console.log(\"Decoded JSON Response:\",JSON.parse(parsedStr));",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{jwtToken}}"
+						},
+						"url": {
+							"raw": "{{idp_url}}/rest/4/userbypass/do",
+							"host": [
+								"{{idp_url}}"
+							],
+							"path": [
+								"rest",
+								"4",
+								"userbypass",
+								"do"
+							]
+						},
+						"description": "See https://apidocs.pingidentity.com/pingid-api/guide/pingid-api/pid_c_PingIDapiUserManagement/#ToggleUserBypass"
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteUser",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "bf8bdd77-23da-48aa-a146-124c3464a0f7",
+								"exec": [
+									"// --------------- REQUEST BODY ---------------",
+									"reqBody = {",
+									"    \"userName\": \"joe\"",
+									"    // Optional: clientData",
+									"};",
+									"// --------------- REQUEST BODY ---------------",
+									"",
+									"reqHeader = {",
+									"    locale: \"en\",",
+									"    secretKey: pm.environment.get(\"token\"),",
+									"    version: pm.environment.get(\"version\"), ",
+									"    orgAlias: pm.environment.get(\"org_alias\"),",
+									"    timestamp: new Date()",
+									"};",
+									"",
+									"jwtPayload = {};",
+									"jwtPayload.reqHeader = reqHeader;",
+									"jwtPayload.reqBody = reqBody;",
+									"",
+									"jwtHeader = {",
+									"\t\t\"alg\" : \"HS256\",",
+									"\t\t\"org_alias\" : pm.environment.get(\"org_alias\"),",
+									"\t\t\"token\" : pm.environment.get(\"token\")",
+									"};",
+									"",
+									"// Base64 Encoding function",
+									"var base64object = function(input) {",
+									" var inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));",
+									" var base64 = CryptoJS.enc.Base64.stringify(inputWords);",
+									" var output = removeIllegalCharacters(base64);",
+									" return output;",
+									"};",
+									"",
+									"var removeIllegalCharacters = function(input) {",
+									" return input",
+									" .replace(/=/g, '')",
+									" .replace(/\\+/g, '-')",
+									" .replace(/\\//g, '_');",
+									"};",
+									"",
+									"// Create Signed JWT",
+									"var unsignedToken = base64object(jwtHeader) + \".\" + base64object(jwtPayload);",
+									"var apiKeyBytes = CryptoJS.enc.Base64.parse(pm.environment.get(\"key\"));",
+									"var signatureHash = CryptoJS.HmacSHA256(unsignedToken, apiKeyBytes);",
+									"var signature = CryptoJS.enc.Base64.stringify(signatureHash);",
+									"var signature2 = removeIllegalCharacters(signature);",
+									"var jwtToken = unsignedToken + '.' + signature2;",
+									"//console.log(jwtToken);",
+									"",
+									"",
+									"pm.environment.set(\"jwtToken\", jwtToken);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "191704bf-f625-40de-8e8e-da5d48b64b44",
+								"exec": [
+									"console.log(\"RAW Response:\",pm.response.text());",
+									"body = pm.response.text().split(\".\")[1];",
+									"var parsedWordArray = CryptoJS.enc.Base64.parse(body);",
+									"var parsedStr = parsedWordArray.toString(CryptoJS.enc.Utf8);",
+									"console.log(\"Decoded JSON Response:\",JSON.parse(parsedStr));",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{jwtToken}}"
+						},
+						"url": {
+							"raw": "{{idp_url}}/rest/4/deleteuser/do",
+							"host": [
+								"{{idp_url}}"
+							],
+							"path": [
+								"rest",
+								"4",
+								"deleteuser",
+								"do"
+							]
+						},
+						"description": "See https://apidocs.pingidentity.com/pingid-api/guide/pingid-api/pid_c_PingIDapiUserManagement/#DeleteUser"
+					},
+					"response": []
+				},
+				{
+					"name": "GetPairingStatus",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "b1e466cf-527f-496c-8297-c9b61c5a353e",
+								"exec": [
+									"// --------------- REQUEST BODY ---------------",
+									"reqBody = {",
+									"    \"activationCode\": \"123456789012\"",
+									"    // Optional: clientData",
+									"};",
+									"// --------------- REQUEST BODY ---------------",
+									"",
+									"reqHeader = {",
+									"    locale: \"en\",",
+									"    secretKey: pm.environment.get(\"token\"),",
+									"    version: pm.environment.get(\"version\"), ",
+									"    orgAlias: pm.environment.get(\"org_alias\"),",
+									"    timestamp: new Date()",
+									"};",
+									"",
+									"jwtPayload = {};",
+									"jwtPayload.reqHeader = reqHeader;",
+									"jwtPayload.reqBody = reqBody;",
+									"",
+									"jwtHeader = {",
+									"\t\t\"alg\" : \"HS256\",",
+									"\t\t\"org_alias\" : pm.environment.get(\"org_alias\"),",
+									"\t\t\"token\" : pm.environment.get(\"token\")",
+									"};",
+									"",
+									"// Base64 Encoding function",
+									"var base64object = function(input) {",
+									" var inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));",
+									" var base64 = CryptoJS.enc.Base64.stringify(inputWords);",
+									" var output = removeIllegalCharacters(base64);",
+									" return output;",
+									"};",
+									"",
+									"var removeIllegalCharacters = function(input) {",
+									" return input",
+									" .replace(/=/g, '')",
+									" .replace(/\\+/g, '-')",
+									" .replace(/\\//g, '_');",
+									"};",
+									"",
+									"// Create Signed JWT",
+									"var unsignedToken = base64object(jwtHeader) + \".\" + base64object(jwtPayload);",
+									"var apiKeyBytes = CryptoJS.enc.Base64.parse(pm.environment.get(\"key\"));",
+									"var signatureHash = CryptoJS.HmacSHA256(unsignedToken, apiKeyBytes);",
+									"var signature = CryptoJS.enc.Base64.stringify(signatureHash);",
+									"var signature2 = removeIllegalCharacters(signature);",
+									"var jwtToken = unsignedToken + '.' + signature2;",
+									"//console.log(jwtToken);",
+									"",
+									"",
+									"pm.environment.set(\"jwtToken\", jwtToken);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "bf9d6f89-3abe-4839-a8be-15d42d80cb61",
+								"exec": [
+									"console.log(\"RAW Response:\",pm.response.text());",
+									"body = pm.response.text().split(\".\")[1];",
+									"var parsedWordArray = CryptoJS.enc.Base64.parse(body);",
+									"var parsedStr = parsedWordArray.toString(CryptoJS.enc.Utf8);",
+									"console.log(\"Decoded JSON Response:\",JSON.parse(parsedStr));",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{jwtToken}}"
+						},
+						"url": {
+							"raw": "{{idp_url}}/rest/4/pairingstatus/do",
+							"host": [
+								"{{idp_url}}"
+							],
+							"path": [
+								"rest",
+								"4",
+								"pairingstatus",
+								"do"
+							]
+						},
+						"description": "See https://apidocs.pingidentity.com/pingid-api/guide/pingid-api/pid_c_PingIDapiUserManagement/#GetPairingStatus"
+					},
+					"response": []
+				},
+				{
+					"name": "GetActivationCode",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "36287123-c323-4de4-9484-f2c4f2b800eb",
+								"exec": [
+									"// --------------- REQUEST BODY ---------------",
+									"reqBody = {",
+									"    \"userName\": \"joe\"",
+									"    // Optional: clientData, deviceType",
+									"};",
+									"// --------------- REQUEST BODY ---------------",
+									"",
+									"reqHeader = {",
+									"    locale: \"en\",",
+									"    secretKey: pm.environment.get(\"token\"),",
+									"    version: pm.environment.get(\"version\"), ",
+									"    orgAlias: pm.environment.get(\"org_alias\"),",
+									"    timestamp: new Date()",
+									"};",
+									"",
+									"jwtPayload = {};",
+									"jwtPayload.reqHeader = reqHeader;",
+									"jwtPayload.reqBody = reqBody;",
+									"",
+									"jwtHeader = {",
+									"\t\t\"alg\" : \"HS256\",",
+									"\t\t\"org_alias\" : pm.environment.get(\"org_alias\"),",
+									"\t\t\"token\" : pm.environment.get(\"token\")",
+									"};",
+									"",
+									"// Base64 Encoding function",
+									"var base64object = function(input) {",
+									" var inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));",
+									" var base64 = CryptoJS.enc.Base64.stringify(inputWords);",
+									" var output = removeIllegalCharacters(base64);",
+									" return output;",
+									"};",
+									"",
+									"var removeIllegalCharacters = function(input) {",
+									" return input",
+									" .replace(/=/g, '')",
+									" .replace(/\\+/g, '-')",
+									" .replace(/\\//g, '_');",
+									"};",
+									"",
+									"// Create Signed JWT",
+									"var unsignedToken = base64object(jwtHeader) + \".\" + base64object(jwtPayload);",
+									"var apiKeyBytes = CryptoJS.enc.Base64.parse(pm.environment.get(\"key\"));",
+									"var signatureHash = CryptoJS.HmacSHA256(unsignedToken, apiKeyBytes);",
+									"var signature = CryptoJS.enc.Base64.stringify(signatureHash);",
+									"var signature2 = removeIllegalCharacters(signature);",
+									"var jwtToken = unsignedToken + '.' + signature2;",
+									"//console.log(jwtToken);",
+									"",
+									"",
+									"pm.environment.set(\"jwtToken\", jwtToken);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "a8c59e70-b6ad-4ae1-9bdd-37e1e9886b21",
+								"exec": [
+									"console.log(\"RAW Response:\",pm.response.text());",
+									"body = pm.response.text().split(\".\")[1];",
+									"var parsedWordArray = CryptoJS.enc.Base64.parse(body);",
+									"var parsedStr = parsedWordArray.toString(CryptoJS.enc.Utf8);",
+									"console.log(\"Decoded JSON Response:\",JSON.parse(parsedStr));",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{jwtToken}}"
+						},
+						"url": {
+							"raw": "{{idp_url}}/rest/4/getactivationcode/do",
+							"host": [
+								"{{idp_url}}"
+							],
+							"path": [
+								"rest",
+								"4",
+								"getactivationcode",
+								"do"
+							]
+						},
+						"description": "See https://apidocs.pingidentity.com/pingid-api/guide/pingid-api/pid_c_PingIDapiUserManagement/#GetActivationCode"
+					},
+					"response": []
+				},
+				{
+					"name": "StartOfflinePairing",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "a0fd553b-fa0d-48b7-a886-92f564b55962",
+								"exec": [
+									"// --------------- REQUEST BODY ---------------",
+									"reqBody = {",
+									"    \"username\": \"joe\", ",
+									"    \"type\":\"EMAIL\", ",
+									"    \"pairingData\": \"joe@domain.com\" ",
+									"    // Optional: clientData, validateUniqueDevice",
+									"};",
+									"// --------------- REQUEST BODY ---------------",
+									"",
+									"reqHeader = {",
+									"    locale: \"en\",",
+									"    secretKey: pm.environment.get(\"token\"),",
+									"    version: pm.environment.get(\"version\"), ",
+									"    orgAlias: pm.environment.get(\"org_alias\"),",
+									"    timestamp: new Date()",
+									"};",
+									"",
+									"jwtPayload = {};",
+									"jwtPayload.reqHeader = reqHeader;",
+									"jwtPayload.reqBody = reqBody;",
+									"",
+									"jwtHeader = {",
+									"\t\t\"alg\" : \"HS256\",",
+									"\t\t\"org_alias\" : pm.environment.get(\"org_alias\"),",
+									"\t\t\"token\" : pm.environment.get(\"token\")",
+									"};",
+									"",
+									"// Base64 Encoding function",
+									"var base64object = function(input) {",
+									" var inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));",
+									" var base64 = CryptoJS.enc.Base64.stringify(inputWords);",
+									" var output = removeIllegalCharacters(base64);",
+									" return output;",
+									"};",
+									"",
+									"var removeIllegalCharacters = function(input) {",
+									" return input",
+									" .replace(/=/g, '')",
+									" .replace(/\\+/g, '-')",
+									" .replace(/\\//g, '_');",
+									"};",
+									"",
+									"// Create Signed JWT",
+									"var unsignedToken = base64object(jwtHeader) + \".\" + base64object(jwtPayload);",
+									"var apiKeyBytes = CryptoJS.enc.Base64.parse(pm.environment.get(\"key\"));",
+									"var signatureHash = CryptoJS.HmacSHA256(unsignedToken, apiKeyBytes);",
+									"var signature = CryptoJS.enc.Base64.stringify(signatureHash);",
+									"var signature2 = removeIllegalCharacters(signature);",
+									"var jwtToken = unsignedToken + '.' + signature2;",
+									"//console.log(jwtToken);",
+									"",
+									"",
+									"pm.environment.set(\"jwtToken\", jwtToken);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "80cf1297-9a36-4cc3-a623-5b74a0e1ecb3",
+								"exec": [
+									"console.log(\"RAW Response:\",pm.response.text());",
+									"body = pm.response.text().split(\".\")[1];",
+									"var parsedWordArray = CryptoJS.enc.Base64.parse(body);",
+									"var parsedStr = parsedWordArray.toString(CryptoJS.enc.Utf8);",
+									"console.log(\"Decoded JSON Response:\",JSON.parse(parsedStr));",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{jwtToken}}"
+						},
+						"url": {
+							"raw": "{{idp_url}}/rest/4/startofflinepairing/do",
+							"host": [
+								"{{idp_url}}"
+							],
+							"path": [
+								"rest",
+								"4",
+								"startofflinepairing",
+								"do"
+							]
+						},
+						"description": "See https://apidocs.pingidentity.com/pingid-api/guide/pingid-api/pid_c_PingIDapiUserManagement/#StartOfflinePairing"
+					},
+					"response": []
+				},
+				{
+					"name": "FinalizeOfflinePairing",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "58d39955-2a20-4aa1-8f96-9be11600b1e6",
+								"exec": [
+									"// --------------- REQUEST BODY ---------------",
+									"reqBody = {",
+									"    \"sessionId\": \"oacts_tUgUClmABCPlJfCHQVNEidjLch3mkNtnkGXABCdAYPc\", ",
+									"    \"otp\": \"123456\"",
+									"    // Optional: clientData",
+									"};",
+									"// --------------- REQUEST BODY ---------------",
+									"",
+									"reqHeader = {",
+									"    locale: \"en\",",
+									"    secretKey: pm.environment.get(\"token\"),",
+									"    version: pm.environment.get(\"version\"), ",
+									"    orgAlias: pm.environment.get(\"org_alias\"),",
+									"    timestamp: new Date()",
+									"};",
+									"",
+									"jwtPayload = {};",
+									"jwtPayload.reqHeader = reqHeader;",
+									"jwtPayload.reqBody = reqBody;",
+									"",
+									"jwtHeader = {",
+									"\t\t\"alg\" : \"HS256\",",
+									"\t\t\"org_alias\" : pm.environment.get(\"org_alias\"),",
+									"\t\t\"token\" : pm.environment.get(\"token\")",
+									"};",
+									"",
+									"// Base64 Encoding function",
+									"var base64object = function(input) {",
+									" var inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));",
+									" var base64 = CryptoJS.enc.Base64.stringify(inputWords);",
+									" var output = removeIllegalCharacters(base64);",
+									" return output;",
+									"};",
+									"",
+									"var removeIllegalCharacters = function(input) {",
+									" return input",
+									" .replace(/=/g, '')",
+									" .replace(/\\+/g, '-')",
+									" .replace(/\\//g, '_');",
+									"};",
+									"",
+									"// Create Signed JWT",
+									"var unsignedToken = base64object(jwtHeader) + \".\" + base64object(jwtPayload);",
+									"var apiKeyBytes = CryptoJS.enc.Base64.parse(pm.environment.get(\"key\"));",
+									"var signatureHash = CryptoJS.HmacSHA256(unsignedToken, apiKeyBytes);",
+									"var signature = CryptoJS.enc.Base64.stringify(signatureHash);",
+									"var signature2 = removeIllegalCharacters(signature);",
+									"var jwtToken = unsignedToken + '.' + signature2;",
+									"//console.log(jwtToken);",
+									"",
+									"",
+									"pm.environment.set(\"jwtToken\", jwtToken);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "f1276bd4-3ae4-40ce-8395-6b2f9dc47957",
+								"exec": [
+									"console.log(\"RAW Response:\",pm.response.text());",
+									"body = pm.response.text().split(\".\")[1];",
+									"var parsedWordArray = CryptoJS.enc.Base64.parse(body);",
+									"var parsedStr = parsedWordArray.toString(CryptoJS.enc.Utf8);",
+									"console.log(\"Decoded JSON Response:\",JSON.parse(parsedStr));",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{jwtToken}}"
+						},
+						"url": {
+							"raw": "{{idp_url}}/rest/4/finalizeofflinepairing/do",
+							"host": [
+								"{{idp_url}}"
+							],
+							"path": [
+								"rest",
+								"4",
+								"finalizeofflinepairing",
+								"do"
+							]
+						},
+						"description": "See https://apidocs.pingidentity.com/pingid-api/guide/pingid-api/pid_c_PingIDapiUserManagement/#FinalizeOfflinePairing"
+					},
+					"response": []
+				},
+				{
+					"name": "OfflinePairing",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "8371b02b-6d30-4114-b1be-250a28f30bf4",
+								"exec": [
+									"// --------------- REQUEST BODY ---------------",
+									"reqBody = {",
+									"    \"username\":\"joe\", ",
+									"    \"type\":\"EMAIL\", ",
+									"    \"pairingData\":\"joe@domain.org\"",
+									"    // Optional: clientData, validateUniqueDevice",
+									"};",
+									"// --------------- REQUEST BODY ---------------",
+									"",
+									"reqHeader = {",
+									"    locale: \"en\",",
+									"    secretKey: pm.environment.get(\"token\"),",
+									"    version: pm.environment.get(\"version\"), ",
+									"    orgAlias: pm.environment.get(\"org_alias\"),",
+									"    timestamp: new Date()",
+									"};",
+									"",
+									"jwtPayload = {};",
+									"jwtPayload.reqHeader = reqHeader;",
+									"jwtPayload.reqBody = reqBody;",
+									"",
+									"jwtHeader = {",
+									"\t\t\"alg\" : \"HS256\",",
+									"\t\t\"org_alias\" : pm.environment.get(\"org_alias\"),",
+									"\t\t\"token\" : pm.environment.get(\"token\")",
+									"};",
+									"",
+									"// Base64 Encoding function",
+									"var base64object = function(input) {",
+									" var inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));",
+									" var base64 = CryptoJS.enc.Base64.stringify(inputWords);",
+									" var output = removeIllegalCharacters(base64);",
+									" return output;",
+									"};",
+									"",
+									"var removeIllegalCharacters = function(input) {",
+									" return input",
+									" .replace(/=/g, '')",
+									" .replace(/\\+/g, '-')",
+									" .replace(/\\//g, '_');",
+									"};",
+									"",
+									"// Create Signed JWT",
+									"var unsignedToken = base64object(jwtHeader) + \".\" + base64object(jwtPayload);",
+									"var apiKeyBytes = CryptoJS.enc.Base64.parse(pm.environment.get(\"key\"));",
+									"var signatureHash = CryptoJS.HmacSHA256(unsignedToken, apiKeyBytes);",
+									"var signature = CryptoJS.enc.Base64.stringify(signatureHash);",
+									"var signature2 = removeIllegalCharacters(signature);",
+									"var jwtToken = unsignedToken + '.' + signature2;",
+									"//console.log(jwtToken);",
+									"",
+									"",
+									"pm.environment.set(\"jwtToken\", jwtToken);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "7ece7402-9c57-4982-81ef-60f5bddff90c",
+								"exec": [
+									"console.log(\"RAW Response:\",pm.response.text());",
+									"body = pm.response.text().split(\".\")[1];",
+									"var parsedWordArray = CryptoJS.enc.Base64.parse(body);",
+									"var parsedStr = parsedWordArray.toString(CryptoJS.enc.Utf8);",
+									"console.log(\"Decoded JSON Response:\",JSON.parse(parsedStr));",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{jwtToken}}"
+						},
+						"url": {
+							"raw": "{{idp_url}}/rest/4/offlinepairing/do",
+							"host": [
+								"{{idp_url}}"
+							],
+							"path": [
+								"rest",
+								"4",
+								"offlinepairing",
+								"do"
+							]
+						},
+						"description": "See https://apidocs.pingidentity.com/pingid-api/guide/pingid-api/pid_c_PingIDapiUserManagement/#OfflinePairing"
+					},
+					"response": []
+				},
+				{
+					"name": "PairYubiKey",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "0cfefeb9-ed45-4dc7-b6a6-d93d9eeed5e8",
+								"exec": [
+									"// --------------- REQUEST BODY ---------------",
+									"reqBody = {",
+									"    \"username\": \"joe\", ",
+									"    \"otp\": \"ccccccabcdefghijklmnopqrstuvwxyz\"",
+									"    // Optional: clientData, validateUniqueDevice",
+									"};",
+									"// --------------- REQUEST BODY ---------------",
+									"",
+									"reqHeader = {",
+									"    locale: \"en\",",
+									"    secretKey: pm.environment.get(\"token\"),",
+									"    version: pm.environment.get(\"version\"), ",
+									"    orgAlias: pm.environment.get(\"org_alias\"),",
+									"    timestamp: new Date()",
+									"};",
+									"",
+									"jwtPayload = {};",
+									"jwtPayload.reqHeader = reqHeader;",
+									"jwtPayload.reqBody = reqBody;",
+									"",
+									"jwtHeader = {",
+									"\t\t\"alg\" : \"HS256\",",
+									"\t\t\"org_alias\" : pm.environment.get(\"org_alias\"),",
+									"\t\t\"token\" : pm.environment.get(\"token\")",
+									"};",
+									"",
+									"// Base64 Encoding function",
+									"var base64object = function(input) {",
+									" var inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));",
+									" var base64 = CryptoJS.enc.Base64.stringify(inputWords);",
+									" var output = removeIllegalCharacters(base64);",
+									" return output;",
+									"};",
+									"",
+									"var removeIllegalCharacters = function(input) {",
+									" return input",
+									" .replace(/=/g, '')",
+									" .replace(/\\+/g, '-')",
+									" .replace(/\\//g, '_');",
+									"};",
+									"",
+									"// Create Signed JWT",
+									"var unsignedToken = base64object(jwtHeader) + \".\" + base64object(jwtPayload);",
+									"var apiKeyBytes = CryptoJS.enc.Base64.parse(pm.environment.get(\"key\"));",
+									"var signatureHash = CryptoJS.HmacSHA256(unsignedToken, apiKeyBytes);",
+									"var signature = CryptoJS.enc.Base64.stringify(signatureHash);",
+									"var signature2 = removeIllegalCharacters(signature);",
+									"var jwtToken = unsignedToken + '.' + signature2;",
+									"//console.log(jwtToken);",
+									"",
+									"",
+									"pm.environment.set(\"jwtToken\", jwtToken);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "59e4c0e3-7298-4812-909c-2a1bb032920f",
+								"exec": [
+									"console.log(\"RAW Response:\",pm.response.text());",
+									"body = pm.response.text().split(\".\")[1];",
+									"var parsedWordArray = CryptoJS.enc.Base64.parse(body);",
+									"var parsedStr = parsedWordArray.toString(CryptoJS.enc.Utf8);",
+									"console.log(\"Decoded JSON Response:\",JSON.parse(parsedStr));",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{jwtToken}}"
+						},
+						"url": {
+							"raw": "{{idp_url}}/rest/4/pairyubikey/do",
+							"host": [
+								"{{idp_url}}"
+							],
+							"path": [
+								"rest",
+								"4",
+								"pairyubikey",
+								"do"
+							]
+						},
+						"description": "See https://apidocs.pingidentity.com/pingid-api/guide/pingid-api/pid_c_PingIDapiUserManagement/#PairYubiKey"
+					},
+					"response": []
+				},
+				{
+					"name": "UnpairDevice",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "ae4c7ac9-604f-4ac4-a284-e80081fd648d",
+								"exec": [
+									"// --------------- REQUEST BODY ---------------",
+									"reqBody = {",
+									"    \"userName\": \"joe\", ",
+									"    \"deviceId\": \"12345678901234567890\"",
+									"    // Optional: clientData",
+									"};",
+									"// --------------- REQUEST BODY ---------------",
+									"",
+									"reqHeader = {",
+									"    locale: \"en\",",
+									"    secretKey: pm.environment.get(\"token\"),",
+									"    version: pm.environment.get(\"version\"), ",
+									"    orgAlias: pm.environment.get(\"org_alias\"),",
+									"    timestamp: new Date()",
+									"};",
+									"",
+									"jwtPayload = {};",
+									"jwtPayload.reqHeader = reqHeader;",
+									"jwtPayload.reqBody = reqBody;",
+									"",
+									"jwtHeader = {",
+									"\t\t\"alg\" : \"HS256\",",
+									"\t\t\"org_alias\" : pm.environment.get(\"org_alias\"),",
+									"\t\t\"token\" : pm.environment.get(\"token\")",
+									"};",
+									"",
+									"// Base64 Encoding function",
+									"var base64object = function(input) {",
+									" var inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));",
+									" var base64 = CryptoJS.enc.Base64.stringify(inputWords);",
+									" var output = removeIllegalCharacters(base64);",
+									" return output;",
+									"};",
+									"",
+									"var removeIllegalCharacters = function(input) {",
+									" return input",
+									" .replace(/=/g, '')",
+									" .replace(/\\+/g, '-')",
+									" .replace(/\\//g, '_');",
+									"};",
+									"",
+									"// Create Signed JWT",
+									"var unsignedToken = base64object(jwtHeader) + \".\" + base64object(jwtPayload);",
+									"var apiKeyBytes = CryptoJS.enc.Base64.parse(pm.environment.get(\"key\"));",
+									"var signatureHash = CryptoJS.HmacSHA256(unsignedToken, apiKeyBytes);",
+									"var signature = CryptoJS.enc.Base64.stringify(signatureHash);",
+									"var signature2 = removeIllegalCharacters(signature);",
+									"var jwtToken = unsignedToken + '.' + signature2;",
+									"//console.log(jwtToken);",
+									"",
+									"",
+									"pm.environment.set(\"jwtToken\", jwtToken);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "5ba96206-8769-4848-a434-7a275aabafed",
+								"exec": [
+									"console.log(\"RAW Response:\",pm.response.text());",
+									"body = pm.response.text().split(\".\")[1];",
+									"var parsedWordArray = CryptoJS.enc.Base64.parse(body);",
+									"var parsedStr = parsedWordArray.toString(CryptoJS.enc.Utf8);",
+									"console.log(\"Decoded JSON Response:\",JSON.parse(parsedStr));",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{jwtToken}}"
+						},
+						"url": {
+							"raw": "{{idp_url}}/rest/4/unpairdevice/do",
+							"host": [
+								"{{idp_url}}"
+							],
+							"path": [
+								"rest",
+								"4",
+								"unpairdevice",
+								"do"
+							]
+						},
+						"description": "See https://apidocs.pingidentity.com/pingid-api/guide/pingid-api/pid_c_PingIDapiUserManagement/#UnpairDevice"
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateDeviceAttributes",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "dbb483ec-9d4a-4757-a85f-000020bc0c09",
+								"exec": [
+									"// --------------- REQUEST BODY ---------------",
+									"reqBody = {",
+									"    \"attributeName\": \"NICKNAME\",",
+									"    \"attributeValue\": \"Corporate E-Mail\",",
+									"    \"userName\": \"joe\", ",
+									"    \"deviceId\": \"12345678901234567890\"",
+									"    // Optional: clientData",
+									"};",
+									"// --------------- REQUEST BODY ---------------",
+									"",
+									"reqHeader = {",
+									"    locale: \"en\",",
+									"    secretKey: pm.environment.get(\"token\"),",
+									"    version: pm.environment.get(\"version\"), ",
+									"    orgAlias: pm.environment.get(\"org_alias\"),",
+									"    timestamp: new Date()",
+									"};",
+									"",
+									"jwtPayload = {};",
+									"jwtPayload.reqHeader = reqHeader;",
+									"jwtPayload.reqBody = reqBody;",
+									"",
+									"jwtHeader = {",
+									"\t\t\"alg\" : \"HS256\",",
+									"\t\t\"org_alias\" : pm.environment.get(\"org_alias\"),",
+									"\t\t\"token\" : pm.environment.get(\"token\")",
+									"};",
+									"",
+									"// Base64 Encoding function",
+									"var base64object = function(input) {",
+									" var inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));",
+									" var base64 = CryptoJS.enc.Base64.stringify(inputWords);",
+									" var output = removeIllegalCharacters(base64);",
+									" return output;",
+									"};",
+									"",
+									"var removeIllegalCharacters = function(input) {",
+									" return input",
+									" .replace(/=/g, '')",
+									" .replace(/\\+/g, '-')",
+									" .replace(/\\//g, '_');",
+									"};",
+									"",
+									"// Create Signed JWT",
+									"var unsignedToken = base64object(jwtHeader) + \".\" + base64object(jwtPayload);",
+									"var apiKeyBytes = CryptoJS.enc.Base64.parse(pm.environment.get(\"key\"));",
+									"var signatureHash = CryptoJS.HmacSHA256(unsignedToken, apiKeyBytes);",
+									"var signature = CryptoJS.enc.Base64.stringify(signatureHash);",
+									"var signature2 = removeIllegalCharacters(signature);",
+									"var jwtToken = unsignedToken + '.' + signature2;",
+									"//console.log(jwtToken);",
+									"",
+									"",
+									"pm.environment.set(\"jwtToken\", jwtToken);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "9e794636-a4f9-4948-9276-460415dd6929",
+								"exec": [
+									"console.log(\"RAW Response:\",pm.response.text());",
+									"body = pm.response.text().split(\".\")[1];",
+									"var parsedWordArray = CryptoJS.enc.Base64.parse(body);",
+									"var parsedStr = parsedWordArray.toString(CryptoJS.enc.Utf8);",
+									"console.log(\"Decoded JSON Response:\",JSON.parse(parsedStr));",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{jwtToken}}"
+						},
+						"url": {
+							"raw": "{{idp_url}}/rest/4/updatedeviceattr/do",
+							"host": [
+								"{{idp_url}}"
+							],
+							"path": [
+								"rest",
+								"4",
+								"updatedeviceattr",
+								"do"
+							]
+						},
+						"description": "See https://apidocs.pingidentity.com/pingid-api/guide/pingid-api/pid_c_PingIDapiUserManagement/#UpdateDeviceAttributes"
+					},
+					"response": []
+				},
+				{
+					"name": "AuthenticatorAppStartPairing",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "d4e4d00f-0b34-445d-af44-ceec967e9dec",
+								"exec": [
+									"// --------------- REQUEST BODY ---------------",
+									"reqBody = {",
+									"    \"username\": \"joe\", ",
+									"    \"pairingType\": \"TOTP\"",
+									"};",
+									"// --------------- REQUEST BODY ---------------",
+									"",
+									"reqHeader = {",
+									"    locale: \"en\",",
+									"    secretKey: pm.environment.get(\"token\"),",
+									"    version: pm.environment.get(\"version\"), ",
+									"    orgAlias: pm.environment.get(\"org_alias\"),",
+									"    timestamp: new Date()",
+									"};",
+									"",
+									"jwtPayload = {};",
+									"jwtPayload.reqHeader = reqHeader;",
+									"jwtPayload.reqBody = reqBody;",
+									"",
+									"jwtHeader = {",
+									"\t\t\"alg\" : \"HS256\",",
+									"\t\t\"org_alias\" : pm.environment.get(\"org_alias\"),",
+									"\t\t\"token\" : pm.environment.get(\"token\")",
+									"};",
+									"",
+									"// Base64 Encoding function",
+									"var base64object = function(input) {",
+									" var inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));",
+									" var base64 = CryptoJS.enc.Base64.stringify(inputWords);",
+									" var output = removeIllegalCharacters(base64);",
+									" return output;",
+									"};",
+									"",
+									"var removeIllegalCharacters = function(input) {",
+									" return input",
+									" .replace(/=/g, '')",
+									" .replace(/\\+/g, '-')",
+									" .replace(/\\//g, '_');",
+									"};",
+									"",
+									"// Create Signed JWT",
+									"var unsignedToken = base64object(jwtHeader) + \".\" + base64object(jwtPayload);",
+									"var apiKeyBytes = CryptoJS.enc.Base64.parse(pm.environment.get(\"key\"));",
+									"var signatureHash = CryptoJS.HmacSHA256(unsignedToken, apiKeyBytes);",
+									"var signature = CryptoJS.enc.Base64.stringify(signatureHash);",
+									"var signature2 = removeIllegalCharacters(signature);",
+									"var jwtToken = unsignedToken + '.' + signature2;",
+									"//console.log(jwtToken);",
+									"",
+									"",
+									"pm.environment.set(\"jwtToken\", jwtToken);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "9d2694aa-dfb1-43b7-bbe6-aecb90ac4827",
+								"exec": [
+									"console.log(\"RAW Response:\",pm.response.text());",
+									"body = pm.response.text().split(\".\")[1];",
+									"var parsedWordArray = CryptoJS.enc.Base64.parse(body);",
+									"var parsedStr = parsedWordArray.toString(CryptoJS.enc.Utf8);",
+									"//console.log(\"Decoded JSON Response:\",JSON.parse(parsedStr));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{jwtToken}}"
+						},
+						"url": {
+							"raw": "{{idp_url}}/rest/4/authenticatorappstartpairing/do",
+							"host": [
+								"{{idp_url}}"
+							],
+							"path": [
+								"rest",
+								"4",
+								"authenticatorappstartpairing",
+								"do"
+							]
+						},
+						"description": "See https://apidocs.pingidentity.com/pingid-api/guide/pingid-api/pid_c_PingIDapiUserManagement/#AuthenticatorAppStartPairing"
+					},
+					"response": []
+				},
+				{
+					"name": "AuthenticatorAppFinishPairing",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "738f1e6f-fd70-409f-8074-20d64349ba3e",
+								"exec": [
+									"// --------------- REQUEST BODY ---------------",
+									"reqBody = {",
+									"    \"otp\": \"123456\", ",
+									"    \"sessionId\": \"oacts_uRbXj84st6n8xABCDeAhC9EcddHFckkwrJrEFGHJWjRY\"",
+									"};",
+									"// --------------- REQUEST BODY ---------------",
+									"",
+									"reqHeader = {",
+									"    locale: \"en\",",
+									"    secretKey: pm.environment.get(\"token\"),",
+									"    version: pm.environment.get(\"version\"), ",
+									"    orgAlias: pm.environment.get(\"org_alias\"),",
+									"    timestamp: new Date()",
+									"};",
+									"",
+									"jwtPayload = {};",
+									"jwtPayload.reqHeader = reqHeader;",
+									"jwtPayload.reqBody = reqBody;",
+									"",
+									"jwtHeader = {",
+									"\t\t\"alg\" : \"HS256\",",
+									"\t\t\"org_alias\" : pm.environment.get(\"org_alias\"),",
+									"\t\t\"token\" : pm.environment.get(\"token\")",
+									"};",
+									"",
+									"// Base64 Encoding function",
+									"var base64object = function(input) {",
+									" var inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));",
+									" var base64 = CryptoJS.enc.Base64.stringify(inputWords);",
+									" var output = removeIllegalCharacters(base64);",
+									" return output;",
+									"};",
+									"",
+									"var removeIllegalCharacters = function(input) {",
+									" return input",
+									" .replace(/=/g, '')",
+									" .replace(/\\+/g, '-')",
+									" .replace(/\\//g, '_');",
+									"};",
+									"",
+									"// Create Signed JWT",
+									"var unsignedToken = base64object(jwtHeader) + \".\" + base64object(jwtPayload);",
+									"var apiKeyBytes = CryptoJS.enc.Base64.parse(pm.environment.get(\"key\"));",
+									"var signatureHash = CryptoJS.HmacSHA256(unsignedToken, apiKeyBytes);",
+									"var signature = CryptoJS.enc.Base64.stringify(signatureHash);",
+									"var signature2 = removeIllegalCharacters(signature);",
+									"var jwtToken = unsignedToken + '.' + signature2;",
+									"//console.log(jwtToken);",
+									"",
+									"",
+									"pm.environment.set(\"jwtToken\", jwtToken);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "fe8ed67e-39d2-4b26-884b-a6aefecbcbe6",
+								"exec": [
+									"console.log(\"RAW Response:\",pm.response.text());",
+									"body = pm.response.text().split(\".\")[1];",
+									"var parsedWordArray = CryptoJS.enc.Base64.parse(body);",
+									"var parsedStr = parsedWordArray.toString(CryptoJS.enc.Utf8);",
+									"console.log(\"Decoded JSON Response:\",JSON.parse(parsedStr));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{jwtToken}}"
+						},
+						"url": {
+							"raw": "{{idp_url}}/rest/4/authenticatorappfinishpairing/do",
+							"host": [
+								"{{idp_url}}"
+							],
+							"path": [
+								"rest",
+								"4",
+								"authenticatorappfinishpairing",
+								"do"
+							]
+						},
+						"description": "See https://apidocs.pingidentity.com/pingid-api/guide/pingid-api/pid_c_PingIDapiUserManagement/#AuthenticatorAppFinishPairing"
+					},
+					"response": []
+				},
+				{
+					"name": "WebAuthnStartPairing",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "b391df20-b8a5-486f-8b5d-2b5d30985981",
+								"exec": [
+									"// --------------- REQUEST BODY ---------------",
+									"reqBody = {",
+									"    \"rpId\": \"pingone.com\",",
+									"    \"rpName\": \"PingID Web Authentication\",",
+									"    \"userName\": \"joe\", ",
+									"    \"webauthnType\": \"WebAuthn\"",
+									"};",
+									"// --------------- REQUEST BODY ---------------",
+									"",
+									"reqHeader = {",
+									"    locale: \"en\",",
+									"    secretKey: pm.environment.get(\"token\"),",
+									"    version: pm.environment.get(\"version\"), ",
+									"    orgAlias: pm.environment.get(\"org_alias\"),",
+									"    timestamp: new Date()",
+									"};",
+									"",
+									"jwtPayload = {};",
+									"jwtPayload.reqHeader = reqHeader;",
+									"jwtPayload.reqBody = reqBody;",
+									"",
+									"jwtHeader = {",
+									"\t\t\"alg\" : \"HS256\",",
+									"\t\t\"org_alias\" : pm.environment.get(\"org_alias\"),",
+									"\t\t\"token\" : pm.environment.get(\"token\")",
+									"};",
+									"",
+									"// Base64 Encoding function",
+									"var base64object = function(input) {",
+									" var inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));",
+									" var base64 = CryptoJS.enc.Base64.stringify(inputWords);",
+									" var output = removeIllegalCharacters(base64);",
+									" return output;",
+									"};",
+									"",
+									"var removeIllegalCharacters = function(input) {",
+									" return input",
+									" .replace(/=/g, '')",
+									" .replace(/\\+/g, '-')",
+									" .replace(/\\//g, '_');",
+									"};",
+									"",
+									"// Create Signed JWT",
+									"var unsignedToken = base64object(jwtHeader) + \".\" + base64object(jwtPayload);",
+									"var apiKeyBytes = CryptoJS.enc.Base64.parse(pm.environment.get(\"key\"));",
+									"var signatureHash = CryptoJS.HmacSHA256(unsignedToken, apiKeyBytes);",
+									"var signature = CryptoJS.enc.Base64.stringify(signatureHash);",
+									"var signature2 = removeIllegalCharacters(signature);",
+									"var jwtToken = unsignedToken + '.' + signature2;",
+									"//console.log(jwtToken);",
+									"",
+									"",
+									"pm.environment.set(\"jwtToken\", jwtToken);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "c5e90abe-8c14-4c84-8469-644fb02cf2a6",
+								"exec": [
+									"console.log(\"RAW Response:\",pm.response.text());",
+									"body = pm.response.text().split(\".\")[1];",
+									"var parsedWordArray = CryptoJS.enc.Base64.parse(body);",
+									"var parsedStr = parsedWordArray.toString(CryptoJS.enc.Utf8);",
+									"console.log(\"Decoded JSON Response:\",JSON.parse(parsedStr));",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{jwtToken}}"
+						},
+						"url": {
+							"raw": "{{idp_url}}/rest/4/webauthnstartpairing/do",
+							"host": [
+								"{{idp_url}}"
+							],
+							"path": [
+								"rest",
+								"4",
+								"webauthnstartpairing",
+								"do"
+							]
+						},
+						"description": "See https://apidocs.pingidentity.com/pingid-api/guide/pingid-api/pid_c_PingIDapiUserManagement/#WebAuthnStartPairing-FIDO-security-key and https://apidocs.pingidentity.com/pingid-api/guide/pingid-api/pid_c_PingIDapiUserManagement/#WebAuthnStartPairing-FIDO-biometrics"
+					},
+					"response": []
+				},
+				{
+					"name": "WebAuthnFinishPairing",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "d956cdca-581e-49bc-9921-3c2c107f5a78",
+								"exec": [
+									"// --------------- REQUEST BODY ---------------",
+									"reqBody = {",
+									"    \"rpId\": \"pingone.com\",",
+									"    \"sessionId\": \"9z8y7x6w-abcd-efgh-ijkl-1a2b3c4d5e6f\",",
+									"    \"userName\": \"joe\", ",
+									"    \"origin\": \"WebAuthn\",",
+									"    \"publicKeyCredentialJson\": \"\"",
+									"};",
+									"// --------------- REQUEST BODY ---------------",
+									"",
+									"reqHeader = {",
+									"    locale: \"en\",",
+									"    secretKey: pm.environment.get(\"token\"),",
+									"    version: pm.environment.get(\"version\"), ",
+									"    orgAlias: pm.environment.get(\"org_alias\"),",
+									"    timestamp: new Date()",
+									"};",
+									"",
+									"jwtPayload = {};",
+									"jwtPayload.reqHeader = reqHeader;",
+									"jwtPayload.reqBody = reqBody;",
+									"",
+									"jwtHeader = {",
+									"\t\t\"alg\" : \"HS256\",",
+									"\t\t\"org_alias\" : pm.environment.get(\"org_alias\"),",
+									"\t\t\"token\" : pm.environment.get(\"token\")",
+									"};",
+									"",
+									"// Base64 Encoding function",
+									"var base64object = function(input) {",
+									" var inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));",
+									" var base64 = CryptoJS.enc.Base64.stringify(inputWords);",
+									" var output = removeIllegalCharacters(base64);",
+									" return output;",
+									"};",
+									"",
+									"var removeIllegalCharacters = function(input) {",
+									" return input",
+									" .replace(/=/g, '')",
+									" .replace(/\\+/g, '-')",
+									" .replace(/\\//g, '_');",
+									"};",
+									"",
+									"// Create Signed JWT",
+									"var unsignedToken = base64object(jwtHeader) + \".\" + base64object(jwtPayload);",
+									"var apiKeyBytes = CryptoJS.enc.Base64.parse(pm.environment.get(\"key\"));",
+									"var signatureHash = CryptoJS.HmacSHA256(unsignedToken, apiKeyBytes);",
+									"var signature = CryptoJS.enc.Base64.stringify(signatureHash);",
+									"var signature2 = removeIllegalCharacters(signature);",
+									"var jwtToken = unsignedToken + '.' + signature2;",
+									"//console.log(jwtToken);",
+									"",
+									"",
+									"pm.environment.set(\"jwtToken\", jwtToken);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "a2f24776-f960-4b0f-a611-6cb188dae457",
+								"exec": [
+									"console.log(\"RAW Response:\",pm.response.text());",
+									"body = pm.response.text().split(\".\")[1];",
+									"var parsedWordArray = CryptoJS.enc.Base64.parse(body);",
+									"var parsedStr = parsedWordArray.toString(CryptoJS.enc.Utf8);",
+									"console.log(\"Decoded JSON Response:\",JSON.parse(parsedStr));",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{jwtToken}}"
+						},
+						"url": {
+							"raw": "{{idp_url}}/rest/4/webauthnfinishpairing/do",
+							"host": [
+								"{{idp_url}}"
+							],
+							"path": [
+								"rest",
+								"4",
+								"webauthnfinishpairing",
+								"do"
+							]
+						},
+						"description": "See https://apidocs.pingidentity.com/pingid-api/guide/pingid-api/pid_c_PingIDapiUserManagement/#WebAuthnFinishPairing-FIDO-security-key and https://apidocs.pingidentity.com/pingid-api/guide/pingid-api/pid_c_PingIDapiUserManagement/#WebAuthnFinishPairing-FIDO-biometrics"
+					},
+					"response": []
+				}
+			],
+			"description": "Please see https://apidocs.pingidentity.com/pingid-api/guide/pingid-api/pid_c_PingIDapiUserManagement for the full documentation of the PingID User Management APIs",
 			"event": [
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "c78740c7-e494-4354-aee6-b5babe86b0a0",
+						"id": "0e5290b6-5b3b-41c2-8a15-5c11e60229c3",
+						"type": "text/javascript",
 						"exec": [
-							"// --------------- REQUEST BODY ---------------",
-							"reqBody = {",
-							"    userName: \"asaf\", ",
-							"    getSameDeviceUsers: \"false\"",
-							"};",
-							"// --------------- REQUEST BODY ---------------",
-							"",
-							"",
-							"reqHeader = {",
-							"    locale: \"en\", ",
-							"    secretKey: pm.environment.get(\"token\"), ",
-							"    version: pm.environment.get(\"version\"), ",
-							"    orgAlias: pm.environment.get(\"org_alias\"), ",
-							"    timestamp: new Date()",
-							"}",
-							"",
-							"jwtPayload = {};",
-							"jwtPayload.reqHeader = reqHeader;",
-							"jwtPayload.reqBody = reqBody;",
-							"",
-							"jwtHeader = {",
-							"\t\t\"alg\" : \"HS256\",",
-							"\t\t\"org_alias\" : pm.environment.get(\"org_alias\"),",
-							"\t\t\"token\" : pm.environment.get(\"token\")",
-							"};",
-							"",
-							"// Base64 Encoding function",
-							"var base64object = function(input) {",
-							" var inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));",
-							" var base64 = CryptoJS.enc.Base64.stringify(inputWords);",
-							" var output = removeIllegalCharacters(base64);",
-							" return output;",
-							"};",
-							"",
-							"var removeIllegalCharacters = function(input) {",
-							" return input",
-							" .replace(/=/g, '')",
-							" .replace(/\\+/g, '-')",
-							" .replace(/\\//g, '_');",
-							"};",
-							"",
-							"// Create Signed JWT",
-							"var unsignedToken = base64object(jwtHeader) + \".\" + base64object(jwtPayload);",
-							"var apiKeyBytes = CryptoJS.enc.Base64.parse(pm.environment.get(\"key\"));",
-							"var signatureHash = CryptoJS.HmacSHA256(unsignedToken, apiKeyBytes);",
-							"var signature = CryptoJS.enc.Base64.stringify(signatureHash);",
-							"var signature2 = removeIllegalCharacters(signature);",
-							"var jwtToken = unsignedToken + '.' + signature2;",
-							"//console.log(jwtToken);",
-							"",
-							"",
-							"pm.environment.set(\"jwtToken\", jwtToken);",
 							""
-						],
-						"type": "text/javascript"
+						]
 					}
 				},
 				{
 					"listen": "test",
 					"script": {
-						"id": "32648b5e-a396-4d9a-8ed5-56a865029ea8",
+						"id": "9f7f775f-cccc-48cb-ab36-ed8a97362604",
+						"type": "text/javascript",
 						"exec": [
-							"console.log(\"RAW Response:\",pm.response.text());",
-							"body = pm.response.text().split(\".\")[1];",
-							"var parsedWordArray = CryptoJS.enc.Base64.parse(body);",
-							"var parsedStr = parsedWordArray.toString(CryptoJS.enc.Utf8);",
-							"console.log(\"Decoded JSON Response:\",JSON.parse(parsedStr));",
-							"",
 							""
-						],
-						"type": "text/javascript"
+						]
 					}
 				}
 			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"name": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{{jwtToken}}"
-				},
-				"url": {
-					"raw": "https://idpxnyl3m.pingidentity.com/pingid/rest/4/getuserdetails/do",
-					"protocol": "https",
-					"host": [
-						"idpxnyl3m",
-						"pingidentity",
-						"com"
-					],
-					"path": [
-						"pingid",
-						"rest",
-						"4",
-						"getuserdetails",
-						"do"
-					]
-				}
-			},
-			"response": []
+			"protocolProfileBehavior": {}
 		},
 		{
-			"name": "AddUser",
+			"name": "Job Management",
+			"item": [
+				{
+					"name": "CreateJob",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "bad85d82-dcdf-4322-a3db-cb70c17b05e2",
+								"exec": [
+									"// --------------- REQUEST BODY ---------------",
+									"reqBody = {",
+									"    \"jobType\": \"USER_REPORTS\"",
+									"    // Optional: clientData",
+									"};",
+									"// --------------- REQUEST BODY ---------------",
+									"",
+									"reqHeader = {",
+									"    locale: \"en\",",
+									"    secretKey: pm.environment.get(\"token\"),",
+									"    version: pm.environment.get(\"version\"), ",
+									"    orgAlias: pm.environment.get(\"org_alias\"),",
+									"    timestamp: new Date()",
+									"};",
+									"",
+									"jwtPayload = {};",
+									"jwtPayload.reqHeader = reqHeader;",
+									"jwtPayload.reqBody = reqBody;",
+									"",
+									"jwtHeader = {",
+									"\t\t\"alg\" : \"HS256\",",
+									"\t\t\"org_alias\" : pm.environment.get(\"org_alias\"),",
+									"\t\t\"token\" : pm.environment.get(\"token\")",
+									"};",
+									"",
+									"// Base64 Encoding function",
+									"var base64object = function(input) {",
+									" var inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));",
+									" var base64 = CryptoJS.enc.Base64.stringify(inputWords);",
+									" var output = removeIllegalCharacters(base64);",
+									" return output;",
+									"};",
+									"",
+									"var removeIllegalCharacters = function(input) {",
+									" return input",
+									" .replace(/=/g, '')",
+									" .replace(/\\+/g, '-')",
+									" .replace(/\\//g, '_');",
+									"};",
+									"",
+									"// Create Signed JWT",
+									"var unsignedToken = base64object(jwtHeader) + \".\" + base64object(jwtPayload);",
+									"var apiKeyBytes = CryptoJS.enc.Base64.parse(pm.environment.get(\"key\"));",
+									"var signatureHash = CryptoJS.HmacSHA256(unsignedToken, apiKeyBytes);",
+									"var signature = CryptoJS.enc.Base64.stringify(signatureHash);",
+									"var signature2 = removeIllegalCharacters(signature);",
+									"var jwtToken = unsignedToken + '.' + signature2;",
+									"//console.log(jwtToken);",
+									"",
+									"",
+									"pm.environment.set(\"jwtToken\", jwtToken);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "ea945a6b-9683-4f18-bdf6-0d552f97523c",
+								"exec": [
+									"console.log(\"RAW Response:\",pm.response.text());",
+									"body = pm.response.text().split(\".\")[1];",
+									"var parsedWordArray = CryptoJS.enc.Base64.parse(body);",
+									"var parsedStr = parsedWordArray.toString(CryptoJS.enc.Utf8);",
+									"console.log(\"Decoded JSON Response:\",JSON.parse(parsedStr));",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{jwtToken}}"
+						},
+						"url": {
+							"raw": "{{idp_url}}/rest/4/createjob/do",
+							"host": [
+								"{{idp_url}}"
+							],
+							"path": [
+								"rest",
+								"4",
+								"createjob",
+								"do"
+							]
+						},
+						"description": "See https://apidocs.pingidentity.com/pingid-api/guide/pingid-api/pid_c_PingIDapiUserManagement/#CreateJob"
+					},
+					"response": []
+				},
+				{
+					"name": "GetJobStatus",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "dba778a6-ab6e-411d-ac08-af19fd1c4b97",
+								"exec": [
+									"// --------------- REQUEST BODY ---------------",
+									"reqBody = {",
+									"    \"jobToken\": \"ABCDEFGHijKLMNopQRS13579\"",
+									"    // Optional: clientData",
+									"};",
+									"// --------------- REQUEST BODY ---------------",
+									"",
+									"reqHeader = {",
+									"    locale: \"en\",",
+									"    secretKey: pm.environment.get(\"token\"),",
+									"    version: pm.environment.get(\"version\"), ",
+									"    orgAlias: pm.environment.get(\"org_alias\"),",
+									"    timestamp: new Date()",
+									"};",
+									"",
+									"jwtPayload = {};",
+									"jwtPayload.reqHeader = reqHeader;",
+									"jwtPayload.reqBody = reqBody;",
+									"",
+									"jwtHeader = {",
+									"\t\t\"alg\" : \"HS256\",",
+									"\t\t\"org_alias\" : pm.environment.get(\"org_alias\"),",
+									"\t\t\"token\" : pm.environment.get(\"token\")",
+									"};",
+									"",
+									"// Base64 Encoding function",
+									"var base64object = function(input) {",
+									" var inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));",
+									" var base64 = CryptoJS.enc.Base64.stringify(inputWords);",
+									" var output = removeIllegalCharacters(base64);",
+									" return output;",
+									"};",
+									"",
+									"var removeIllegalCharacters = function(input) {",
+									" return input",
+									" .replace(/=/g, '')",
+									" .replace(/\\+/g, '-')",
+									" .replace(/\\//g, '_');",
+									"};",
+									"",
+									"// Create Signed JWT",
+									"var unsignedToken = base64object(jwtHeader) + \".\" + base64object(jwtPayload);",
+									"var apiKeyBytes = CryptoJS.enc.Base64.parse(pm.environment.get(\"key\"));",
+									"var signatureHash = CryptoJS.HmacSHA256(unsignedToken, apiKeyBytes);",
+									"var signature = CryptoJS.enc.Base64.stringify(signatureHash);",
+									"var signature2 = removeIllegalCharacters(signature);",
+									"var jwtToken = unsignedToken + '.' + signature2;",
+									"//console.log(jwtToken);",
+									"",
+									"",
+									"pm.environment.set(\"jwtToken\", jwtToken);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "4caea046-3f44-420f-b9cd-2a0972e9fa9a",
+								"exec": [
+									"console.log(\"RAW Response:\",pm.response.text());",
+									"body = pm.response.text().split(\".\")[1];",
+									"var parsedWordArray = CryptoJS.enc.Base64.parse(body);",
+									"var parsedStr = parsedWordArray.toString(CryptoJS.enc.Utf8);",
+									"console.log(\"Decoded JSON Response:\",JSON.parse(parsedStr));",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{jwtToken}}"
+						},
+						"url": {
+							"raw": "{{idp_url}}/rest/4/getjobstatus/do",
+							"host": [
+								"{{idp_url}}"
+							],
+							"path": [
+								"rest",
+								"4",
+								"getjobstatus",
+								"do"
+							]
+						},
+						"description": "See https://apidocs.pingidentity.com/pingid-api/guide/pingid-api/pid_c_PingIDapiUserManagement/#GetJobStatus"
+					},
+					"response": []
+				},
+				{
+					"name": "GetBulkJobStatus",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "364f9d6d-dac4-431a-abe9-7909cea389e4",
+								"exec": [
+									"// --------------- REQUEST BODY ---------------",
+									"reqBody = {",
+									"    \"jobTokens\": [",
+									"        \"ABCDEFGHijKLMNopQRS13579\",",
+									"        \"ZYXWVUTSrqPONMlkJIH24680\"",
+									"        ]",
+									"    // Optional: clientData",
+									"};",
+									"// --------------- REQUEST BODY ---------------",
+									"",
+									"reqHeader = {",
+									"    locale: \"en\",",
+									"    secretKey: pm.environment.get(\"token\"),",
+									"    version: pm.environment.get(\"version\"), ",
+									"    orgAlias: pm.environment.get(\"org_alias\"),",
+									"    timestamp: new Date()",
+									"};",
+									"",
+									"jwtPayload = {};",
+									"jwtPayload.reqHeader = reqHeader;",
+									"jwtPayload.reqBody = reqBody;",
+									"",
+									"jwtHeader = {",
+									"\t\t\"alg\" : \"HS256\",",
+									"\t\t\"org_alias\" : pm.environment.get(\"org_alias\"),",
+									"\t\t\"token\" : pm.environment.get(\"token\")",
+									"};",
+									"",
+									"// Base64 Encoding function",
+									"var base64object = function(input) {",
+									" var inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));",
+									" var base64 = CryptoJS.enc.Base64.stringify(inputWords);",
+									" var output = removeIllegalCharacters(base64);",
+									" return output;",
+									"};",
+									"",
+									"var removeIllegalCharacters = function(input) {",
+									" return input",
+									" .replace(/=/g, '')",
+									" .replace(/\\+/g, '-')",
+									" .replace(/\\//g, '_');",
+									"};",
+									"",
+									"// Create Signed JWT",
+									"var unsignedToken = base64object(jwtHeader) + \".\" + base64object(jwtPayload);",
+									"var apiKeyBytes = CryptoJS.enc.Base64.parse(pm.environment.get(\"key\"));",
+									"var signatureHash = CryptoJS.HmacSHA256(unsignedToken, apiKeyBytes);",
+									"var signature = CryptoJS.enc.Base64.stringify(signatureHash);",
+									"var signature2 = removeIllegalCharacters(signature);",
+									"var jwtToken = unsignedToken + '.' + signature2;",
+									"//console.log(jwtToken);",
+									"",
+									"",
+									"pm.environment.set(\"jwtToken\", jwtToken);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "62b785eb-9915-4dc5-a5da-da2feeb4465d",
+								"exec": [
+									"console.log(\"RAW Response:\",pm.response.text());",
+									"body = pm.response.text().split(\".\")[1];",
+									"var parsedWordArray = CryptoJS.enc.Base64.parse(body);",
+									"var parsedStr = parsedWordArray.toString(CryptoJS.enc.Utf8);",
+									"console.log(\"Decoded JSON Response:\",JSON.parse(parsedStr));",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{jwtToken}}"
+						},
+						"url": {
+							"raw": "{{idp_url}}/rest/4/getbulkjobstatus/do",
+							"host": [
+								"{{idp_url}}"
+							],
+							"path": [
+								"rest",
+								"4",
+								"getbulkjobstatus",
+								"do"
+							]
+						},
+						"description": "See https://apidocs.pingidentity.com/pingid-api/guide/pingid-api/pid_c_PingIDapiUserManagement/#GetBulkJobStatus"
+					},
+					"response": []
+				},
+				{
+					"name": "GetOrganizationReport",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "286b4492-9b43-4bd0-b6d6-552021622232",
+								"exec": [
+									"// --------------- REQUEST BODY ---------------",
+									"reqBody = {",
+									"    \"fileType\": \"JSON\"",
+									"    // Optional: clientData",
+									"};",
+									"// --------------- REQUEST BODY ---------------",
+									"",
+									"reqHeader = {",
+									"    locale: \"en\",",
+									"    secretKey: pm.environment.get(\"token\"),",
+									"    version: pm.environment.get(\"version\"), ",
+									"    orgAlias: pm.environment.get(\"org_alias\"),",
+									"    timestamp: new Date()",
+									"};",
+									"",
+									"jwtPayload = {};",
+									"jwtPayload.reqHeader = reqHeader;",
+									"jwtPayload.reqBody = reqBody;",
+									"",
+									"jwtHeader = {",
+									"\t\t\"alg\" : \"HS256\",",
+									"\t\t\"org_alias\" : pm.environment.get(\"org_alias\"),",
+									"\t\t\"token\" : pm.environment.get(\"token\")",
+									"};",
+									"",
+									"// Base64 Encoding function",
+									"var base64object = function(input) {",
+									" var inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));",
+									" var base64 = CryptoJS.enc.Base64.stringify(inputWords);",
+									" var output = removeIllegalCharacters(base64);",
+									" return output;",
+									"};",
+									"",
+									"var removeIllegalCharacters = function(input) {",
+									" return input",
+									" .replace(/=/g, '')",
+									" .replace(/\\+/g, '-')",
+									" .replace(/\\//g, '_');",
+									"};",
+									"",
+									"// Create Signed JWT",
+									"var unsignedToken = base64object(jwtHeader) + \".\" + base64object(jwtPayload);",
+									"var apiKeyBytes = CryptoJS.enc.Base64.parse(pm.environment.get(\"key\"));",
+									"var signatureHash = CryptoJS.HmacSHA256(unsignedToken, apiKeyBytes);",
+									"var signature = CryptoJS.enc.Base64.stringify(signatureHash);",
+									"var signature2 = removeIllegalCharacters(signature);",
+									"var jwtToken = unsignedToken + '.' + signature2;",
+									"//console.log(jwtToken);",
+									"",
+									"",
+									"pm.environment.set(\"jwtToken\", jwtToken);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "e0ca5725-29cf-418c-84c6-8a8925de0480",
+								"exec": [
+									"console.log(\"JSON Response:\",JSON.parse(pm.response.text()));",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{jwtToken}}"
+						},
+						"url": {
+							"raw": "{{idp_url}}/rest/4/getorgreport/do",
+							"host": [
+								"{{idp_url}}"
+							],
+							"path": [
+								"rest",
+								"4",
+								"getorgreport",
+								"do"
+							]
+						},
+						"description": "See https://apidocs.pingidentity.com/pingid-api/guide/pingid-api/pid_c_PingIDapiUserManagement/#GetOrganizationReport"
+					},
+					"response": []
+				}
+			],
+			"description": "Please see https://apidocs.pingidentity.com/pingid-api/guide/pingid-api/pid_c_PingIDapiUserManagement/#Job-Management for the full documentation of the PingID Job Management APIs",
 			"event": [
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "d3f7979a-c8f0-4d05-9bed-0d05813921ac",
+						"id": "56eb5abe-5fa1-4d0c-ae52-8d30fdb68002",
+						"type": "text/javascript",
 						"exec": [
-							"// --------------- REQUEST BODY ---------------",
-							"reqBody = {",
-							"    lname: \"Smith\",",
-							"    fName: \"George\",",
-							"    role: \"REGULAR\",",
-							"    activateUser: false,",
-							"    email: \"georgesmith@home.com\",",
-							"    userName: \"George\", ",
-							"};",
-							"// --------------- REQUEST BODY ---------------",
-							"",
-							"reqHeader = {",
-							"    locale: \"en\",",
-							"    secretKey: pm.environment.get(\"token\"),",
-							"    version: pm.environment.get(\"version\"), ",
-							"    orgAlias: pm.environment.get(\"org_alias\"),",
-							"    timestamp: new Date()",
-							"};",
-							"",
-							"jwtPayload = {};",
-							"jwtPayload.reqHeader = reqHeader;",
-							"jwtPayload.reqBody = reqBody;",
-							"",
-							"jwtHeader = {",
-							"\t\t\"alg\" : \"HS256\",",
-							"\t\t\"org_alias\" : pm.environment.get(\"org_alias\"),",
-							"\t\t\"token\" : pm.environment.get(\"token\")",
-							"};",
-							"",
-							"// Base64 Encoding function",
-							"var base64object = function(input) {",
-							" var inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));",
-							" var base64 = CryptoJS.enc.Base64.stringify(inputWords);",
-							" var output = removeIllegalCharacters(base64);",
-							" return output;",
-							"};",
-							"",
-							"var removeIllegalCharacters = function(input) {",
-							" return input",
-							" .replace(/=/g, '')",
-							" .replace(/\\+/g, '-')",
-							" .replace(/\\//g, '_');",
-							"};",
-							"",
-							"// Create Signed JWT",
-							"var unsignedToken = base64object(jwtHeader) + \".\" + base64object(jwtPayload);",
-							"var apiKeyBytes = CryptoJS.enc.Base64.parse(pm.environment.get(\"key\"));",
-							"var signatureHash = CryptoJS.HmacSHA256(unsignedToken, apiKeyBytes);",
-							"var signature = CryptoJS.enc.Base64.stringify(signatureHash);",
-							"var signature2 = removeIllegalCharacters(signature);",
-							"var jwtToken = unsignedToken + '.' + signature2;",
-							"//console.log(jwtToken);",
-							"",
-							"",
-							"pm.environment.set(\"jwtToken\", jwtToken);",
 							""
-						],
-						"type": "text/javascript"
+						]
 					}
 				},
 				{
 					"listen": "test",
 					"script": {
-						"id": "e9e7a80d-159f-43df-b391-cf3006f6d66c",
+						"id": "170a799c-2467-4a22-b604-11dc1b7397c1",
+						"type": "text/javascript",
 						"exec": [
-							"console.log(\"RAW Response:\",pm.response.text());",
-							"body = pm.response.text().split(\".\")[1];",
-							"var parsedWordArray = CryptoJS.enc.Base64.parse(body);",
-							"var parsedStr = parsedWordArray.toString(CryptoJS.enc.Utf8);",
-							"console.log(\"Decoded JSON Response:\",JSON.parse(parsedStr));",
 							""
-						],
-						"type": "text/javascript"
+						]
 					}
 				}
 			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{{jwtToken}}"
-				},
-				"url": {
-					"raw": "https://idpxnyl3m.pingidentity.com/pingid/rest/4/adduser/do",
-					"protocol": "https",
-					"host": [
-						"idpxnyl3m",
-						"pingidentity",
-						"com"
-					],
-					"path": [
-						"pingid",
-						"rest",
-						"4",
-						"adduser",
-						"do"
-					]
-				}
-			},
-			"response": []
+			"protocolProfileBehavior": {}
 		},
 		{
-			"name": "ActivateUser",
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "StartAuthentication",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "a348993b-cf1f-4d53-859a-0b53cf54cc6c",
+								"exec": [
+									"// --------------- REQUEST BODY ---------------",
+									"reqBody = {",
+									"  \"spAlias\": \"web\",",
+									"  \"userName\": \"joe\"",
+									"  // Optional: deviceId, sessionId, clientData, enforcePolicy, async, ipAddr, application, cookie, reqDevFP, memberOf, formParameters",
+									"};",
+									"// --------------- REQUEST BODY ---------------",
+									"",
+									"reqHeader = {",
+									"    locale: \"en\",",
+									"    secretKey: pm.environment.get(\"token\"),",
+									"    version: pm.environment.get(\"version\"), ",
+									"    orgAlias: pm.environment.get(\"org_alias\"),",
+									"    timestamp: new Date()",
+									"};",
+									"",
+									"jwtPayload = {};",
+									"jwtPayload.reqHeader = reqHeader;",
+									"jwtPayload.reqBody = reqBody;",
+									"",
+									"jwtHeader = {",
+									"\t\t\"alg\" : \"HS256\",",
+									"\t\t\"org_alias\" : pm.environment.get(\"org_alias\"),",
+									"\t\t\"token\" : pm.environment.get(\"token\")",
+									"};",
+									"",
+									"// Base64 Encoding function",
+									"var base64object = function(input) {",
+									" var inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));",
+									" var base64 = CryptoJS.enc.Base64.stringify(inputWords);",
+									" var output = removeIllegalCharacters(base64);",
+									" return output;",
+									"};",
+									"",
+									"var removeIllegalCharacters = function(input) {",
+									" return input",
+									" .replace(/=/g, '')",
+									" .replace(/\\+/g, '-')",
+									" .replace(/\\//g, '_');",
+									"};",
+									"",
+									"// Create Signed JWT",
+									"var unsignedToken = base64object(jwtHeader) + \".\" + base64object(jwtPayload);",
+									"var apiKeyBytes = CryptoJS.enc.Base64.parse(pm.environment.get(\"key\"));",
+									"var signatureHash = CryptoJS.HmacSHA256(unsignedToken, apiKeyBytes);",
+									"var signature = CryptoJS.enc.Base64.stringify(signatureHash);",
+									"var signature2 = removeIllegalCharacters(signature);",
+									"var jwtToken = unsignedToken + '.' + signature2;",
+									"//console.log(jwtToken);",
+									"",
+									"",
+									"pm.environment.set(\"jwtToken\", jwtToken);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "90b1fc3f-b2f5-4463-9616-21eb9ca394d6",
+								"exec": [
+									"console.log(\"RAW Response:\",pm.response.text());",
+									"body = pm.response.text().split(\".\")[1];",
+									"var parsedWordArray = CryptoJS.enc.Base64.parse(body);",
+									"var parsedStr = parsedWordArray.toString(CryptoJS.enc.Utf8);",
+									"console.log(\"Decoded JSON Response:\",JSON.parse(parsedStr));",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{jwtToken}}"
+						},
+						"url": {
+							"raw": "{{idp_url}}/rest/4/startauthentication/do",
+							"host": [
+								"{{idp_url}}"
+							],
+							"path": [
+								"rest",
+								"4",
+								"startauthentication",
+								"do"
+							]
+						},
+						"description": "See https://apidocs.pingidentity.com/pingid-api/guide/pingid-api/pid_c_PingIDapiAuthentication/#StartAuthentication"
+					},
+					"response": []
+				},
+				{
+					"name": "AuthStatus",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "f74d2b1e-c103-49e9-97f8-f610c2e2cec2",
+								"exec": [
+									"// --------------- REQUEST BODY ---------------",
+									"reqBody = {",
+									"  \"sessionId\": \"webs_d7oHzn9Z1ABCDby7cpg3BmvdtwEFGHiJAvbmRI50I2k\"",
+									"  // Optional: clientData",
+									"};",
+									"// --------------- REQUEST BODY ---------------",
+									"",
+									"reqHeader = {",
+									"    locale: \"en\",",
+									"    secretKey: pm.environment.get(\"token\"),",
+									"    version: pm.environment.get(\"version\"), ",
+									"    orgAlias: pm.environment.get(\"org_alias\"),",
+									"    timestamp: new Date()",
+									"};",
+									"",
+									"jwtPayload = {};",
+									"jwtPayload.reqHeader = reqHeader;",
+									"jwtPayload.reqBody = reqBody;",
+									"",
+									"jwtHeader = {",
+									"\t\t\"alg\" : \"HS256\",",
+									"\t\t\"org_alias\" : pm.environment.get(\"org_alias\"),",
+									"\t\t\"token\" : pm.environment.get(\"token\")",
+									"};",
+									"",
+									"// Base64 Encoding function",
+									"var base64object = function(input) {",
+									" var inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));",
+									" var base64 = CryptoJS.enc.Base64.stringify(inputWords);",
+									" var output = removeIllegalCharacters(base64);",
+									" return output;",
+									"};",
+									"",
+									"var removeIllegalCharacters = function(input) {",
+									" return input",
+									" .replace(/=/g, '')",
+									" .replace(/\\+/g, '-')",
+									" .replace(/\\//g, '_');",
+									"};",
+									"",
+									"// Create Signed JWT",
+									"var unsignedToken = base64object(jwtHeader) + \".\" + base64object(jwtPayload);",
+									"var apiKeyBytes = CryptoJS.enc.Base64.parse(pm.environment.get(\"key\"));",
+									"var signatureHash = CryptoJS.HmacSHA256(unsignedToken, apiKeyBytes);",
+									"var signature = CryptoJS.enc.Base64.stringify(signatureHash);",
+									"var signature2 = removeIllegalCharacters(signature);",
+									"var jwtToken = unsignedToken + '.' + signature2;",
+									"//console.log(jwtToken);",
+									"",
+									"",
+									"pm.environment.set(\"jwtToken\", jwtToken);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "98b9a185-eb6a-4f72-a578-5484a712a2ce",
+								"exec": [
+									"console.log(\"RAW Response:\",pm.response.text());",
+									"body = pm.response.text().split(\".\")[1];",
+									"var parsedWordArray = CryptoJS.enc.Base64.parse(body);",
+									"var parsedStr = parsedWordArray.toString(CryptoJS.enc.Utf8);",
+									"console.log(\"Decoded JSON Response:\",JSON.parse(parsedStr));",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{jwtToken}}"
+						},
+						"url": {
+							"raw": "{{idp_url}}/rest/4/authstatus/do",
+							"host": [
+								"{{idp_url}}"
+							],
+							"path": [
+								"rest",
+								"4",
+								"authstatus",
+								"do"
+							]
+						},
+						"description": "See https://apidocs.pingidentity.com/pingid-api/guide/pingid-api/pid_c_PingIDapiAuthentication/#AuthStatus"
+					},
+					"response": []
+				},
+				{
+					"name": "CancelAuthentication",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "8a5d2499-6f26-4313-8140-4e99f96679c7",
+								"exec": [
+									"// --------------- REQUEST BODY ---------------",
+									"reqBody = {",
+									"  \"sessionId\": \"webs_d7oHzn9Z1ABCDby7cpg3BmvdtwEFGHiJAvbmRI50I2k\",",
+									"  \"cancelAuthenticationType\": \"CHANGE_DEVICE\"",
+									"  // Optional: clientData",
+									"};",
+									"// --------------- REQUEST BODY ---------------",
+									"",
+									"reqHeader = {",
+									"    locale: \"en\",",
+									"    secretKey: pm.environment.get(\"token\"),",
+									"    version: pm.environment.get(\"version\"), ",
+									"    orgAlias: pm.environment.get(\"org_alias\"),",
+									"    timestamp: new Date()",
+									"};",
+									"",
+									"jwtPayload = {};",
+									"jwtPayload.reqHeader = reqHeader;",
+									"jwtPayload.reqBody = reqBody;",
+									"",
+									"jwtHeader = {",
+									"\t\t\"alg\" : \"HS256\",",
+									"\t\t\"org_alias\" : pm.environment.get(\"org_alias\"),",
+									"\t\t\"token\" : pm.environment.get(\"token\")",
+									"};",
+									"",
+									"// Base64 Encoding function",
+									"var base64object = function(input) {",
+									" var inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));",
+									" var base64 = CryptoJS.enc.Base64.stringify(inputWords);",
+									" var output = removeIllegalCharacters(base64);",
+									" return output;",
+									"};",
+									"",
+									"var removeIllegalCharacters = function(input) {",
+									" return input",
+									" .replace(/=/g, '')",
+									" .replace(/\\+/g, '-')",
+									" .replace(/\\//g, '_');",
+									"};",
+									"",
+									"// Create Signed JWT",
+									"var unsignedToken = base64object(jwtHeader) + \".\" + base64object(jwtPayload);",
+									"var apiKeyBytes = CryptoJS.enc.Base64.parse(pm.environment.get(\"key\"));",
+									"var signatureHash = CryptoJS.HmacSHA256(unsignedToken, apiKeyBytes);",
+									"var signature = CryptoJS.enc.Base64.stringify(signatureHash);",
+									"var signature2 = removeIllegalCharacters(signature);",
+									"var jwtToken = unsignedToken + '.' + signature2;",
+									"//console.log(jwtToken);",
+									"",
+									"",
+									"pm.environment.set(\"jwtToken\", jwtToken);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "01910dc2-180d-4cfe-bc22-a5a6be264e39",
+								"exec": [
+									"console.log(\"RAW Response:\",pm.response.text());",
+									"body = pm.response.text().split(\".\")[1];",
+									"var parsedWordArray = CryptoJS.enc.Base64.parse(body);",
+									"var parsedStr = parsedWordArray.toString(CryptoJS.enc.Utf8);",
+									"console.log(\"Decoded JSON Response:\",JSON.parse(parsedStr));",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{jwtToken}}"
+						},
+						"url": {
+							"raw": "{{idp_url}}/rest/4/cancelauthentication/do",
+							"host": [
+								"{{idp_url}}"
+							],
+							"path": [
+								"rest",
+								"4",
+								"cancelauthentication",
+								"do"
+							]
+						},
+						"description": "See https://apidocs.pingidentity.com/pingid-api/guide/pingid-api/pid_c_PingIDapiAuthentication/#CancelAuthentication"
+					},
+					"response": []
+				},
+				{
+					"name": "AuthenticateOnline",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "4463a972-7a85-46af-bf67-75c240a02214",
+								"exec": [
+									"// --------------- REQUEST BODY ---------------",
+									"reqBody = {",
+									"  \"spAlias\": \"web\",",
+									"  \"userName\": \"joe\"",
+									"  // Optional: authType, deviceId, deviceData, deviceType, clientData, enforcePolicy, ipAddr, application, cookie, reqDevFP, memberOf, formParameters",
+									"};",
+									"// --------------- REQUEST BODY ---------------",
+									"",
+									"reqHeader = {",
+									"    locale: \"en\",",
+									"    secretKey: pm.environment.get(\"token\"),",
+									"    version: pm.environment.get(\"version\"), ",
+									"    orgAlias: pm.environment.get(\"org_alias\"),",
+									"    timestamp: new Date()",
+									"};",
+									"",
+									"jwtPayload = {};",
+									"jwtPayload.reqHeader = reqHeader;",
+									"jwtPayload.reqBody = reqBody;",
+									"",
+									"jwtHeader = {",
+									"\t\t\"alg\" : \"HS256\",",
+									"\t\t\"org_alias\" : pm.environment.get(\"org_alias\"),",
+									"\t\t\"token\" : pm.environment.get(\"token\")",
+									"};",
+									"",
+									"// Base64 Encoding function",
+									"var base64object = function(input) {",
+									" var inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));",
+									" var base64 = CryptoJS.enc.Base64.stringify(inputWords);",
+									" var output = removeIllegalCharacters(base64);",
+									" return output;",
+									"};",
+									"",
+									"var removeIllegalCharacters = function(input) {",
+									" return input",
+									" .replace(/=/g, '')",
+									" .replace(/\\+/g, '-')",
+									" .replace(/\\//g, '_');",
+									"};",
+									"",
+									"// Create Signed JWT",
+									"var unsignedToken = base64object(jwtHeader) + \".\" + base64object(jwtPayload);",
+									"var apiKeyBytes = CryptoJS.enc.Base64.parse(pm.environment.get(\"key\"));",
+									"var signatureHash = CryptoJS.HmacSHA256(unsignedToken, apiKeyBytes);",
+									"var signature = CryptoJS.enc.Base64.stringify(signatureHash);",
+									"var signature2 = removeIllegalCharacters(signature);",
+									"var jwtToken = unsignedToken + '.' + signature2;",
+									"//console.log(jwtToken);",
+									"",
+									"",
+									"pm.environment.set(\"jwtToken\", jwtToken);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "67555b6d-a97c-4423-8434-e488094f1dcc",
+								"exec": [
+									"console.log(\"RAW Response:\",pm.response.text());",
+									"body = pm.response.text().split(\".\")[1];",
+									"var parsedWordArray = CryptoJS.enc.Base64.parse(body);",
+									"var parsedStr = parsedWordArray.toString(CryptoJS.enc.Utf8);",
+									"console.log(\"Decoded JSON Response:\",JSON.parse(parsedStr));",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{jwtToken}}"
+						},
+						"url": {
+							"raw": "{{idp_url}}/rest/4/authonline/do",
+							"host": [
+								"{{idp_url}}"
+							],
+							"path": [
+								"rest",
+								"4",
+								"authonline",
+								"do"
+							]
+						},
+						"description": "See https://apidocs.pingidentity.com/pingid-api/guide/pingid-api/pid_c_PingIDapiAuthentication/#AuthenticateOnline"
+					},
+					"response": []
+				},
+				{
+					"name": "AuthenticateOffline",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "2967f570-46fb-4624-97ee-a8b34f059d7f",
+								"exec": [
+									"// --------------- REQUEST BODY ---------------",
+									"reqBody = {",
+									"  \"spAlias\": \"web\",",
+									"  \"userName\": \"joe\",",
+									"  \"otp\": \"123456\",",
+									"  \"sessionId\": \"webs_d7oHzn9Z1ABCDby7cpg3BmvdtwEFGHiJAvbmRI50I2k\"",
+									"  // Optional: clientData, formParameters",
+									"};",
+									"// --------------- REQUEST BODY ---------------",
+									"",
+									"reqHeader = {",
+									"    locale: \"en\",",
+									"    secretKey: pm.environment.get(\"token\"),",
+									"    version: pm.environment.get(\"version\"), ",
+									"    orgAlias: pm.environment.get(\"org_alias\"),",
+									"    timestamp: new Date()",
+									"};",
+									"",
+									"jwtPayload = {};",
+									"jwtPayload.reqHeader = reqHeader;",
+									"jwtPayload.reqBody = reqBody;",
+									"",
+									"jwtHeader = {",
+									"\t\t\"alg\" : \"HS256\",",
+									"\t\t\"org_alias\" : pm.environment.get(\"org_alias\"),",
+									"\t\t\"token\" : pm.environment.get(\"token\")",
+									"};",
+									"",
+									"// Base64 Encoding function",
+									"var base64object = function(input) {",
+									" var inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));",
+									" var base64 = CryptoJS.enc.Base64.stringify(inputWords);",
+									" var output = removeIllegalCharacters(base64);",
+									" return output;",
+									"};",
+									"",
+									"var removeIllegalCharacters = function(input) {",
+									" return input",
+									" .replace(/=/g, '')",
+									" .replace(/\\+/g, '-')",
+									" .replace(/\\//g, '_');",
+									"};",
+									"",
+									"// Create Signed JWT",
+									"var unsignedToken = base64object(jwtHeader) + \".\" + base64object(jwtPayload);",
+									"var apiKeyBytes = CryptoJS.enc.Base64.parse(pm.environment.get(\"key\"));",
+									"var signatureHash = CryptoJS.HmacSHA256(unsignedToken, apiKeyBytes);",
+									"var signature = CryptoJS.enc.Base64.stringify(signatureHash);",
+									"var signature2 = removeIllegalCharacters(signature);",
+									"var jwtToken = unsignedToken + '.' + signature2;",
+									"//console.log(jwtToken);",
+									"",
+									"",
+									"pm.environment.set(\"jwtToken\", jwtToken);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "33fc83c4-1b79-46ba-a0d3-d9d960eeb44f",
+								"exec": [
+									"console.log(\"RAW Response:\",pm.response.text());",
+									"body = pm.response.text().split(\".\")[1];",
+									"var parsedWordArray = CryptoJS.enc.Base64.parse(body);",
+									"var parsedStr = parsedWordArray.toString(CryptoJS.enc.Utf8);",
+									"console.log(\"Decoded JSON Response:\",JSON.parse(parsedStr));",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{jwtToken}}"
+						},
+						"url": {
+							"raw": "{{idp_url}}/rest/4/authoffline/do",
+							"host": [
+								"{{idp_url}}"
+							],
+							"path": [
+								"rest",
+								"4",
+								"authoffline",
+								"do"
+							]
+						},
+						"description": "See https://apidocs.pingidentity.com/pingid-api/guide/pingid-api/pid_c_PingIDapiAuthentication/#AuthenticateOffline"
+					},
+					"response": []
+				},
+				{
+					"name": "WebAuthnStartAuth",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "71c7d871-2174-42ce-821e-631ee22b9fe3",
+								"exec": [
+									"// --------------- REQUEST BODY ---------------",
+									"reqBody = {",
+									"  \"rpId\": \"pingone.com\",",
+									"  \"userName\": \"joe\",",
+									"  \"deviceUuid\":\"0f0eaf16-bc75-b440-0f0e-af16bc75b440\",",
+									"  \"webauthnType\":\"WebAuthn\"",
+									"};",
+									"// --------------- REQUEST BODY ---------------",
+									"",
+									"reqHeader = {",
+									"    locale: \"en\",",
+									"    secretKey: pm.environment.get(\"token\"),",
+									"    version: pm.environment.get(\"version\"), ",
+									"    orgAlias: pm.environment.get(\"org_alias\"),",
+									"    timestamp: new Date()",
+									"};",
+									"",
+									"jwtPayload = {};",
+									"jwtPayload.reqHeader = reqHeader;",
+									"jwtPayload.reqBody = reqBody;",
+									"",
+									"jwtHeader = {",
+									"\t\t\"alg\" : \"HS256\",",
+									"\t\t\"org_alias\" : pm.environment.get(\"org_alias\"),",
+									"\t\t\"token\" : pm.environment.get(\"token\")",
+									"};",
+									"",
+									"// Base64 Encoding function",
+									"var base64object = function(input) {",
+									" var inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));",
+									" var base64 = CryptoJS.enc.Base64.stringify(inputWords);",
+									" var output = removeIllegalCharacters(base64);",
+									" return output;",
+									"};",
+									"",
+									"var removeIllegalCharacters = function(input) {",
+									" return input",
+									" .replace(/=/g, '')",
+									" .replace(/\\+/g, '-')",
+									" .replace(/\\//g, '_');",
+									"};",
+									"",
+									"// Create Signed JWT",
+									"var unsignedToken = base64object(jwtHeader) + \".\" + base64object(jwtPayload);",
+									"var apiKeyBytes = CryptoJS.enc.Base64.parse(pm.environment.get(\"key\"));",
+									"var signatureHash = CryptoJS.HmacSHA256(unsignedToken, apiKeyBytes);",
+									"var signature = CryptoJS.enc.Base64.stringify(signatureHash);",
+									"var signature2 = removeIllegalCharacters(signature);",
+									"var jwtToken = unsignedToken + '.' + signature2;",
+									"//console.log(jwtToken);",
+									"",
+									"",
+									"pm.environment.set(\"jwtToken\", jwtToken);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "8aac702a-5edf-4067-8618-d37d92de8922",
+								"exec": [
+									"console.log(\"RAW Response:\",pm.response.text());",
+									"body = pm.response.text().split(\".\")[1];",
+									"var parsedWordArray = CryptoJS.enc.Base64.parse(body);",
+									"var parsedStr = parsedWordArray.toString(CryptoJS.enc.Utf8);",
+									"console.log(\"Decoded JSON Response:\",JSON.parse(parsedStr));",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{jwtToken}}"
+						},
+						"url": {
+							"raw": "{{idp_url}}/rest/4/webauthnstartauth/do",
+							"host": [
+								"{{idp_url}}"
+							],
+							"path": [
+								"rest",
+								"4",
+								"webauthnstartauth",
+								"do"
+							]
+						},
+						"description": "See https://apidocs.pingidentity.com/pingid-api/guide/pingid-api/pid_c_PingIDapiAuthentication/#WebAuthnStartAuth-FIDO-security-key and https://apidocs.pingidentity.com/pingid-api/guide/pingid-api/pid_c_PingIDapiAuthentication/#WebAuthnStartAuth-FIDO-biometrics"
+					},
+					"response": []
+				},
+				{
+					"name": "StartWebAuthnPasswordlessAuth",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "b107518b-2d9a-48cc-b493-a2ada2948275",
+								"exec": [
+									"// --------------- REQUEST BODY ---------------",
+									"reqBody = {",
+									"  \"rpId\": \"pingone.com\",",
+									"  \"spAlias\": \"web\",",
+									"  \"origin\": \"https://admin.pingone.com\"",
+									"};",
+									"// --------------- REQUEST BODY ---------------",
+									"",
+									"reqHeader = {",
+									"    locale: \"en\",",
+									"    secretKey: pm.environment.get(\"token\"),",
+									"    version: pm.environment.get(\"version\"), ",
+									"    orgAlias: pm.environment.get(\"org_alias\"),",
+									"    timestamp: new Date()",
+									"};",
+									"",
+									"jwtPayload = {};",
+									"jwtPayload.reqHeader = reqHeader;",
+									"jwtPayload.reqBody = reqBody;",
+									"",
+									"jwtHeader = {",
+									"\t\t\"alg\" : \"HS256\",",
+									"\t\t\"org_alias\" : pm.environment.get(\"org_alias\"),",
+									"\t\t\"token\" : pm.environment.get(\"token\")",
+									"};",
+									"",
+									"// Base64 Encoding function",
+									"var base64object = function(input) {",
+									" var inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));",
+									" var base64 = CryptoJS.enc.Base64.stringify(inputWords);",
+									" var output = removeIllegalCharacters(base64);",
+									" return output;",
+									"};",
+									"",
+									"var removeIllegalCharacters = function(input) {",
+									" return input",
+									" .replace(/=/g, '')",
+									" .replace(/\\+/g, '-')",
+									" .replace(/\\//g, '_');",
+									"};",
+									"",
+									"// Create Signed JWT",
+									"var unsignedToken = base64object(jwtHeader) + \".\" + base64object(jwtPayload);",
+									"var apiKeyBytes = CryptoJS.enc.Base64.parse(pm.environment.get(\"key\"));",
+									"var signatureHash = CryptoJS.HmacSHA256(unsignedToken, apiKeyBytes);",
+									"var signature = CryptoJS.enc.Base64.stringify(signatureHash);",
+									"var signature2 = removeIllegalCharacters(signature);",
+									"var jwtToken = unsignedToken + '.' + signature2;",
+									"//console.log(jwtToken);",
+									"",
+									"",
+									"pm.environment.set(\"jwtToken\", jwtToken);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "c7235ab3-bf7e-436a-b9c2-d4f5f17af98d",
+								"exec": [
+									"console.log(\"RAW Response:\",pm.response.text());",
+									"body = pm.response.text().split(\".\")[1];",
+									"var parsedWordArray = CryptoJS.enc.Base64.parse(body);",
+									"var parsedStr = parsedWordArray.toString(CryptoJS.enc.Utf8);",
+									"console.log(\"Decoded JSON Response:\",JSON.parse(parsedStr));",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{jwtToken}}"
+						},
+						"url": {
+							"raw": "{{idp_url}}/rest/4/startwebauthnpasswordlessauth/do",
+							"host": [
+								"{{idp_url}}"
+							],
+							"path": [
+								"rest",
+								"4",
+								"startwebauthnpasswordlessauth",
+								"do"
+							]
+						},
+						"description": "See https://apidocs.pingidentity.com/pingid-api/guide/pingid-api/pid_c_PingIDapiAuthentication/#StartWebAuthnPasswordlessAuth"
+					},
+					"response": []
+				},
+				{
+					"name": "FinishWebAuthnPasswordlessAuth",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "4db11980-7a24-4d9f-9066-e8ee86e8eac6",
+								"exec": [
+									"// --------------- REQUEST BODY ---------------",
+									"reqBody = {",
+									"  \"publicKeyCredentialJson\": \"\",",
+									"  \"sessionId\": \"webs_d7oHzn9Z1ABCDby7cpg3BmvdtwEFGHiJAvbmRI50I2k\"",
+									"};",
+									"// --------------- REQUEST BODY ---------------",
+									"",
+									"reqHeader = {",
+									"    locale: \"en\",",
+									"    secretKey: pm.environment.get(\"token\"),",
+									"    version: pm.environment.get(\"version\"), ",
+									"    orgAlias: pm.environment.get(\"org_alias\"),",
+									"    timestamp: new Date()",
+									"};",
+									"",
+									"jwtPayload = {};",
+									"jwtPayload.reqHeader = reqHeader;",
+									"jwtPayload.reqBody = reqBody;",
+									"",
+									"jwtHeader = {",
+									"\t\t\"alg\" : \"HS256\",",
+									"\t\t\"org_alias\" : pm.environment.get(\"org_alias\"),",
+									"\t\t\"token\" : pm.environment.get(\"token\")",
+									"};",
+									"",
+									"// Base64 Encoding function",
+									"var base64object = function(input) {",
+									" var inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));",
+									" var base64 = CryptoJS.enc.Base64.stringify(inputWords);",
+									" var output = removeIllegalCharacters(base64);",
+									" return output;",
+									"};",
+									"",
+									"var removeIllegalCharacters = function(input) {",
+									" return input",
+									" .replace(/=/g, '')",
+									" .replace(/\\+/g, '-')",
+									" .replace(/\\//g, '_');",
+									"};",
+									"",
+									"// Create Signed JWT",
+									"var unsignedToken = base64object(jwtHeader) + \".\" + base64object(jwtPayload);",
+									"var apiKeyBytes = CryptoJS.enc.Base64.parse(pm.environment.get(\"key\"));",
+									"var signatureHash = CryptoJS.HmacSHA256(unsignedToken, apiKeyBytes);",
+									"var signature = CryptoJS.enc.Base64.stringify(signatureHash);",
+									"var signature2 = removeIllegalCharacters(signature);",
+									"var jwtToken = unsignedToken + '.' + signature2;",
+									"//console.log(jwtToken);",
+									"",
+									"",
+									"pm.environment.set(\"jwtToken\", jwtToken);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "38c1ed09-23bb-4b0d-8fe1-cedd38815504",
+								"exec": [
+									"console.log(\"RAW Response:\",pm.response.text());",
+									"body = pm.response.text().split(\".\")[1];",
+									"var parsedWordArray = CryptoJS.enc.Base64.parse(body);",
+									"var parsedStr = parsedWordArray.toString(CryptoJS.enc.Utf8);",
+									"console.log(\"Decoded JSON Response:\",JSON.parse(parsedStr));",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{jwtToken}}"
+						},
+						"url": {
+							"raw": "{{idp_url}}/rest/4/finishwebauthnpasswordlessauth/do",
+							"host": [
+								"{{idp_url}}"
+							],
+							"path": [
+								"rest",
+								"4",
+								"finishwebauthnpasswordlessauth",
+								"do"
+							]
+						},
+						"description": "See https://apidocs.pingidentity.com/pingid-api/guide/pingid-api/pid_c_PingIDapiAuthentication/#FinishWebAuthnPasswordlessAuth"
+					},
+					"response": []
+				}
+			],
+			"description": "Please see https://apidocs.pingidentity.com/pingid-api/guide/pingid-api/pid_c_PingIDapiAuthentication for the full documentation of the PingID Authentication APIs",
 			"event": [
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "d3f7979a-c8f0-4d05-9bed-0d05813921ac",
+						"id": "18e303f1-e705-4d1b-a036-8bd86a9357a7",
+						"type": "text/javascript",
 						"exec": [
-							"// --------------- REQUEST BODY ---------------",
-							"reqBody = {",
-							"    userName: \"George\", ",
-							"};",
-							"// --------------- REQUEST BODY ---------------",
-							"",
-							"reqHeader = {",
-							"    locale: \"en\",",
-							"    secretKey: pm.environment.get(\"token\"),",
-							"    version: pm.environment.get(\"version\"), ",
-							"    orgAlias: pm.environment.get(\"org_alias\"),",
-							"    timestamp: new Date()",
-							"};",
-							"",
-							"jwtPayload = {};",
-							"jwtPayload.reqHeader = reqHeader;",
-							"jwtPayload.reqBody = reqBody;",
-							"",
-							"jwtHeader = {",
-							"\t\t\"alg\" : \"HS256\",",
-							"\t\t\"org_alias\" : pm.environment.get(\"org_alias\"),",
-							"\t\t\"token\" : pm.environment.get(\"token\")",
-							"};",
-							"",
-							"// Base64 Encoding function",
-							"var base64object = function(input) {",
-							" var inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));",
-							" var base64 = CryptoJS.enc.Base64.stringify(inputWords);",
-							" var output = removeIllegalCharacters(base64);",
-							" return output;",
-							"};",
-							"",
-							"var removeIllegalCharacters = function(input) {",
-							" return input",
-							" .replace(/=/g, '')",
-							" .replace(/\\+/g, '-')",
-							" .replace(/\\//g, '_');",
-							"};",
-							"",
-							"// Create Signed JWT",
-							"var unsignedToken = base64object(jwtHeader) + \".\" + base64object(jwtPayload);",
-							"var apiKeyBytes = CryptoJS.enc.Base64.parse(pm.environment.get(\"key\"));",
-							"var signatureHash = CryptoJS.HmacSHA256(unsignedToken, apiKeyBytes);",
-							"var signature = CryptoJS.enc.Base64.stringify(signatureHash);",
-							"var signature2 = removeIllegalCharacters(signature);",
-							"var jwtToken = unsignedToken + '.' + signature2;",
-							"//console.log(jwtToken);",
-							"",
-							"",
-							"pm.environment.set(\"jwtToken\", jwtToken);",
 							""
-						],
-						"type": "text/javascript"
+						]
 					}
 				},
 				{
 					"listen": "test",
 					"script": {
-						"id": "e9e7a80d-159f-43df-b391-cf3006f6d66c",
+						"id": "61bf7491-0a81-4cf5-926b-f8f18538523b",
+						"type": "text/javascript",
 						"exec": [
-							"console.log(\"RAW Response:\",pm.response.text());",
-							"body = pm.response.text().split(\".\")[1];",
-							"var parsedWordArray = CryptoJS.enc.Base64.parse(body);",
-							"var parsedStr = parsedWordArray.toString(CryptoJS.enc.Utf8);",
-							"console.log(\"Decoded JSON Response:\",JSON.parse(parsedStr));",
 							""
-						],
-						"type": "text/javascript"
+						]
 					}
 				}
 			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{{jwtToken}}"
-				},
-				"url": {
-					"raw": "https://idpxnyl3m.pingidentity.com/pingid/rest/4/activateuser/do",
-					"protocol": "https",
-					"host": [
-						"idpxnyl3m",
-						"pingidentity",
-						"com"
-					],
-					"path": [
-						"pingid",
-						"rest",
-						"4",
-						"activateuser",
-						"do"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "OfflinePairing",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"id": "d3f7979a-c8f0-4d05-9bed-0d05813921ac",
-						"exec": [
-							"// --------------- REQUEST BODY ---------------",
-							"reqBody = {",
-							"    username: \"George\", ",
-							"    type: \"SMS\", ",
-							"    pairingData: \"14445556666\", ",
-							"    clientData: null,",
-							"    validateUniqueDevice:true",
-							"};",
-							"// --------------- REQUEST BODY ---------------",
-							"",
-							"reqHeader = {",
-							"    locale: \"en\",",
-							"    secretKey: pm.environment.get(\"token\"),",
-							"    version: pm.environment.get(\"version\"), ",
-							"    orgAlias: pm.environment.get(\"org_alias\"),",
-							"    timestamp: new Date()",
-							"};",
-							"",
-							"jwtPayload = {};",
-							"jwtPayload.reqHeader = reqHeader;",
-							"jwtPayload.reqBody = reqBody;",
-							"",
-							"jwtHeader = {",
-							"\t\t\"alg\" : \"HS256\",",
-							"\t\t\"org_alias\" : pm.environment.get(\"org_alias\"),",
-							"\t\t\"token\" : pm.environment.get(\"token\")",
-							"};",
-							"",
-							"// Base64 Encoding function",
-							"var base64object = function(input) {",
-							" var inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));",
-							" var base64 = CryptoJS.enc.Base64.stringify(inputWords);",
-							" var output = removeIllegalCharacters(base64);",
-							" return output;",
-							"};",
-							"",
-							"var removeIllegalCharacters = function(input) {",
-							" return input",
-							" .replace(/=/g, '')",
-							" .replace(/\\+/g, '-')",
-							" .replace(/\\//g, '_');",
-							"};",
-							"",
-							"// Create Signed JWT",
-							"var unsignedToken = base64object(jwtHeader) + \".\" + base64object(jwtPayload);",
-							"var apiKeyBytes = CryptoJS.enc.Base64.parse(pm.environment.get(\"key\"));",
-							"var signatureHash = CryptoJS.HmacSHA256(unsignedToken, apiKeyBytes);",
-							"var signature = CryptoJS.enc.Base64.stringify(signatureHash);",
-							"var signature2 = removeIllegalCharacters(signature);",
-							"var jwtToken = unsignedToken + '.' + signature2;",
-							"//console.log(jwtToken);",
-							"",
-							"",
-							"pm.environment.set(\"jwtToken\", jwtToken);",
-							""
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"id": "e9e7a80d-159f-43df-b391-cf3006f6d66c",
-						"exec": [
-							"console.log(\"RAW Response:\",pm.response.text());",
-							"body = pm.response.text().split(\".\")[1];",
-							"var parsedWordArray = CryptoJS.enc.Base64.parse(body);",
-							"var parsedStr = parsedWordArray.toString(CryptoJS.enc.Utf8);",
-							"console.log(\"Decoded JSON Response:\",JSON.parse(parsedStr));",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{{jwtToken}}"
-				},
-				"url": {
-					"raw": "https://idpxnyl3m.pingidentity.com/pingid/rest/4/offlinepairing/do",
-					"protocol": "https",
-					"host": [
-						"idpxnyl3m",
-						"pingidentity",
-						"com"
-					],
-					"path": [
-						"pingid",
-						"rest",
-						"4",
-						"offlinepairing",
-						"do"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "StartOfflinePairing",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"id": "6db5845a-66b6-4f9e-9487-3aedb93d19b4",
-						"exec": [
-							"// --------------- REQUEST BODY ---------------",
-							"reqBody = {",
-							"    \"userName\": \"George\", ",
-							"    type: \"SMS\", ",
-							"    pairingData: \"14445556666\", ",
-							"    validateUniqueDevice: true",
-							"};",
-							"// --------------- REQUEST BODY ---------------",
-							"",
-							"reqHeader = {",
-							"    locale: \"en\",",
-							"    secretKey: pm.environment.get(\"token\"),",
-							"    version: pm.environment.get(\"version\"), ",
-							"    orgAlias: pm.environment.get(\"org_alias\"),",
-							"    timestamp: new Date()",
-							"};",
-							"",
-							"jwtPayload = {};",
-							"jwtPayload.reqHeader = reqHeader;",
-							"jwtPayload.reqBody = reqBody;",
-							"",
-							"jwtHeader = {",
-							"\t\t\"alg\" : \"HS256\",",
-							"\t\t\"org_alias\" : pm.environment.get(\"org_alias\"),",
-							"\t\t\"token\" : pm.environment.get(\"token\")",
-							"};",
-							"",
-							"// Base64 Encoding function",
-							"var base64object = function(input) {",
-							" var inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));",
-							" var base64 = CryptoJS.enc.Base64.stringify(inputWords);",
-							" var output = removeIllegalCharacters(base64);",
-							" return output;",
-							"};",
-							"",
-							"var removeIllegalCharacters = function(input) {",
-							" return input",
-							" .replace(/=/g, '')",
-							" .replace(/\\+/g, '-')",
-							" .replace(/\\//g, '_');",
-							"};",
-							"",
-							"// Create Signed JWT",
-							"var unsignedToken = base64object(jwtHeader) + \".\" + base64object(jwtPayload);",
-							"var apiKeyBytes = CryptoJS.enc.Base64.parse(pm.environment.get(\"key\"));",
-							"var signatureHash = CryptoJS.HmacSHA256(unsignedToken, apiKeyBytes);",
-							"var signature = CryptoJS.enc.Base64.stringify(signatureHash);",
-							"var signature2 = removeIllegalCharacters(signature);",
-							"var jwtToken = unsignedToken + '.' + signature2;",
-							"//console.log(jwtToken);",
-							"",
-							"",
-							"pm.environment.set(\"jwtToken\", jwtToken);",
-							""
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"id": "33b13a23-92a0-4768-bdc1-fe68e3645525",
-						"exec": [
-							"console.log(\"RAW Response:\",pm.response.text());",
-							"body = pm.response.text().split(\".\")[1];",
-							"var parsedWordArray = CryptoJS.enc.Base64.parse(body);",
-							"var parsedStr = parsedWordArray.toString(CryptoJS.enc.Utf8);",
-							"console.log(\"Decoded JSON Response:\",JSON.parse(parsedStr));",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{{jwtToken}}"
-				},
-				"url": {
-					"raw": "https://idpxnyl3m.pingidentity.com/pingid/rest/4/startofflinepairing/do",
-					"protocol": "https",
-					"host": [
-						"idpxnyl3m",
-						"pingidentity",
-						"com"
-					],
-					"path": [
-						"pingid",
-						"rest",
-						"4",
-						"startofflinepairing",
-						"do"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "AuthenticateOnline",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"id": "6db5845a-66b6-4f9e-9487-3aedb93d19b4",
-						"exec": [
-							"// --------------- REQUEST BODY ---------------",
-							"reqBody = {",
-							"    \"userName\": \"George\", ",
-							"    type: \"SMS\", ",
-							"    pairingData: \"14445556666\", ",
-							"    validateUniqueDevice: true",
-							"};",
-							"// --------------- REQUEST BODY ---------------",
-							"",
-							"reqHeader = {",
-							"    locale: \"en\",",
-							"    secretKey: pm.environment.get(\"token\"),",
-							"    version: pm.environment.get(\"version\"), ",
-							"    orgAlias: pm.environment.get(\"org_alias\"),",
-							"    timestamp: new Date()",
-							"};",
-							"",
-							"jwtPayload = {};",
-							"jwtPayload.reqHeader = reqHeader;",
-							"jwtPayload.reqBody = reqBody;",
-							"",
-							"jwtHeader = {",
-							"\t\t\"alg\" : \"HS256\",",
-							"\t\t\"org_alias\" : pm.environment.get(\"org_alias\"),",
-							"\t\t\"token\" : pm.environment.get(\"token\")",
-							"};",
-							"",
-							"// Base64 Encoding function",
-							"var base64object = function(input) {",
-							" var inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));",
-							" var base64 = CryptoJS.enc.Base64.stringify(inputWords);",
-							" var output = removeIllegalCharacters(base64);",
-							" return output;",
-							"};",
-							"",
-							"var removeIllegalCharacters = function(input) {",
-							" return input",
-							" .replace(/=/g, '')",
-							" .replace(/\\+/g, '-')",
-							" .replace(/\\//g, '_');",
-							"};",
-							"",
-							"// Create Signed JWT",
-							"var unsignedToken = base64object(jwtHeader) + \".\" + base64object(jwtPayload);",
-							"var apiKeyBytes = CryptoJS.enc.Base64.parse(pm.environment.get(\"key\"));",
-							"var signatureHash = CryptoJS.HmacSHA256(unsignedToken, apiKeyBytes);",
-							"var signature = CryptoJS.enc.Base64.stringify(signatureHash);",
-							"var signature2 = removeIllegalCharacters(signature);",
-							"var jwtToken = unsignedToken + '.' + signature2;",
-							"//console.log(jwtToken);",
-							"",
-							"",
-							"pm.environment.set(\"jwtToken\", jwtToken);",
-							""
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"id": "33b13a23-92a0-4768-bdc1-fe68e3645525",
-						"exec": [
-							"console.log(\"RAW Response:\",pm.response.text());",
-							"body = pm.response.text().split(\".\")[1];",
-							"var parsedWordArray = CryptoJS.enc.Base64.parse(body);",
-							"var parsedStr = parsedWordArray.toString(CryptoJS.enc.Utf8);",
-							"console.log(\"Decoded JSON Response:\",JSON.parse(parsedStr));",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{{jwtToken}}"
-				},
-				"url": {
-					"raw": "https://idpxnyl3m.pingidentity.com/pingid/rest/4/startofflinepairing/do",
-					"protocol": "https",
-					"host": [
-						"idpxnyl3m",
-						"pingidentity",
-						"com"
-					],
-					"path": [
-						"pingid",
-						"rest",
-						"4",
-						"startofflinepairing",
-						"do"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "AuthenticteOffline",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"id": "6db5845a-66b6-4f9e-9487-3aedb93d19b4",
-						"exec": [
-							"// --------------- REQUEST BODY ---------------",
-							"reqBody = {",
-							"    \"userName\": \"George\", ",
-							"    type: \"SMS\", ",
-							"    pairingData: \"14445556666\", ",
-							"    validateUniqueDevice: true",
-							"};",
-							"// --------------- REQUEST BODY ---------------",
-							"",
-							"reqHeader = {",
-							"    locale: \"en\",",
-							"    secretKey: pm.environment.get(\"token\"),",
-							"    version: pm.environment.get(\"version\"), ",
-							"    orgAlias: pm.environment.get(\"org_alias\"),",
-							"    timestamp: new Date()",
-							"};",
-							"",
-							"jwtPayload = {};",
-							"jwtPayload.reqHeader = reqHeader;",
-							"jwtPayload.reqBody = reqBody;",
-							"",
-							"jwtHeader = {",
-							"\t\t\"alg\" : \"HS256\",",
-							"\t\t\"org_alias\" : pm.environment.get(\"org_alias\"),",
-							"\t\t\"token\" : pm.environment.get(\"token\")",
-							"};",
-							"",
-							"// Base64 Encoding function",
-							"var base64object = function(input) {",
-							" var inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));",
-							" var base64 = CryptoJS.enc.Base64.stringify(inputWords);",
-							" var output = removeIllegalCharacters(base64);",
-							" return output;",
-							"};",
-							"",
-							"var removeIllegalCharacters = function(input) {",
-							" return input",
-							" .replace(/=/g, '')",
-							" .replace(/\\+/g, '-')",
-							" .replace(/\\//g, '_');",
-							"};",
-							"",
-							"// Create Signed JWT",
-							"var unsignedToken = base64object(jwtHeader) + \".\" + base64object(jwtPayload);",
-							"var apiKeyBytes = CryptoJS.enc.Base64.parse(pm.environment.get(\"key\"));",
-							"var signatureHash = CryptoJS.HmacSHA256(unsignedToken, apiKeyBytes);",
-							"var signature = CryptoJS.enc.Base64.stringify(signatureHash);",
-							"var signature2 = removeIllegalCharacters(signature);",
-							"var jwtToken = unsignedToken + '.' + signature2;",
-							"//console.log(jwtToken);",
-							"",
-							"",
-							"pm.environment.set(\"jwtToken\", jwtToken);",
-							""
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"id": "33b13a23-92a0-4768-bdc1-fe68e3645525",
-						"exec": [
-							"console.log(\"RAW Response:\",pm.response.text());",
-							"body = pm.response.text().split(\".\")[1];",
-							"var parsedWordArray = CryptoJS.enc.Base64.parse(body);",
-							"var parsedStr = parsedWordArray.toString(CryptoJS.enc.Utf8);",
-							"console.log(\"Decoded JSON Response:\",JSON.parse(parsedStr));",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{{jwtToken}}"
-				},
-				"url": {
-					"raw": "https://idpxnyl3m.pingidentity.com/pingid/rest/4/startofflinepairing/do",
-					"protocol": "https",
-					"host": [
-						"idpxnyl3m",
-						"pingidentity",
-						"com"
-					],
-					"path": [
-						"pingid",
-						"rest",
-						"4",
-						"startofflinepairing",
-						"do"
-					]
-				}
-			},
-			"response": []
+			"protocolProfileBehavior": {}
 		}
 	],
 	"protocolProfileBehavior": {}
