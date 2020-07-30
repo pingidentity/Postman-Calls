@@ -9,4 +9,5 @@ Reference the [PingID API docs](https://apidocs.pingidentity.com/pingid-api/guid
 1. org_alias (as appears in the PingID properties file)
 2. token (as appears in the PingID properties file)
 3. key (use_base64_key as appears in the PingID properties file)
-3. version - the API version (see docs - usually 4.9)
+4. idp_url (as appears in the PingID properties file)
+5. version - the API version (see docs - usually 4.9)
